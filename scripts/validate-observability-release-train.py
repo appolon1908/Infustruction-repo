@@ -49,7 +49,7 @@ EXPECTED_REPOSITORIES = {
     "alloy": "appolon1908-hue/Codestra-Alloy",
     "openbao": "appolon1908-hue/Codestra-OpenBao",
 }
-EXPECTED_HOSTS = {
+EXPECTED_HOSTS: dict[str, str | None] = {
     "grafana": "graf.codestra.media",
     "prometheus": "prom.codestra.media",
     "alertmanager": "aler.codestra.media",
@@ -59,11 +59,14 @@ EXPECTED_HOSTS = {
     "superset": "supe.codestra.media",
     "node-exporter": "node.codestra.media",
     "cadvisor": "cadv.codestra.media",
-    "postgres-exporter": "pgex.codestra.media",
+    "postgres-exporter": None,
     "redis-exporter": "rdex.codestra.media",
     "blackbox-exporter": "blac.codestra.media",
     "alloy": "allo.codestra.media",
     "openbao": "bao.codestra.media",
+}
+EXPECTED_PRIVATE_SERVICE_IDENTITIES = {
+    "postgres-exporter": "postgres-exporter:9187",
 }
 EXPECTED_PERSISTENT_BRANCHES = ["main", "development", "test", "staging", "production"]
 PUBLIC_BROWSER_COMPONENTS = {"grafana", "superset", "openbao"}
@@ -113,20 +116,38 @@ def validate_registry(registry: dict[str, Any]) -> None:
 
     seen_repositories: set[str] = set()
     seen_hosts: set[str] = set()
+    seen_private_identities: set[str] = set()
     for item in repositories:
         component = item["component"]
         repository = item.get("repository")
         hostname = item.get("hostname")
+        expected_hostname = EXPECTED_HOSTS[component]
         if repository != EXPECTED_REPOSITORIES[component]:
             fail(f"{component}: repository mismatch")
-        if hostname != EXPECTED_HOSTS[component]:
+        if hostname != expected_hostname:
             fail(f"{component}: hostname mismatch")
-        if repository in seen_repositories or hostname in seen_hosts:
-            fail(f"{component}: duplicate repository or hostname")
+        if repository in seen_repositories:
+            fail(f"{component}: duplicate repository")
         seen_repositories.add(repository)
-        seen_hosts.add(hostname)
-        if not hostname.endswith(".codestra.media"):
-            fail(f"{component}: hostname is outside codestra.media")
+
+        expected_private_identity = EXPECTED_PRIVATE_SERVICE_IDENTITIES.get(component)
+        if expected_private_identity is not None:
+            if item.get("privateServiceIdentity") != expected_private_identity:
+                fail(f"{component}: private service identity mismatch")
+            if expected_private_identity in seen_private_identities:
+                fail(f"{component}: duplicate private service identity")
+            seen_private_identities.add(expected_private_identity)
+            if hostname is not None:
+                fail(f"{component}: public hostname must remain unassigned")
+        else:
+            if "privateServiceIdentity" in item:
+                fail(f"{component}: unexpected private service identity")
+            if not isinstance(hostname, str) or not hostname.endswith(".codestra.media"):
+                fail(f"{component}: hostname is outside codestra.media")
+            if hostname in seen_hosts:
+                fail(f"{component}: duplicate hostname")
+            seen_hosts.add(hostname)
+
         if item.get("nativePortPublic") is not False:
             fail(f"{component}: native port must not be public")
         if item.get("persistentBranchesPresent") is not True:
@@ -161,7 +182,12 @@ def validate_registry(registry: dict[str, Any]) -> None:
     if not isinstance(cross, list) or len(cross) != 4:
         fail("exactly four cross-cutting authorities are required")
     serialized = json.dumps(cross, sort_keys=True)
-    for prohibited in ("liveApplyAllowed\": true", "liveReloadAllowed\": true", "liveFirewallApplyAllowed\": true", "liveMutationAllowed\": true"):
+    for prohibited in (
+        "liveApplyAllowed\": true",
+        "liveReloadAllowed\": true",
+        "liveFirewallApplyAllowed\": true",
+        "liveMutationAllowed\": true",
+    ):
         if prohibited in serialized:
             fail(f"cross-cutting authority enabled a live action: {prohibited}")
 
@@ -228,7 +254,10 @@ def validate_lock(lock: dict[str, Any], registry: dict[str, Any]) -> None:
     cross = lock.get("crossCuttingLocks")
     if not isinstance(cross, list) or len(cross) != 3:
         fail("three cross-cutting branch locks are required")
-    if not any(item.get("repository") == "appolon1908-hue/Keycloak" and item.get("issue") == 30 for item in cross):
+    if not any(
+        item.get("repository") == "appolon1908-hue/Keycloak" and item.get("issue") == 30
+        for item in cross
+    ):
         fail("Keycloak issue #30 lock is missing")
 
 
@@ -293,7 +322,15 @@ def validate_docs() -> None:
             fail(f"{path.relative_to(ROOT)} does not state the deployment freeze")
     matrix = MATRIX.read_text(encoding="utf-8")
     for component in EXPECTED_COMPONENTS:
-        if EXPECTED_REPOSITORIES[component] not in matrix and EXPECTED_HOSTS[component] not in matrix:
+        repository = EXPECTED_REPOSITORIES[component]
+        hostname = EXPECTED_HOSTS[component]
+        private_identity = EXPECTED_PRIVATE_SERVICE_IDENTITIES.get(component)
+        alternatives = [repository]
+        if hostname is not None:
+            alternatives.append(hostname)
+        if private_identity is not None:
+            alternatives.append(private_identity)
+        if not any(value in matrix for value in alternatives):
             fail(f"status matrix omits {component}")
     protection = PROTECTION.read_text(encoding="utf-8")
     for branch in EXPECTED_PERSISTENT_BRANCHES:
@@ -312,6 +349,8 @@ def main() -> int:
     validate_manifest(manifest, registry)
     validate_docs()
     print("OBSERVABILITY_REPOSITORY_COUNT=14")
+    print("PUBLIC_DNS_HOST_COUNT=13")
+    print("POSTGRES_EXPORTER_PRIVATE_IDENTITY=postgres-exporter:9187")
     print("PERSISTENT_BRANCH_SETS_RECORDED=14")
     print("ACTIVE_BRANCH_LOCK=PASS")
     print("RELEASE_MANIFEST_STATE=BUILDING")

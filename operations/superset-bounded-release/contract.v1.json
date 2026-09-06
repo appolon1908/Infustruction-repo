@@ -1,0 +1,130 @@
+{
+  "schema": "codestra.superset-bounded-release-contract.v1",
+  "workload": "superset",
+  "source_repository": "appolon1908-hue/Superset",
+  "infrastructure_repository": "appolon1908-hue/Infustruction-repo",
+  "promotion_chain": [
+    "development",
+    "test",
+    "staging",
+    "production",
+    "main"
+  ],
+  "release": {
+    "workflow": ".github/workflows/release-image.yml",
+    "bounded_workflow": ".github/workflows/bounded-runtime-certification.yml",
+    "reusable_build_authority": "appolon1908-hue/Codestra-Telemetry/.github/workflows/reusable-release-image.yml@9a6aebb849bbc068105c10d9d1dfd39ebf6f78bd",
+    "image_repository": "ghcr.io/appolon1908-hue/superset-superset",
+    "source_branch": "production",
+    "required_evidence": [
+      "exact_protected_source_sha",
+      "exact_image_digest",
+      "oci_source_label",
+      "oci_revision_label",
+      "nonroot_user_10001_10001",
+      "high_critical_vulnerability_gate",
+      "sbom",
+      "image_provenance",
+      "cosign_signature",
+      "spdx_attestation",
+      "github_build_provenance"
+    ],
+    "runtime_activation_by_release": false
+  },
+  "staging": {
+    "hosted_artifact_job": "artifact-staging-certification",
+    "bounded_job": "bounded-staging-runtime",
+    "environment": "staging-readonly",
+    "runner_labels": [
+      "self-hosted",
+      "codestra-staging"
+    ],
+    "required_gates": [
+      "signed_image_identity",
+      "migration",
+      "role_bootstrap_idempotency",
+      "metadata_readiness",
+      "metadata_backup_integrity",
+      "metadata_restore",
+      "runtime_restart_rollback",
+      "database_native_rls",
+      "cross_business_denial",
+      "write_attempt_denied",
+      "zero_live_effects"
+    ],
+    "public_traffic_changed": false,
+    "production_runtime_changed": false
+  },
+  "production_readonly_canary": {
+    "job": "production-readonly-canary",
+    "environment": "production-readonly-canary",
+    "runner_labels": [
+      "self-hosted",
+      "codestra-production-canary"
+    ],
+    "maximum_percent": 1,
+    "methods": [
+      "GET",
+      "HEAD"
+    ],
+    "read_only": true,
+    "controller": {
+      "path_variable": "SUPERSET_CANARY_CONTROLLER",
+      "sha256_variable": "SUPERSET_CANARY_CONTROLLER_SHA256",
+      "required_owner_uid": 0,
+      "group_world_writable": false,
+      "apply_receipt_schema": "codestra.superset-readonly-canary-receipt.v1",
+      "rollback_receipt_schema": "codestra.superset-readonly-canary-rollback.v1",
+      "status_schema": "codestra.superset-readonly-canary-status.v1"
+    },
+    "required_stop_conditions": [
+      "source_or_digest_mismatch",
+      "missing_staging_evidence",
+      "readiness_failure",
+      "oidc_failure",
+      "runtime_state_drift",
+      "write_counter_movement",
+      "external_delivery_counter_movement",
+      "method_outside_get_head",
+      "percentage_above_one",
+      "controller_checksum_mismatch",
+      "rollback_failure"
+    ],
+    "runtime_must_be_restored_after_canary": true
+  },
+  "required_external_bindings": {
+    "stage6_host_created": false,
+    "codestra_staging_runner_registered": false,
+    "codestra_production_canary_runner_registered": false,
+    "staging_readonly_environment_configured": false,
+    "production_readonly_canary_environment_configured": false,
+    "superset_canary_controller_installed": false,
+    "superset_canary_controller_checksum_bound": false
+  },
+  "candidate": {
+    "status": "PENDING_PROTECTED_SUPERSET_RELEASE",
+    "source_sha": null,
+    "release_tag": null,
+    "image": null,
+    "image_digest": null,
+    "release_run_id": null,
+    "release_evidence_sha256": null,
+    "hosted_staging_evidence_sha256": null,
+    "bounded_staging_evidence_sha256": null,
+    "production_canary_evidence_sha256": null
+  },
+  "safety_state": {
+    "deployment_authorized": false,
+    "production_certified": false,
+    "live_write": false,
+    "odoo_write": false,
+    "external_delivery": false,
+    "email_delivery": false,
+    "sms_delivery": false,
+    "pstn_dialing": false,
+    "provider_delivery": false,
+    "campaign_activation": false,
+    "payment_execution": false,
+    "financial_trading": false
+  }
+}

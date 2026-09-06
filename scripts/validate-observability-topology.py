@@ -14,7 +14,7 @@ TOPOLOGY = CONFIG / "topology.v1.json"
 COMMUNICATION = CONFIG / "communication-map.v1.json"
 FIREWALL = CONFIG / "firewall.v1.json"
 
-EXPECTED_HOSTS = {
+EXPECTED_HOSTS: dict[str, str | None] = {
     "grafana": "graf.codestra.media",
     "prometheus": "prom.codestra.media",
     "alertmanager": "aler.codestra.media",
@@ -24,11 +24,14 @@ EXPECTED_HOSTS = {
     "superset": "supe.codestra.media",
     "node-exporter": "node.codestra.media",
     "cadvisor": "cadv.codestra.media",
-    "postgres-exporter": "pgex.codestra.media",
+    "postgres-exporter": None,
     "redis-exporter": "rdex.codestra.media",
     "blackbox-exporter": "blac.codestra.media",
     "alloy": "allo.codestra.media",
     "openbao": "bao.codestra.media",
+}
+EXPECTED_PRIVATE_SERVICE_IDENTITIES = {
+    "postgres-exporter": "postgres-exporter:9187",
 }
 EXPECTED_REPOSITORIES = {
     "grafana": "appolon1908-hue/Codestra-Grafana-",
@@ -51,7 +54,11 @@ BROWSER_HOSTS = {
     "supe.codestra.media",
     "bao.codestra.media",
 }
-PRIVATE_HOSTS = set(EXPECTED_HOSTS.values()) - BROWSER_HOSTS
+PRIVATE_HOSTS = {
+    hostname
+    for hostname in EXPECTED_HOSTS.values()
+    if hostname is not None and hostname not in BROWSER_HOSTS
+}
 EXPECTED_FLOWS = {
     ("caddy", "grafana", 3000),
     ("caddy", "superset", 8088),
@@ -132,6 +139,14 @@ def validate_topology(topology: dict) -> None:
         component = by_id[component_id]
         if component.get("hostname") != hostname:
             fail(f"{component_id}: canonical hostname mismatch")
+        expected_private_identity = EXPECTED_PRIVATE_SERVICE_IDENTITIES.get(component_id)
+        if expected_private_identity is None:
+            if "privateServiceIdentity" in component:
+                fail(f"{component_id}: unexpected private service identity")
+            if not isinstance(hostname, str) or not hostname.endswith(".codestra.media"):
+                fail(f"{component_id}: canonical hostname is invalid")
+        elif component.get("privateServiceIdentity") != expected_private_identity:
+            fail(f"{component_id}: private service identity mismatch")
         if component.get("repository") != EXPECTED_REPOSITORIES[component_id]:
             fail(f"{component_id}: repository authority mismatch")
         confirmation = component.get("portConfirmation")
@@ -272,6 +287,8 @@ def main() -> None:
     validate_communication(communication)
     validate_firewall(load(FIREWALL), communication)
     print("OBSERVABILITY_SERVICE_COUNT=14")
+    print("PUBLIC_DNS_HOST_COUNT=13")
+    print("POSTGRES_EXPORTER_PRIVATE_IDENTITY=postgres-exporter:9187")
     print("BROWSER_EDGE_HOSTS=graf.codestra.media,supe.codestra.media,bao.codestra.media")
     print("PRIVATE_CADDY_POLICY=DENY_ONLY")
     print("EAST_WEST_DEFAULT=DENY")

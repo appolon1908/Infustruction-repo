@@ -1,0 +1,42 @@
+name: Validate Stage 6 authoritative source lock
+
+on:
+  pull_request:
+    paths:
+      - "STAGE6-SOURCE-LOCK.yaml"
+      - "deploy/staging/runtime-reconciliation/**"
+      - "releases/STAGE6-STAGING-EXACT-SOURCE-LOCK-2026-08-30.json"
+      - "reports/runtime-reconciliation/**"
+      - "scripts/build_stage6_reconciliation_matrix.py"
+      - "scripts/validate_stage6_source_lock.py"
+      - ".github/workflows/validate-stage6-source-lock.yml"
+  push:
+    branches: [main]
+    paths:
+      - "STAGE6-SOURCE-LOCK.yaml"
+      - "deploy/staging/runtime-reconciliation/**"
+      - "releases/STAGE6-STAGING-EXACT-SOURCE-LOCK-2026-08-30.json"
+      - "reports/runtime-reconciliation/**"
+      - "scripts/build_stage6_reconciliation_matrix.py"
+      - "scripts/validate_stage6_source_lock.py"
+      - ".github/workflows/validate-stage6-source-lock.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --disable-pip-version-check --no-cache-dir PyYAML==6.0.3
+      - run: python -m py_compile scripts/build_stage6_reconciliation_matrix.py scripts/validate_stage6_source_lock.py
+      - run: python scripts/build_stage6_reconciliation_matrix.py
+      - run: git diff --exit-code -- reports/runtime-reconciliation/STAGE6-RECONCILIATION-MATRIX.csv
+      - run: python scripts/validate_stage6_source_lock.py

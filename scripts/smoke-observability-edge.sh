@@ -4,6 +4,7 @@ set -Eeuo pipefail
 EXPECTED_IP="${OBSERVABILITY_EXPECTED_IP:-37.27.128.39}"
 MODE="${OBSERVABILITY_SMOKE_MODE:-preflight}"
 TIMEOUT_SECONDS="${OBSERVABILITY_SMOKE_TIMEOUT_SECONDS:-8}"
+POSTGRES_EXPORTER_PRIVATE_IDENTITY="postgres-exporter:9187"
 
 PUBLIC_HOSTS=(
   graf.codestra.media
@@ -18,7 +19,6 @@ PRIVATE_HOSTS=(
   otel.codestra.media
   node.codestra.media
   cadv.codestra.media
-  pgex.codestra.media
   rdex.codestra.media
   blac.codestra.media
   allo.codestra.media
@@ -108,6 +108,9 @@ check_native_port_closed() {
 for host in "${PUBLIC_HOSTS[@]}" "${PRIVATE_HOSTS[@]}"; do
   check_dns "$host"
 done
+
+printf 'POSTGRES_EXPORTER_PRIVATE_IDENTITY=%s\n' "$POSTGRES_EXPORTER_PRIVATE_IDENTITY"
+printf 'POSTGRES_EXPORTER_PUBLIC_DNS=UNASSIGNED\n'
 
 if [[ "$MODE" == "preflight" ]]; then
   printf 'OBSERVABILITY_PREFLIGHT_VALID=1\n'

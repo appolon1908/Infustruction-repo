@@ -15,7 +15,7 @@ KEYCLOAK_LIVE_APPLY_ALLOWED=NO
 OPENBAO_INITIALIZATION_ALLOWED=NO
 ```
 
-DNS names may resolve to `37.27.128.39`, but DNS is not evidence of service installation, authentication, TLS activation, private-port closure, health or release approval.
+Thirteen public DNS names may resolve to `37.27.128.39`, but DNS is not evidence of service installation, authentication, TLS activation, private-port closure, health or release approval. PostgreSQL Exporter has no public hostname; its principal repository assigns only the private service identity `postgres-exporter:9187`.
 
 ## Persistent branch audit
 
@@ -33,7 +33,7 @@ The GitHub branch inventory reported every persistent branch as **unprotected**.
 
 ## Exact repository matrix
 
-| # | Component | Canonical host | Canonical candidate | PR/stack | Current source state |
+| # | Component | Endpoint authority | Canonical candidate | PR/stack | Current source state |
 |---:|---|---|---|---|---|
 | 1 | Grafana | `graf.codestra.media` | `integration/enterprise-observability-control-plane-20260829` @ `55a29aade410a6d2e6bb31384533ae6c3824121d` | PR #1 -> `development` | Source ready for review; no deployment |
 | 2 | Prometheus | `prom.codestra.media` | `feature/observability/authoritative-prometheus-20260829` @ `5d8bf6905a8ad79f9234700bc2818e8155f08427` | PR #1 -> `development` | Source ready for review; targets remain gated |
@@ -44,7 +44,7 @@ The GitHub branch inventory reported every persistent branch as **unprotected**.
 | 7 | Superset | `supe.codestra.media` | `feature/codestra-corporate-suite-v1-20260829` @ `9ff12b1a321120218da2d8fa91b78e6b9bc43bdd` | PR #1 OIDC foundation -> PR #2 analytics | Ordered stack; read-model-only policy; no database connection |
 | 8 | Node Exporter | `node.codestra.media` | `feature/codestra-corporate-suite-v1-20260829` @ `d444b4ec10291d9517c969f37cc63a3c69f062f4` | PR #1 runtime -> PR #2 corporate | Exact-head CI rerun after locked-source fixes |
 | 9 | cAdvisor | `cadv.codestra.media` | `feature/codestra-corporate-suite-v1-20260829` @ `2fea43e3fb043056f426ba420f188cefe3832f62` | PR #1 runtime -> PR #2 corporate | Exact-current-head verification pending |
-| 10 | PostgreSQL Exporter | `pgex.codestra.media` | `feature/observability/postgres-exporter-20260829` @ `8919709a9e020acf250aafb4c691021a12a5331f` | PR #1 hostname -> PR #2 runtime | Repository confirmed; exact-head CI rerun after DNS assertion correction |
+| 10 | PostgreSQL Exporter | `postgres-exporter:9187` private service identity; no public hostname | `feature/observability/postgres-exporter-20260829` @ `8919709a9e020acf250aafb4c691021a12a5331f` | PR #1 authority -> PR #2 runtime | Principal repository authority confirmed; port 9187 remains private and publicly forbidden |
 | 11 | Redis Exporter | `rdex.codestra.media` | `feature/codestra-corporate-suite-v1-20260829` @ `96ef1dcad350cea074dfb4082315ddd6d62c6adf` | PR #1 runtime -> PR #2 corporate | Exact-head CI rerun after upstream-fixture scan correction |
 | 12 | Blackbox Exporter | `blac.codestra.media` | `feature/codestra-corporate-suite-v1-20260829` @ `97a386f3124fad4560ccf6429b1a806736bcfabc` | PR #1 runtime -> PR #2 corporate | Exact-head CI green; no probes activated |
 | 13 | Alloy | `allo.codestra.media` | `feature/codestra-corporate-suite-v1-20260829` @ `76b73fd244e819039ec5faee1281321d689f0250` | PR #1 | Source ready for review; no mounts, certificates or ingestion activated |
@@ -55,7 +55,7 @@ The GitHub branch inventory reported every persistent branch as **unprotected**.
 | Authority | Active source | Required work | Live state |
 |---|---|---|---|
 | Keycloak | `feature/observability-managed-clients-v1` | Issue #30: three managed clients, five realm roles, plan/review/apply/export/rollback and secret-safe tests | No apply |
-| Caddy | `feature/observability-edge-routing-v1`, PR #6 | Authenticated `graf`/`supe`, restricted `bao`, controlled denial for eleven private hosts | No reload or certificates |
+| Caddy | `feature/observability-edge-routing-v1`, PR #6 | Authenticated `graf`/`supe`, restricted `bao`, controlled denial for ten private DNS hosts; PostgreSQL Exporter remains private-only without a public host | No reload or certificates |
 | Infrastructure | `feature/observability-private-network-v1`, PR #2 | Topology, firewall desired state, integration coordination and evidence | No firewall or install |
 | Integration lab | `codex/observability-integration-foundation`, PR #4 | Disposable synthetic full-stack validation | No production dependencies |
 | Communications dashboard | `communication-platform-:feat/dashboard-read-model-v1`, PR #3 | Unified operational/read-model contract | No business mutation |

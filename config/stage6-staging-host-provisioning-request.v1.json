@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "request_id": "codestra-stage6-staging-readonly-20260903",
+  "status": "PROVISIONED_PENDING_CURRENT_VERIFICATION",
+  "deployment_authorized": false,
+  "production_certified": false,
+  "host_created": true,
+  "host_verified": false,
+  "repository": "appolon1908-hue/Infustruction-repo",
+  "workflow": ".github/workflows/stage6-provision-staging-host.yml",
+  "protected_environment": "stage6-infrastructure-provisioning",
+  "purpose": "isolated staging-readonly certification host",
+  "network_class": "isolated-private-staging",
+  "required_source": {
+    "production_platform_repository": "appolon1908-hue/codestra-production-platform",
+    "production_platform_branch": "release/production-activation",
+    "source_lock_status": "PASS",
+    "candidate_matrix_deployment_authorized": true,
+    "endpoint_manifest_checksum_required": true
+  },
+  "required_provisioning_outputs": [
+    "provider_resource_id",
+    "canonical_hostname",
+    "private_ip",
+    "ssh_host_key_fingerprint",
+    "operating_system_image_id",
+    "instance_type",
+    "region",
+    "network_id",
+    "firewall_policy_id",
+    "created_at_utc",
+    "workflow_run_id",
+    "workflow_source_sha",
+    "configuration_checksum"
+  ],
+  "required_verification": [
+    "host_identity",
+    "clock_synchronization",
+    "disk_capacity",
+    "memory_capacity",
+    "private_network_only",
+    "public_native_service_ports_absent",
+    "ssh_known_hosts_match",
+    "operator_identity_least_privilege",
+    "container_runtime_health",
+    "failed_systemd_units_zero",
+    "clean_bootstrap_replay",
+    "destruction_and_recreation_test",
+    "sanitized_evidence_uploaded"
+  ],
+  "forbidden_actions": [
+    "reuse_production_host",
+    "reuse_core_application_host",
+    "reuse_vicidial_host",
+    "enable_business_writes",
+    "enable_external_delivery",
+    "enable_email_sms_or_pstn",
+    "enable_provider_effects",
+    "enable_payment_or_trading",
+    "change_ssh_authorized_keys_outside_workflow",
+    "record_secret_values"
+  ],
+  "observed_evidence": {
+    "path": "evidence/stage6/STAGE6-PROVISIONING-EVIDENCE-20260901.json",
+    "sha256": "sha256:2c85d5206e033253159747f14ddac64665226d29b931e668aeb7943a736f3732"
+  },
+  "next_required_evidence": [
+    "fresh protected GET-only Hetzner inventory from current main",
+    "current host identity, SSH host key, operating system, capacity and time readback",
+    "private-network and public-port denial proof",
+    "least-privilege staging-readonly operator proof",
+    "container runtime and failed-unit health",
+    "clean bootstrap replay and rollback-safe recreation evidence",
+    "current sanitized evidence artifact"
+  ],
+  "safety_controls": {
+    "production_changed": false,
+    "business_writes": false,
+    "external_delivery": false,
+    "email_delivery": false,
+    "sms_delivery": false,
+    "pstn_dialing": false,
+    "provider_effects": false,
+    "payment_execution": false,
+    "financial_trading": false,
+    "admin_bypass": false,
+    "manual_server_patch": false
+  }
+}

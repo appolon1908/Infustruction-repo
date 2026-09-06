@@ -87,11 +87,28 @@
       "component": "OpenBao",
       "contract_state": "DRAFT_OR_UNMERGED",
       "runtime_verified": false
+    },
+    {
+      "activation_allowed": false,
+      "api_contract_pr": null,
+      "component": "Alertmanager",
+      "contract_state": "DRAFT_OR_UNMERGED",
+      "runtime_verified": false
+    },
+    {
+      "activation_allowed": false,
+      "api_contract_pr": null,
+      "component": "PostgreSQL Exporter",
+      "contract_state": "DRAFT_OR_UNMERGED",
+      "runtime_verified": false
     }
   ],
   "cross_business_denial": "FAIL",
   "generated_at": "2026-09-02T17:02:17Z",
-  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_12_PRODUCTION_PULL_INSTALL_ACTIVATE",
+  "historical_observed_at": "2026-09-02T17:02:17Z",
+  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_14_AUTHORITY_REVIEW",
+  "runtime_revalidated": false,
+  "scope_corrected_at": "2026-09-06",
   "server": "37.27.128.39",
   "tenant_isolation": "FAIL",
   "unexpected_404s": 0,

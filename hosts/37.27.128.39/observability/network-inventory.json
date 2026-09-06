@@ -4,6 +4,120 @@
     "supe.codestra.media",
     "bao.codestra.media"
   ],
+  "components": [
+    {
+      "activation_allowed": false,
+      "component": "Grafana",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "graf.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Grafana-"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Prometheus",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "prom.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Prometheus"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Alertmanager",
+      "evidence_status": "NOT_CAPTURED",
+      "intended_hostname": "aler.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Alertmanager"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Loki",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "loki.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Loki"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Tempo",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "temp.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Tempo"
+    },
+    {
+      "activation_allowed": false,
+      "component": "OpenTelemetry Collector",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "otel.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Telemetry"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Superset",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "supe.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Superset"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Node Exporter",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "node.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Node-Exporter"
+    },
+    {
+      "activation_allowed": false,
+      "component": "cAdvisor",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "cadv.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-cAdvisor"
+    },
+    {
+      "activation_allowed": false,
+      "component": "PostgreSQL Exporter",
+      "evidence_status": "NOT_CAPTURED",
+      "intended_hostname": null,
+      "private_service_identity": "postgres-exporter:9187",
+      "repository": "appolon1908-hue/Codestra-Postgres-Exporter"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Redis Exporter",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "rdex.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Redis-Exporter"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Blackbox Exporter",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "blac.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Blackbox-Exporter"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Alloy",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "allo.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-Alloy"
+    },
+    {
+      "activation_allowed": false,
+      "component": "OpenBao",
+      "evidence_status": "HISTORICAL_20260902",
+      "intended_hostname": "bao.codestra.media",
+      "private_service_identity": null,
+      "repository": "appolon1908-hue/Codestra-OpenBao"
+    }
+  ],
   "dns": [
     {
       "a_records": [
@@ -91,8 +205,9 @@
     }
   ],
   "generated_at": "2026-09-02T17:02:17Z",
+  "historical_observed_at": "2026-09-02T17:02:17Z",
   "network_gate": "FAIL",
-  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_12_PRODUCTION_PULL_INSTALL_ACTIVATE",
+  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_14_AUTHORITY_REVIEW",
   "restricted_endpoints": [
     "prom.codestra.media",
     "loki.codestra.media",
@@ -104,6 +219,8 @@
     "rdex.codestra.media",
     "blac.codestra.media"
   ],
+  "runtime_revalidated": false,
+  "scope_corrected_at": "2026-09-06",
   "server": "37.27.128.39",
   "tls": [
     {

@@ -14,5 +14,8 @@
    ceremony; no unseal shares or root authority may be invented.
 8. Identity owners must provide approved OIDC/mTLS service and canary identities
    for negative and cross-business tests without exposing their values.
-9. The Node Exporter owner must replace or formally retire the unmanaged host
+9. Alertmanager and PostgreSQL Exporter require complete protected source,
+   image, runtime, network, API, recovery, and rollback evidence; registry
+   membership alone does not establish any of those operational gates.
+10. The Node Exporter owner must replace or formally retire the unmanaged host
    package service and approve an explicit collector allowlist.

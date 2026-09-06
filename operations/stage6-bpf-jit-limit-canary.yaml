@@ -1,0 +1,67 @@
+schema_version: "1.0"
+change_id: STAGE6-BPF-JIT-LIMIT-CANARY-20260831
+status: REVIEW_REQUIRED_NOT_EXECUTED
+environment: STAGING_SHARED_HOST
+host: 65.109.65.169
+diagnosis:
+  kernel: 5.15.0-187-generic
+  config_bpf_jit_always_on: true
+  bpf_jit_enabled: true
+  current_bpf_jit_limit: 528482304
+  x86_64_modules_len: 1593835520
+  observed_bpf_jit_mappings: 32587
+  observed_bpf_jit_vmalloc_bytes: 661848064
+  burn_rate_measurement:
+    started_at: "2026-08-31T12:52:02-04:00"
+    ended_at: "2026-08-31T13:02:07-04:00"
+    elapsed_seconds: 605
+    mappings_t0: 32584
+    mappings_t1: 32587
+    bytes_t0: 662261760
+    bytes_t1: 661848064
+    mappings_per_hour: 17.851240
+    bytes_per_hour: -2461662
+    hours_to_modules_len: UNBOUNDED_NO_POSITIVE_BYTE_BURN
+  zombie_processes: 32048
+  zombie_command: ssl_client
+  zombie_parents:
+    - codestra-n8n-internal-proxy
+    - codestra-odoo-internal-proxy
+canary:
+  persistence: NONE
+  proposed_bpf_jit_limit: 1400000000
+  apply: sysctl -w net.core.bpf_jit_limit=1400000000
+  probes:
+    - docker exec codestra-n8n-staging-n8n-1 true
+    - docker exec codestra-identity-staging-keycloak-staging-1 true
+  pass_condition:
+    - both exec probes succeed with the default seccomp profile
+    - no security control changes
+    - no container is restarted or recreated
+  fail_action: immediately restore the original limit
+rollback:
+  command: sysctl -w net.core.bpf_jit_limit=528482304
+  verification: sysctl -n net.core.bpf_jit_limit
+risk:
+  executable_kernel_memory_ceiling_increased: true
+  unprivileged_bpf_disabled: 2
+  accepted: false
+  note: short, non-persistent diagnostic bridge only; the measured 605-second interval showed no positive byte burn, so it is not justified by a one-day exhaustion estimate and must be removed after the proxy reaper fix releases retained filters
+authorization:
+  source_pr_merge_authorizes_execution: false
+  exact_plan_fingerprint_approval_required: true
+  execution_authorized: false
+prohibitions:
+  seccomp_disabled: false
+  privileged_allowed: false
+  capability_relaxation_allowed: false
+  no_new_privileges_relaxation_allowed: false
+  readonly_root_relaxation_allowed: false
+  container_restart_allowed: false
+  container_recreation_allowed: false
+  frozen_workload_mutation_allowed: false
+  klyrow_host_access_allowed: false
+  staging_reconciliation_authorized: false
+  production_deployment_authorized: false
+runtime_mutation: false
+production_changed: false

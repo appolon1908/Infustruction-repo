@@ -1,0 +1,24 @@
+{
+  "schema": "codestra.api-completion-matrix.v1",
+  "captured_at": "2026-09-02T15:20:00Z",
+  "denominator": 15,
+  "production_business_writes_enabled": false,
+  "counts": {"health": 0, "ready": 0, "version": 0, "capabilities": 0},
+  "workloads": [
+    {"name":"public-api-edge","health":"PASS_UNATTRIBUTED","ready":"FAIL","version":"FAIL","capabilities":"FAIL"},
+    {"name":"middleware","health":"UNKNOWN","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"UNKNOWN"},
+    {"name":"odoo","health":"UNKNOWN","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"UNKNOWN"},
+    {"name":"n8n","health":"UNKNOWN","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"UNKNOWN"},
+    {"name":"marketing","health":"FAIL_TLS","ready":"FAIL_TLS","version":"FAIL_TLS","capabilities":"FAIL_TLS"},
+    {"name":"ai","health":"UNKNOWN","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"UNKNOWN"},
+    {"name":"communication","health":"UNKNOWN","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"UNKNOWN"},
+    {"name":"social-control-plane","health":"UNKNOWN","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"UNKNOWN"},
+    {"name":"social-runtime","health":"UNKNOWN_AUTH_REDIRECT","ready":"UNKNOWN_AUTH_REDIRECT","version":"UNKNOWN_AUTH_REDIRECT","capabilities":"UNKNOWN_AUTH_REDIRECT"},
+    {"name":"postgresql","health":"PRIVATE_ONLY","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"NATIVE_ADAPTER_REQUIRED"},
+    {"name":"redis","health":"PRIVATE_ONLY","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"NATIVE_ADAPTER_REQUIRED"},
+    {"name":"keycloak","health":"UNKNOWN","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"OIDC_DISCOVERY_ONLY"},
+    {"name":"kong","health":"UNKNOWN","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"UNKNOWN"},
+    {"name":"caddy","health":"EDGE_REACHABLE","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"NATIVE_ADAPTER_REQUIRED"},
+    {"name":"observability","health":"PARTIAL","ready":"UNKNOWN","version":"UNKNOWN","capabilities":"NATIVE_ADAPTER_REQUIRED"}
+  ]
+}

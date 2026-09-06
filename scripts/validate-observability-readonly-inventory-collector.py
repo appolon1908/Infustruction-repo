@@ -46,6 +46,9 @@ EXPECTED_PROBES = {
     "nftables_rules": ("nft", "--numeric", "list", "ruleset"),
     "iptables_rules": ("iptables-save",),
 }
+EXPECTED_PRIVATE_SERVICE_IDENTITIES = {
+    "postgres-exporter": "postgres-exporter:9187",
+}
 FORBIDDEN_SOURCE = (
     "shell=True",
     "subprocess.Popen",
@@ -114,6 +117,7 @@ def main() -> int:
         '"serviceStateChanged": False',
         '"networkStateChanged": False',
         '"firewallStateChanged": False',
+        '"privateServiceIdentities": dict(PRIVATE_SERVICE_IDENTITIES)',
     ):
         if required not in text:
             fail(f"collector is missing required safety behavior: {required}")
@@ -137,12 +141,18 @@ def main() -> int:
             fail(f"{probe_name} exposes a command or label field")
     if module.minimal_environment().keys() != {"PATH", "LANG", "LC_ALL"}:
         fail("collector subprocess environment must remain minimal")
-    if len(module.CANONICAL_HOSTS) != 14 or len(set(module.CANONICAL_HOSTS)) != 14:
-        fail("collector must resolve exactly fourteen unique canonical hosts")
+    if len(module.CANONICAL_HOSTS) != 13 or len(set(module.CANONICAL_HOSTS)) != 13:
+        fail("collector must resolve exactly thirteen unique public DNS hosts")
     if any(not host.endswith(".codestra.media") for host in module.CANONICAL_HOSTS):
         fail("collector contains a hostname outside codestra.media")
+    if module.PRIVATE_SERVICE_IDENTITIES != EXPECTED_PRIVATE_SERVICE_IDENTITIES:
+        fail("collector private service identity set mismatch")
+    if set(module.PRIVATE_SERVICE_IDENTITIES) & set(module.CANONICAL_HOSTS):
+        fail("private service identity must not be treated as a public DNS host")
 
     print("READONLY_INVENTORY_PROBE_COUNT=15")
+    print("PUBLIC_DNS_HOST_COUNT=13")
+    print("PRIVATE_SERVICE_IDENTITY_COUNT=1")
     print("SUDO_CAPABILITY=ABSENT")
     print("MUTATING_COMMANDS=ABSENT")
     print("PROCESS_OR_CONTAINER_ENVIRONMENT_COLLECTION=ABSENT")

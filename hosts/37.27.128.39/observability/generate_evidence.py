@@ -10,6 +10,24 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 GENERATED_AT = "2026-09-02T17:02:17Z"
 SERVER = "37.27.128.39"
+REGISTRY = ROOT.parents[2] / "config/observability/repository-registry.v1.json"
+DISPLAY_NAMES = {
+    "grafana": "Grafana", "prometheus": "Prometheus", "alertmanager": "Alertmanager",
+    "loki": "Loki", "tempo": "Tempo", "opentelemetry": "OpenTelemetry Collector",
+    "superset": "Superset", "node-exporter": "Node Exporter", "cadvisor": "cAdvisor",
+    "postgres-exporter": "PostgreSQL Exporter", "redis-exporter": "Redis Exporter",
+    "blackbox-exporter": "Blackbox Exporter", "alloy": "Alloy", "openbao": "OpenBao",
+}
+
+
+def canonical_registry() -> dict:
+    data = json.loads(REGISTRY.read_text())
+    rows = data["repositories"]
+    result = {row["component"]: row for row in rows}
+    if len(result) != len(rows) or set(result) != set(DISPLAY_NAMES):
+        raise ValueError("canonical observability component inventory mismatch")
+    return result
+
 
 COMPONENTS = [
     {
@@ -179,10 +197,33 @@ def write_json(name: str, value: object) -> None:
 
 
 def main() -> None:
+    # Extend scope from canonical source, not invented production/runtime observations.
+    registry = canonical_registry()
+    components = [dict(row, source_evidence_status="HISTORICAL_20260902") for row in COMPONENTS]
+    for key in ("alertmanager", "postgres-exporter"):
+        canonical = registry[key]
+        components.append({
+            "component": DISPLAY_NAMES[key],
+            "repository": "https://github.com/" + canonical["repository"],
+            "production_sha": None,
+            "staging_sha": None,
+            "production_branch_protected": None,
+            "production_contains_staging": None,
+            "api_pr": None,
+            "promotion_pr": None,
+            "runtime_state": "NOT_CAPTURED",
+            "runtime_image_digest": None,
+            "source_evidence_status": "NOT_CAPTURED",
+            "canonical_candidate_sha": canonical["candidate"]["headSha"],
+            "canonical_candidate_branch": canonical["candidate"]["branch"],
+        })
     common = {
         "generated_at": GENERATED_AT,
         "server": SERVER,
-        "phase": "SERVER_B_CODESTRA_OBSERVABILITY_12_PRODUCTION_PULL_INSTALL_ACTIVATE",
+        "phase": "SERVER_B_CODESTRA_OBSERVABILITY_14_AUTHORITY_REVIEW",
+        "historical_observed_at": GENERATED_AT,
+        "scope_corrected_at": "2026-09-06",
+        "runtime_revalidated": False,
     }
     write_json(
         "repository-inventory.json",
@@ -191,7 +232,7 @@ def main() -> None:
             "host_authority_repository": "https://github.com/appolon1908-hue/Infustruction-repo",
             "host_authority_base_branch": "development",
             "host_authority_base_sha": "e00cf3298bd5b7775a06707693f547ba704ac728",
-            "components": COMPONENTS,
+            "components": components,
         },
     )
     write_json(
@@ -206,13 +247,14 @@ def main() -> None:
                     "branch": "production",
                     "source_sha": row["production_sha"],
                     "staging_sha": row["staging_sha"],
+                    "source_evidence_status": row["source_evidence_status"],
                     "branch_protected": row["production_branch_protected"],
                     "production_contains_staging": row["production_contains_staging"],
                     "exact_head_ci": "FAIL",
                     "release_evidence_complete": False,
                     "activation_allowed": False,
                 }
-                for row in COMPONENTS
+                for row in components
             ],
         },
     )
@@ -232,7 +274,7 @@ def main() -> None:
                     "vulnerability_gate": "FAIL",
                     "activation_allowed": False,
                 }
-                for row in COMPONENTS
+                for row in components
             ],
         },
     )
@@ -240,8 +282,9 @@ def main() -> None:
         "runtime-inventory.json",
         {
             **common,
-            "running_required_components": 4,
-            "absent_required_components": 8,
+            "running_required_components": sum(row["runtime_state"].startswith("PRESENT_") for row in components),
+            "absent_required_components": sum(row["runtime_state"] == "ABSENT" for row in components),
+            "not_captured_required_components": sum(row["runtime_state"] == "NOT_CAPTURED" for row in components),
             "running_unhealthy_containers": 0,
             "restarting_containers": 0,
             "critical_alerts": [
@@ -268,7 +311,7 @@ def main() -> None:
                     "host_authority_managed": False,
                     "activation_certified": False,
                 }
-                for row in COMPONENTS
+                for row in components
             ],
         },
     )
@@ -305,6 +348,17 @@ def main() -> None:
                     "bao.codestra.media",
                 }
             ],
+            "components": [
+                {
+                    "component": DISPLAY_NAMES[key],
+                    "repository": row["repository"],
+                    "intended_hostname": row.get("hostname"),
+                    "private_service_identity": row.get("privateServiceIdentity"),
+                    "evidence_status": "NOT_CAPTURED" if key in {"alertmanager", "postgres-exporter"} else "HISTORICAL_20260902",
+                    "activation_allowed": False,
+                }
+                for key, row in registry.items()
+            ],
             "network_gate": "FAIL",
         },
     )
@@ -328,7 +382,7 @@ def main() -> None:
                     "runtime_verified": False,
                     "activation_allowed": False,
                 }
-                for row in COMPONENTS
+                for row in components
             ],
         },
     )
@@ -344,6 +398,7 @@ def main() -> None:
                     "stateful": row["component"]
                     in {
                         "Loki",
+                        "Alertmanager",
                         "Prometheus",
                         "Grafana",
                         "Tempo",
@@ -356,7 +411,7 @@ def main() -> None:
                     "rpo_seconds": None,
                     "rto_seconds": None,
                 }
-                for row in COMPONENTS
+                for row in components
             ],
         },
     )
@@ -378,7 +433,7 @@ def main() -> None:
                     "rollback_duration_seconds": None,
                     "rollback_health": "FAIL",
                 }
-                for row in COMPONENTS
+                for row in components
             ],
         },
     )
@@ -417,8 +472,8 @@ This is a sanitized, fail-closed pre-change record for `37.27.128.39`. No
 component was installed, recreated, restarted, or activated. SSH, firewall,
 DNS, reverse-proxy, identity, and secret authorities were not changed.
 
-All twelve DNS names resolve exclusively to the intended server. Eleven names
-serve an unrelated Klyrow certificate; only `bao.codestra.media` has a matching
+The historical twelve probed DNS names resolved exclusively to the intended server. Eleven names
+served an unrelated Klyrow certificate; only `bao.codestra.media` has a matching
 certificate. Two critical Klyrow delivery alerts are firing. Only Prometheus,
 Grafana, Node Exporter, and OpenBao have existing runtimes, none controlled by
 this host authority. OpenBao is uninitialized and sealed. The host package Node
@@ -426,6 +481,12 @@ Exporter is healthy and loopback-only, but its broad default collector set is
 not controlled by the reviewed host authority. The required API, release,
 runtime, backup, restore, rollback, SBOM, provenance, and signature evidence is
 not present on the protected product production branches.
+
+The scope now includes all fourteen canonical components. Alertmanager and
+PostgreSQL Exporter were missing from this record; their production/staging
+heads and runtime/network/recovery evidence remain explicitly NOT_CAPTURED.
+Canonical candidate references do not substitute for protected production
+heads. No new DNS, service, or runtime probe was run for this source repair.
 
 Activation remains prohibited until every JSON/YAML gate in this directory is
 regenerated from reviewed protected release heads and validates PASS.
@@ -448,7 +509,10 @@ regenerated from reviewed protected release heads and validates PASS.
    ceremony; no unseal shares or root authority may be invented.
 8. Identity owners must provide approved OIDC/mTLS service and canary identities
    for negative and cross-business tests without exposing their values.
-9. The Node Exporter owner must replace or formally retire the unmanaged host
+9. Alertmanager and PostgreSQL Exporter require complete protected source,
+   image, runtime, network, API, recovery, and rollback evidence; registry
+   membership alone does not establish any of those operational gates.
+10. The Node Exporter owner must replace or formally retire the unmanaged host
    package service and approve an explicit collector allowlist.
 """
     )
@@ -456,6 +520,7 @@ regenerated from reviewed protected release heads and validates PASS.
         "release-layout.json",
         {
             **common,
+            "components": sorted(DISPLAY_NAMES.values()),
             "release_root": "/opt/codestra/releases/observability/<component>/<production-sha>/",
             "current_link": "/opt/codestra/current/observability/<component>",
             "rollback_root": "/opt/codestra/rollback/observability/<component>/",

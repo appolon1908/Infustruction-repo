@@ -1,0 +1,10 @@
+schema: codestra.source-lock.v1
+captured_at: '2026-09-02T16:48:00Z'
+production_changed: false
+business_writes_enabled: false
+releases:
+  ai: {repository: appolon1908-hue/Codestra-AI, pr: 5, protected_sha: 1832d19eb779146beaf7aa9ead17aac4f502beb7, signature: VERIFIED, image_digest: PENDING_BUILD, runtime: NOT_DEPLOYED}
+  middleware: {repository: Codestra-SRL/codestra-middleware, pr: 282, protected_sha: c8c8d6fad442e7a65eeac353a0f0853797ea84a8, signature: VERIFIED, image_digest: PENDING_BUILD, runtime: NOT_DEPLOYED}
+  communication: {repository: appolon1908-hue/Codestra-Communication-CC, pr: 5, protected_sha: cceb1fd7462f765e6ac36db154086d56a88ba712, signature: VERIFIED, image_digest: PENDING_BUILD, runtime: NOT_DEPLOYED}
+  marketing: {repository: appolon1908-hue/Codestra-Marketing-, pr: 5, protected_sha: 3f78cbdeccbdd69f1dfa7f4d31232b43e798047a, signature: VERIFIED, image_digest: PENDING_BUILD, runtime: NOT_DEPLOYED}
+  social: {repository: appolon1908-hue/Codesrea-Social-, pr: 5, protected_sha: 1323a7335e1724a00406aeadd1fec4c8e8af5f1a, signature: VERIFIED, image_digest: PENDING_BUILD, runtime: NOT_DEPLOYED}

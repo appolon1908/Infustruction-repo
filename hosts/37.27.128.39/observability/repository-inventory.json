@@ -10,6 +10,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-Loki",
       "runtime_image_digest": null,
       "runtime_state": "ABSENT",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "a3dbac8cc945d6f3d1725839964ab42360181bcf"
     },
     {
@@ -22,6 +23,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-Prometheus",
       "runtime_image_digest": "sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996",
       "runtime_state": "PRESENT_IN_TWO_BUSINESS_APPLICATION_STACKS_NOT_HOST_AUTHORITY",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "b74f9432b2e4103b72c66aac62e7ccb7bd3617de"
     },
     {
@@ -34,6 +36,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-Grafana-",
       "runtime_image_digest": "sha256:9b58461280b4d2992d4399823c9427d0fcf5f0fd7f376c93f2dea876158b867b",
       "runtime_state": "PRESENT_IN_KLYROW_STACK_NOT_HOST_AUTHORITY",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "42a2f75e4993349e654da5994d3b061b7e6219d5"
     },
     {
@@ -46,6 +49,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-Tempo",
       "runtime_image_digest": null,
       "runtime_state": "ABSENT",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "870b131d75b3fef2ac22eb7174542a2bded102f4"
     },
     {
@@ -58,6 +62,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-Telemetry",
       "runtime_image_digest": null,
       "runtime_state": "ABSENT",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "f8ac9417fc27473f04c58722fb2ec990072762ef"
     },
     {
@@ -70,6 +75,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-Alloy",
       "runtime_image_digest": null,
       "runtime_state": "ABSENT",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "f976f69d4bc8fd4e5e5fc0f5eb8e9c659f50ebde"
     },
     {
@@ -82,6 +88,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-Node-Exporter",
       "runtime_image_digest": "sha256:d00a542e409ee618a4edc67da14dd48c5da66726bbd5537ab2af9c1dfc442c8a",
       "runtime_state": "PRESENT_AS_HOST_SYSTEMD_AND_TWO_BUSINESS_STACKS_NOT_HOST_AUTHORITY",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "95e24dff0450c202aa03fd3e2b81ac9ae82b14a7"
     },
     {
@@ -94,6 +101,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-cAdvisor",
       "runtime_image_digest": null,
       "runtime_state": "ABSENT",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "97927343014f73cd4c388a1fcdd92ee483fa2b33"
     },
     {
@@ -106,6 +114,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-Redis-Exporter",
       "runtime_image_digest": null,
       "runtime_state": "ABSENT",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "0c051b670c308186494e4e09d9c116a7b54fdf23"
     },
     {
@@ -118,6 +127,7 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-Blackbox-Exporter",
       "runtime_image_digest": null,
       "runtime_state": "ABSENT",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "f303beea84acca2335a0a0f311fefca933404178"
     },
     {
@@ -130,6 +140,7 @@
       "repository": "https://github.com/appolon1908-hue/Superset",
       "runtime_image_digest": null,
       "runtime_state": "ABSENT",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "e64f83889fed203bf51f925adacfdca82a25c0b8"
     },
     {
@@ -142,13 +153,47 @@
       "repository": "https://github.com/appolon1908-hue/Codestra-OpenBao",
       "runtime_image_digest": "sha256:5b2486ab0fb90bbc788cc345b0a08616dfb375873ee8be5df3a2fd4d378a67e0",
       "runtime_state": "PRESENT_UNINITIALIZED_AND_SEALED",
+      "source_evidence_status": "HISTORICAL_20260902",
       "staging_sha": "6e092ce5cf8e1cd76587118103653ebb7e7620b0"
+    },
+    {
+      "api_pr": null,
+      "canonical_candidate_branch": "integration/central-alert-routing-v1-20260829",
+      "canonical_candidate_sha": "8b3aad22be080dd898d173e9a7901da488d1427d",
+      "component": "Alertmanager",
+      "production_branch_protected": null,
+      "production_contains_staging": null,
+      "production_sha": null,
+      "promotion_pr": null,
+      "repository": "https://github.com/appolon1908-hue/Codestra-Alertmanager",
+      "runtime_image_digest": null,
+      "runtime_state": "NOT_CAPTURED",
+      "source_evidence_status": "NOT_CAPTURED",
+      "staging_sha": null
+    },
+    {
+      "api_pr": null,
+      "canonical_candidate_branch": "feature/observability/postgres-exporter-20260829",
+      "canonical_candidate_sha": "8919709a9e020acf250aafb4c691021a12a5331f",
+      "component": "PostgreSQL Exporter",
+      "production_branch_protected": null,
+      "production_contains_staging": null,
+      "production_sha": null,
+      "promotion_pr": null,
+      "repository": "https://github.com/appolon1908-hue/Codestra-Postgres-Exporter",
+      "runtime_image_digest": null,
+      "runtime_state": "NOT_CAPTURED",
+      "source_evidence_status": "NOT_CAPTURED",
+      "staging_sha": null
     }
   ],
   "generated_at": "2026-09-02T17:02:17Z",
+  "historical_observed_at": "2026-09-02T17:02:17Z",
   "host_authority_base_branch": "development",
   "host_authority_base_sha": "e00cf3298bd5b7775a06707693f547ba704ac728",
   "host_authority_repository": "https://github.com/appolon1908-hue/Infustruction-repo",
-  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_12_PRODUCTION_PULL_INSTALL_ACTIVATE",
+  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_14_AUTHORITY_REVIEW",
+  "runtime_revalidated": false,
+  "scope_corrected_at": "2026-09-06",
   "server": "37.27.128.39"
 }

@@ -1,0 +1,202 @@
+{
+  "recorded_at_utc": "2026-09-05T11:50:50.673892+00:00",
+  "scope": "Repair production release source blockers; preserve protected gates and disabled business writes.",
+  "fixes": [
+    {
+      "repository": "Vicidialer-Codestra",
+      "pr": 23,
+      "sha": "529ba96e388e201627c2bdafc42cee5429feb22e",
+      "problem": "Root-owned 0600 policy inaccessible to container UID/GID 10001",
+      "change": "Explicit root-only runtime GID option writes root-owned 0640; packet specifies GID10001. Default remains staging-only 0600.",
+      "validation": "17 policy/tool tests passed; ownership assignment mocked, no privileged host changes."
+    },
+    {
+      "repository": "codestra-provisioning-service",
+      "pr": 29,
+      "sha": "ebe3f3b10fe832157c4be753a1d80418ac52f83a",
+      "problem": "Numeric zero accepted as False in disabled-state readback",
+      "change": "Require literal False or exact N; reject numeric and malformed flags. Preserve SIP regressions and coordinated code.",
+      "validation": "Ruff PASS; 117 tests passed, two dependency deprecation warnings."
+    }
+  ],
+  "reviews": "Renewed review requested from kazan555 on both current follow-ups.",
+  "production_changes": "NONE",
+  "remaining": "CI and current-head reviews; canonical integration; protected immutable build and artifact verification; runtime/preflight prerequisites unchanged.",
+  "ci_verified_at_utc": "2026-09-05T11:53:46.497674+00:00",
+  "ci": {
+    "Vicidialer-Codestra": {
+      "head": "529ba96e388e201627c2bdafc42cee5429feb22e",
+      "checks": [
+        {
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964368064/job/101301717301"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964350721/job/101301671424"
+        },
+        {
+          "name": "validate",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964367827/job/101301716103"
+        },
+        {
+          "name": "build-test-evidence",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964367828/job/101301716133"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964368064/job/101301717218"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964350721/job/101301671300"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964368064/job/101301742157"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964350721/job/101301695316"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964368064/job/101301742528"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964350721/job/101301695436"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964368064/job/101301742394"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964350721/job/101301695419"
+        }
+      ],
+      "approvals": []
+    },
+    "codestra-provisioning-service": {
+      "head": "ebe3f3b10fe832157c4be753a1d80418ac52f83a",
+      "checks": [
+        {
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964369399/job/101301721133"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964366992/job/101301713470"
+        },
+        {
+          "name": "validate",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964369119/job/101301719932"
+        },
+        {
+          "name": "sign-existing-release",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964369119/job/101301720583"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964369399/job/101301721014"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964366992/job/101301713552"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964369399/job/101301744938"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964366992/job/101301733144"
+        },
+        {
+          "name": "publish",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964369119/job/101301860356"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964369399/job/101301745015"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964366992/job/101301733824"
+        },
+        {
+          "name": "verify-release",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964369119/job/101301860613"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964369399/job/101301744829"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964366992/job/101301733669"
+        }
+      ],
+      "approvals": [
+        {
+          "state": "APPROVED",
+          "commit": "4c842f36b56fdfe1d79466fac7b2a966122c06ad"
+        }
+      ]
+    }
+  },
+  "review_note": "PR29 approval references older 4c842f3 head, not the current fix; it is not claimed as renewed exact-head approval."
+}

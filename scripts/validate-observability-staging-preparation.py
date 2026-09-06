@@ -18,20 +18,20 @@ SHA40 = re.compile(r"^[0-9a-f]{40}$")
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 EXPECTED_POLICY = ["development", "test", "staging", "production", "main"]
 EXPECTED = [
-    ("grafana", "appolon1908-hue/Codestra-Grafana-", "graf.codestra.media", "loopback_edge_only"),
-    ("prometheus", "appolon1908-hue/Codestra-Prometheus", "prom.codestra.media", "internal_private"),
-    ("alertmanager", "appolon1908-hue/Codestra-Alertmanager", "aler.codestra.media", "internal_private"),
-    ("loki", "appolon1908-hue/Codestra-Loki", "loki.codestra.media", "internal_private"),
-    ("tempo", "appolon1908-hue/Codestra-Tempo", "temp.codestra.media", "internal_private"),
-    ("opentelemetry", "appolon1908-hue/Codestra-Telemetry", "otel.codestra.media", "internal_private"),
-    ("superset", "appolon1908-hue/Superset", "supe.codestra.media", "loopback_edge_only"),
-    ("node-exporter", "appolon1908-hue/Codestra-Node-Exporter", "node.codestra.media", "internal_private"),
-    ("cadvisor", "appolon1908-hue/Codestra-cAdvisor", "cadv.codestra.media", "internal_private"),
-    ("postgres-exporter", "appolon1908-hue/Codestra-Postgres-Exporter", "pgex.codestra.media", "internal_private"),
-    ("redis-exporter", "appolon1908-hue/Codestra-Redis-Exporter", "rdex.codestra.media", "internal_private"),
-    ("blackbox-exporter", "appolon1908-hue/Codestra-Blackbox-Exporter", "blac.codestra.media", "internal_private"),
-    ("alloy", "appolon1908-hue/Codestra-Alloy", "allo.codestra.media", "internal_private"),
-    ("openbao", "appolon1908-hue/Codestra-OpenBao", "bao.codestra.media", "private_strong_auth"),
+    ("grafana", "appolon1908-hue/Codestra-Grafana-", "graf.codestra.media", None, "loopback_edge_only"),
+    ("prometheus", "appolon1908-hue/Codestra-Prometheus", "prom.codestra.media", None, "internal_private"),
+    ("alertmanager", "appolon1908-hue/Codestra-Alertmanager", "aler.codestra.media", None, "internal_private"),
+    ("loki", "appolon1908-hue/Codestra-Loki", "loki.codestra.media", None, "internal_private"),
+    ("tempo", "appolon1908-hue/Codestra-Tempo", "temp.codestra.media", None, "internal_private"),
+    ("opentelemetry", "appolon1908-hue/Codestra-Telemetry", "otel.codestra.media", None, "internal_private"),
+    ("superset", "appolon1908-hue/Superset", "supe.codestra.media", None, "loopback_edge_only"),
+    ("node-exporter", "appolon1908-hue/Codestra-Node-Exporter", "node.codestra.media", None, "internal_private"),
+    ("cadvisor", "appolon1908-hue/Codestra-cAdvisor", "cadv.codestra.media", None, "internal_private"),
+    ("postgres-exporter", "appolon1908-hue/Codestra-Postgres-Exporter", None, "postgres-exporter:9187", "internal_private"),
+    ("redis-exporter", "appolon1908-hue/Codestra-Redis-Exporter", "rdex.codestra.media", None, "internal_private"),
+    ("blackbox-exporter", "appolon1908-hue/Codestra-Blackbox-Exporter", "blac.codestra.media", None, "internal_private"),
+    ("alloy", "appolon1908-hue/Codestra-Alloy", "allo.codestra.media", None, "internal_private"),
+    ("openbao", "appolon1908-hue/Codestra-OpenBao", "bao.codestra.media", None, "private_strong_auth"),
 ]
 ARTIFACT_FIELDS = {
     "imageReference",
@@ -119,12 +119,13 @@ def validate_components(manifest: dict[str, Any]) -> tuple[bool, bool, bool]:
 
     seen_repositories: set[str] = set()
     seen_hosts: set[str] = set()
+    seen_private_identities: set[str] = set()
     all_test = True
     all_ci = True
     all_artifacts = True
 
     for value, expected in zip(values, EXPECTED, strict=True):
-        component, repository, hostname, exposure = expected
+        component, repository, hostname, private_identity, exposure = expected
         for key, wanted in {
             "component": component,
             "repository": repository,
@@ -134,10 +135,23 @@ def validate_components(manifest: dict[str, Any]) -> tuple[bool, bool, bool]:
             if value.get(key) != wanted:
                 fail(f"{component}: {key} must be {wanted!r}")
 
-        if repository in seen_repositories or hostname in seen_hosts:
-            fail(f"{component}: duplicate repository or hostname")
+        if repository in seen_repositories:
+            fail(f"{component}: duplicate repository")
         seen_repositories.add(repository)
-        seen_hosts.add(hostname)
+        if hostname is not None:
+            if hostname in seen_hosts:
+                fail(f"{component}: duplicate hostname")
+            if not hostname.endswith(".codestra.media"):
+                fail(f"{component}: canonical hostname is outside codestra.media")
+            seen_hosts.add(hostname)
+            if "privateServiceIdentity" in value:
+                fail(f"{component}: unexpected private service identity")
+        else:
+            if value.get("privateServiceIdentity") != private_identity:
+                fail(f"{component}: private service identity mismatch")
+            if not isinstance(private_identity, str) or private_identity in seen_private_identities:
+                fail(f"{component}: invalid or duplicate private service identity")
+            seen_private_identities.add(private_identity)
 
         stage = value.get("sourceStage")
         source_ref = value.get("sourceRef")
@@ -330,9 +344,12 @@ def main() -> int:
     validate_docs()
 
     print("OBSERVABILITY_COMPONENT_COUNT=14")
+    print("PUBLIC_DNS_HOST_COUNT=13")
+    print("PRIVATE_SERVICE_IDENTITY_COUNT=1")
     print(f"ALL_AUTHORITIES_AT_TEST={'YES' if all_test else 'NO'}")
     print(f"ALL_EXACT_HEAD_CI_GREEN={'YES' if all_ci else 'NO'}")
     print(f"IMMUTABLE_ARTIFACT_EVIDENCE_COMPLETE={'YES' if all_artifacts else 'NO'}")
+    print("STAGING_DECISION=NO_GO_PREPARATION_INCOMPLETE")
     print("DEPLOYMENT_AUTHORIZED=NO")
     print("PRODUCTION_AUTHORIZED=NO")
     print("OBSERVABILITY_STAGING_PREPARATION_VALIDATION=PASS")

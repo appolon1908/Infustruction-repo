@@ -31,12 +31,14 @@ CANONICAL_HOSTS = [
     "supe.codestra.media",
     "node.codestra.media",
     "cadv.codestra.media",
-    "pgex.codestra.media",
     "rdex.codestra.media",
     "blac.codestra.media",
     "allo.codestra.media",
     "bao.codestra.media",
 ]
+PRIVATE_SERVICE_IDENTITIES = {
+    "postgres-exporter": "postgres-exporter:9187",
+}
 
 DOCKER_CONTAINER_FORMAT = (
     '{"id":{{json .ID}},"image":{{json .Image}},"names":{{json .Names}},'
@@ -263,6 +265,7 @@ def main() -> int:
         "osRelease": read_os_release(),
         "probes": {probe.name: run_probe(probe) for probe in PROBES},
         "dns": {host: resolve_host(host) for host in CANONICAL_HOSTS},
+        "privateServiceIdentities": dict(PRIVATE_SERVICE_IDENTITIES),
         "configurationHashes": {
             str(path): sha256_file(path) for path in args.hash_file
         },

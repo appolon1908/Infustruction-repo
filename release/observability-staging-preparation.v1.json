@@ -192,7 +192,8 @@
     {
       "component": "postgres-exporter",
       "repository": "appolon1908-hue/Codestra-Postgres-Exporter",
-      "canonicalHostname": "pgex.codestra.media",
+      "canonicalHostname": null,
+      "privateServiceIdentity": "postgres-exporter:9187",
       "nativeExposure": "internal_private",
       "sourceStage": "test",
       "sourceRef": "test",

@@ -119,10 +119,33 @@
       "signature": "FAIL",
       "source_aligned": false,
       "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Alertmanager",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "PostgreSQL Exporter",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
     }
   ],
   "generated_at": "2026-09-02T17:02:17Z",
+  "historical_observed_at": "2026-09-02T17:02:17Z",
   "lock_status": "FAIL",
-  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_12_PRODUCTION_PULL_INSTALL_ACTIVATE",
+  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_14_AUTHORITY_REVIEW",
+  "runtime_revalidated": false,
+  "scope_corrected_at": "2026-09-06",
   "server": "37.27.128.39"
 }
