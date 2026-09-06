@@ -22,7 +22,12 @@ jobs:
       - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v6.1.0
         with:
           python-version: "3.13"
-      - run: python scripts/validate_stage6_readonly_inventory.py
+      - name: Validate GET-only authority and regression suite
+        run: |
+          set -Eeuo pipefail
+          python scripts/validate_stage6_readonly_inventory.py
+          python -m unittest scripts/test_stage6_hetzner_inventory_resolution.py
+          git diff --check
 
   inventory:
     needs: validate-static-policy
@@ -51,25 +56,41 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
           python scripts/validate_stage6_readonly_inventory.py
-      - name: Collect sanitized GET-only inventory
+          python -m unittest scripts/test_stage6_hetzner_inventory_resolution.py
+      - name: Collect and reconcile sanitized GET-only inventory
         env:
           HETZNER_CLOUD_TOKEN: ${{ secrets.HETZNER_CLOUD_TOKEN }}
         run: |
           set -Eeuo pipefail
           test -n "$HETZNER_CLOUD_TOKEN"
           umask 077
-          python scripts/collect_stage6_hetzner_inventory.py --output-dir stage6-readonly-inventory
+          python scripts/collect_stage6_hetzner_inventory.py \
+            --authority config/stage6-inventory-authority.v1.json \
+            --output-dir stage6-readonly-inventory
           python -m json.tool stage6-readonly-inventory/stage6-input-resolution.json >/dev/null
           python -m json.tool stage6-readonly-inventory/hetzner-inventory.sanitized.json >/dev/null
+          jq -e '
+            .complete == true and
+            .unresolved == [] and
+            .cloud_api_methods == ["GET"] and
+            .cloud_mutation == false and
+            .production_changed == false
+          ' stage6-readonly-inventory/stage6-input-resolution.json >/dev/null
       - name: Publish non-secret resolution summary
         run: |
           set -Eeuo pipefail
-          jq -r '.fields | to_entries[] | "\(.key)=\(if .value == null then "UNRESOLVED" else (.value|if type=="array" then join(",") else tostring end) end)"' stage6-readonly-inventory/stage6-input-resolution.json | tee -a "$GITHUB_STEP_SUMMARY"
-          jq -r '"UNRESOLVED_NON_SECRET_FIELDS=" + (if (.unresolved|length)==0 then "NONE" else (.unresolved|join(",")) end)' stage6-readonly-inventory/stage6-input-resolution.json | tee -a "$GITHUB_STEP_SUMMARY"
+          jq -r '.fields | to_entries[] | "\(.key)=\(.value|if type=="array" then join(",") else tostring end)"' \
+            stage6-readonly-inventory/stage6-input-resolution.json | tee -a "$GITHUB_STEP_SUMMARY"
+          jq -r '"AUTHORITY_SHA256=" + .authority_sha256' \
+            stage6-readonly-inventory/stage6-input-resolution.json | tee -a "$GITHUB_STEP_SUMMARY"
+          jq -r '"UNRESOLVED_NON_SECRET_FIELDS=" + (if (.unresolved|length)==0 then "NONE" else (.unresolved|join(",")) end)' \
+            stage6-readonly-inventory/stage6-input-resolution.json | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' 'API_METHODS=GET_ONLY' 'CLOUD_MUTATION=NO' 'PRODUCTION_CHANGED=NO' \
+            | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Upload sanitized inventory
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: stage6-readonly-inventory-${{ github.sha }}
           path: stage6-readonly-inventory/
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 30

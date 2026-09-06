@@ -1,0 +1,48 @@
+{
+  "schema": "codestra.github-release-environments.v1",
+  "repository": "appolon1908-hue/Infustruction-repo",
+  "environments": {
+    "staging-readonly": {
+      "protected_branches_only": true,
+      "required_runner_labels": [
+        "self-hosted",
+        "codestra-staging"
+      ],
+      "required_secrets": [
+        "STAGING_CANONICAL_CANDIDATE_B64",
+        "STAGING_ENDPOINT_MANIFEST_B64",
+        "STAGING_READONLY_BEARER_TOKEN",
+        "STAGING_METRICS_BEARER_TOKEN",
+        "STAGING_GHCR_READ_TOKEN",
+        "STAGING_RESTIC_REPOSITORY",
+        "STAGING_RESTIC_PASSWORD_FILE"
+      ]
+    },
+    "production-readonly-canary": {
+      "protected_branches_only": true,
+      "required_runner_labels": [
+        "self-hosted",
+        "codestra-production-canary"
+      ],
+      "required_secrets": [
+        "PRODUCTION_CANONICAL_CANDIDATE_B64",
+        "PRODUCTION_ENDPOINT_MANIFEST_B64",
+        "PRODUCTION_READONLY_BEARER_TOKEN",
+        "PRODUCTION_METRICS_BEARER_TOKEN",
+        "PRODUCTION_GHCR_READ_TOKEN"
+      ]
+    }
+  },
+  "live_effect_defaults": {
+    "LIVE_WRITE": false,
+    "ODOO_WRITE": false,
+    "ENABLE_EXTERNAL_DELIVERY": false,
+    "N8N_DELIVERY_ENABLED": false,
+    "LIVE_EMAIL_DELIVERY": false,
+    "LIVE_SMS_DELIVERY": false,
+    "LIVE_PSTN_DIALING": false,
+    "PRODUCTION_DIALING": "DISABLED",
+    "CAMPAIGN_ACTIVATION": false,
+    "PROVIDER_DELIVERY": false
+  }
+}

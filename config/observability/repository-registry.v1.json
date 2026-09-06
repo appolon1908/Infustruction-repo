@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "program": "codestra-observability-security-release-train",
+  "observedAt": "2026-08-29T21:15:00Z",
+  "deploymentEnabled": false,
+  "dnsTarget": "37.27.128.39",
+  "persistentBranches": [
+    "main",
+    "development",
+    "test",
+    "staging",
+    "production"
+  ],
+  "temporaryBranchPrefixes": [
+    "feature/",
+    "fix/",
+    "upgrade/",
+    "security/",
+    "docs/",
+    "test/",
+    "release/",
+    "hotfix/",
+    "rollback/",
+    "integration/",
+    "governance/"
+  ],
+  "repositories": [
+    {
+      "order": 1,
+      "component": "grafana",
+      "repository": "appolon1908-hue/Codestra-Grafana-",
+      "hostname": "graf.codestra.media",
+      "exposure": "authenticated_browser_through_caddy",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "integration/enterprise-observability-control-plane-20260829",
+        "headSha": "55a29aade410a6d2e6bb31384533ae6c3824121d",
+        "pullRequest": 1,
+        "base": "development",
+        "stackRole": "single_canonical_implementation"
+      },
+      "status": "source_ready_for_review"
+    },
+    {
+      "order": 2,
+      "component": "prometheus",
+      "repository": "appolon1908-hue/Codestra-Prometheus",
+      "hostname": "prom.codestra.media",
+      "exposure": "private_control_plane",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/observability/authoritative-prometheus-20260829",
+        "headSha": "5d8bf6905a8ad79f9234700bc2818e8155f08427",
+        "pullRequest": 1,
+        "base": "development",
+        "stackRole": "single_canonical_implementation"
+      },
+      "status": "source_ready_for_review"
+    },
+    {
+      "order": 3,
+      "component": "alertmanager",
+      "repository": "appolon1908-hue/Codestra-Alertmanager",
+      "hostname": "aler.codestra.media",
+      "exposure": "private_control_plane",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "integration/central-alert-routing-v1-20260829",
+        "headSha": "8b3aad22be080dd898d173e9a7901da488d1427d",
+        "pullRequest": 1,
+        "base": "main",
+        "stackRole": "single_canonical_implementation"
+      },
+      "status": "source_ready_for_review"
+    },
+    {
+      "order": 4,
+      "component": "loki",
+      "repository": "appolon1908-hue/Codestra-Loki",
+      "hostname": "loki.codestra.media",
+      "exposure": "private_control_plane",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/codestra-corporate-suite-v1-20260829",
+        "headSha": "73706f3ece2061a94163a4bf4c90a6503af37e63",
+        "pullRequest": 1,
+        "base": "development",
+        "stackRole": "single_canonical_implementation"
+      },
+      "status": "source_ready_for_review"
+    },
+    {
+      "order": 5,
+      "component": "tempo",
+      "repository": "appolon1908-hue/Codestra-Tempo",
+      "hostname": "temp.codestra.media",
+      "exposure": "private_control_plane",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/codestra-corporate-suite-v1-20260829",
+        "headSha": "edf217b31b227c63a1def27ac4b03a67c3aff100",
+        "pullRequest": 1,
+        "base": "development",
+        "stackRole": "single_canonical_implementation"
+      },
+      "status": "source_ready_for_review"
+    },
+    {
+      "order": 6,
+      "component": "opentelemetry",
+      "repository": "appolon1908-hue/Codestra-Telemetry",
+      "hostname": "otel.codestra.media",
+      "exposure": "private_ingress_and_pipeline",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/observability/collector-prometheus-authority-20260829",
+        "headSha": "9e44696978080368b9af3743db505fa4f59136a0",
+        "pullRequest": 2,
+        "base": "development",
+        "stackRole": "single_canonical_implementation"
+      },
+      "status": "source_ready_for_review"
+    },
+    {
+      "order": 7,
+      "component": "superset",
+      "repository": "appolon1908-hue/Superset",
+      "hostname": "supe.codestra.media",
+      "exposure": "authenticated_browser_through_caddy",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/codestra-corporate-suite-v1-20260829",
+        "headSha": "9ff12b1a321120218da2d8fa91b78e6b9bc43bdd",
+        "pullRequest": 2,
+        "base": "feature/private-bind-keycloak-oidc-v1",
+        "foundationBranch": "feature/private-bind-keycloak-oidc-v1",
+        "foundationPullRequest": 1,
+        "foundationHeadSha": "7ddf9932caaf50fff406220739eb08844990c489",
+        "stackRole": "foundation_then_corporate_extension"
+      },
+      "status": "stacked_source_review"
+    },
+    {
+      "order": 8,
+      "component": "node-exporter",
+      "repository": "appolon1908-hue/Codestra-Node-Exporter",
+      "hostname": "node.codestra.media",
+      "exposure": "private_exporter",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/codestra-corporate-suite-v1-20260829",
+        "headSha": "d444b4ec10291d9517c969f37cc63a3c69f062f4",
+        "pullRequest": 2,
+        "base": "feature/observability/node-exporter-20260829",
+        "foundationBranch": "feature/observability/node-exporter-20260829",
+        "foundationPullRequest": 1,
+        "stackRole": "foundation_then_corporate_extension"
+      },
+      "status": "exact_head_ci_in_progress"
+    },
+    {
+      "order": 9,
+      "component": "cadvisor",
+      "repository": "appolon1908-hue/Codestra-cAdvisor",
+      "hostname": "cadv.codestra.media",
+      "exposure": "private_exporter",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/codestra-corporate-suite-v1-20260829",
+        "headSha": "2fea43e3fb043056f426ba420f188cefe3832f62",
+        "pullRequest": 2,
+        "base": "feature/observability/cadvisor-20260829",
+        "foundationBranch": "feature/observability/cadvisor-20260829",
+        "foundationPullRequest": 1,
+        "stackRole": "foundation_then_corporate_extension"
+      },
+      "status": "exact_head_ci_pending_verification"
+    },
+    {
+      "order": 10,
+      "component": "postgres-exporter",
+      "repository": "appolon1908-hue/Codestra-Postgres-Exporter",
+      "hostname": null,
+      "privateServiceIdentity": "postgres-exporter:9187",
+      "exposure": "private_exporter",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/observability/postgres-exporter-20260829",
+        "headSha": "8919709a9e020acf250aafb4c691021a12a5331f",
+        "pullRequest": 2,
+        "base": "governance/canonical-pgex-hostname-20260829",
+        "foundationBranch": "governance/canonical-pgex-hostname-20260829",
+        "foundationPullRequest": 1,
+        "stackRole": "hostname_governance_then_runtime"
+      },
+      "status": "exact_head_ci_in_progress"
+    },
+    {
+      "order": 11,
+      "component": "redis-exporter",
+      "repository": "appolon1908-hue/Codestra-Redis-Exporter",
+      "hostname": "rdex.codestra.media",
+      "exposure": "private_exporter",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/codestra-corporate-suite-v1-20260829",
+        "headSha": "96ef1dcad350cea074dfb4082315ddd6d62c6adf",
+        "pullRequest": 2,
+        "base": "feature/observability/redis-exporter-20260829",
+        "foundationBranch": "feature/observability/redis-exporter-20260829",
+        "foundationPullRequest": 1,
+        "stackRole": "foundation_then_corporate_extension"
+      },
+      "status": "exact_head_ci_in_progress"
+    },
+    {
+      "order": 12,
+      "component": "blackbox-exporter",
+      "repository": "appolon1908-hue/Codestra-Blackbox-Exporter",
+      "hostname": "blac.codestra.media",
+      "exposure": "private_exporter",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/codestra-corporate-suite-v1-20260829",
+        "headSha": "97a386f3124fad4560ccf6429b1a806736bcfabc",
+        "pullRequest": 2,
+        "base": "feature/observability/blackbox-exporter-20260829",
+        "foundationBranch": "feature/observability/blackbox-exporter-20260829",
+        "foundationPullRequest": 1,
+        "stackRole": "foundation_then_corporate_extension"
+      },
+      "status": "exact_head_ci_green"
+    },
+    {
+      "order": 13,
+      "component": "alloy",
+      "repository": "appolon1908-hue/Codestra-Alloy",
+      "hostname": "allo.codestra.media",
+      "exposure": "private_collection_agent",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/codestra-corporate-suite-v1-20260829",
+        "headSha": "76b73fd244e819039ec5faee1281321d689f0250",
+        "pullRequest": 1,
+        "base": "main",
+        "stackRole": "single_canonical_implementation"
+      },
+      "status": "source_ready_for_review"
+    },
+    {
+      "order": 14,
+      "component": "openbao",
+      "repository": "appolon1908-hue/Codestra-OpenBao",
+      "hostname": "bao.codestra.media",
+      "exposure": "source_restricted_authenticated_browser_through_caddy",
+      "nativePortPublic": false,
+      "persistentBranchesPresent": true,
+      "persistentBranchesProtected": false,
+      "candidate": {
+        "branch": "feature/codestra-corporate-suite-v1-20260829",
+        "headSha": "ecfe6e6e094c1b9f3127e0ba35a4c4b8475cd693",
+        "pullRequest": 2,
+        "base": "feature/private-bind-keycloak-oidc-v1",
+        "foundationBranch": "feature/private-bind-keycloak-oidc-v1",
+        "foundationPullRequest": 1,
+        "foundationHeadSha": "a3f6c4469cdf7acee032b024fcc3c707b7e71645",
+        "stackRole": "foundation_then_corporate_extension"
+      },
+      "status": "storage_seal_ha_dr_blocked"
+    }
+  ],
+  "crossCuttingAuthorities": [
+    {
+      "repository": "appolon1908-hue/Keycloak",
+      "branch": "feature/observability-managed-clients-v1",
+      "issue": 30,
+      "role": "managed_oidc_clients_realm_roles_plan_review_apply_rollback",
+      "liveApplyAllowed": false
+    },
+    {
+      "repository": "appolon1908-hue/Caddy",
+      "branch": "feature/observability-edge-routing-v1",
+      "pullRequest": 6,
+      "role": "tls_edge_authenticated_browser_routes_and_private_host_denial",
+      "liveReloadAllowed": false
+    },
+    {
+      "repository": "appolon1908-hue/Infustruction-repo",
+      "branch": "feature/observability-private-network-v1",
+      "pullRequest": 2,
+      "role": "topology_firewall_desired_state_and_release_coordination",
+      "liveFirewallApplyAllowed": false
+    },
+    {
+      "repository": "appolon1908-hue/communication-platform-",
+      "branch": "feat/dashboard-read-model-v1",
+      "pullRequest": 3,
+      "role": "communications_dashboard_and_read_model_authority",
+      "liveMutationAllowed": false
+    }
+  ]
+}

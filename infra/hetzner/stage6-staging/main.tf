@@ -203,7 +203,8 @@ resource "hcloud_server" "stage6" {
   delete_protection  = true
   rebuild_protection = true
   user_data = templatefile("${path.module}/cloud-init.yaml.tftpl", {
-    egress_gateway_private_ip = var.egress_gateway_private_ip
+    egress_gateway_private_ip            = var.egress_gateway_private_ip
+    staging_readonly_operator_public_key = trimspace(var.staging_readonly_operator_public_key)
   })
   firewall_ids = [hcloud_firewall.runtime.id]
   depends_on   = [hcloud_server_network.egress]

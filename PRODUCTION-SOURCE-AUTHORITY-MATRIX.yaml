@@ -17,6 +17,22 @@ defaults:
   protected_branch: UNKNOWN
   source_sha: UNKNOWN
   confidence: low
+restricted_operators:
+  klyrow-stack:
+    source_repository: appolon1908-hue/Infustruction-repo
+    protected_branch: main
+    source_path: operators/klyrow-stack
+    installer_path: operators/install-klyrow-stack
+    sudoers_path: operators/klyrow-stack.sudoers
+    installed_path: /usr/local/sbin/klyrow-stack
+    installed_owner: root
+    installed_group: root
+    installed_mode: '0755'
+    allowed_subcommands: [status, rollback-plan, preflight, plan, stage, deploy, rollback]
+    approval_marker_schema: 1
+    known_good_override_sha256: 345093a338012f9d32f6d7569f20b8c62503058731e0d4c5a7765dbe667dcc6e
+    rollback_policy: fail_closed_automatic_on_health_or_safety_failure
+    runtime_installation: pending_reviewed_merge
 workloads:
   codestra-middleware-1:
     runtime_image: codestra/middleware:health-contract-b3ca9aa

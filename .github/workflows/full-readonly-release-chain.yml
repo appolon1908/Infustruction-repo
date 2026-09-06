@@ -1,0 +1,378 @@
+name: Codestra full immutable read-only release chain
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/full-readonly-release-chain.yml"
+      - ".github/workflows/staging-readonly-certification.yml"
+      - "operations/staging-readonly/**"
+  workflow_dispatch:
+    inputs:
+      canary_percent:
+        description: "Production read-only canary percentage; must be greater than zero and no more than one"
+        required: true
+        type: string
+        default: "1"
+
+permissions:
+  contents: read
+  packages: read
+  actions: read
+
+concurrency:
+  group: codestra-full-immutable-readonly-release-chain
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CODESTRA_RELEASE_WORKFLOW_PATH: .github/workflows/full-readonly-release-chain.yml
+
+jobs:
+  policy:
+    name: full-release-chain-policy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Validate permanent release authority
+        run: |
+          set -Eeuo pipefail
+          python3 -m py_compile \
+            operations/staging-readonly/release_control.py \
+            operations/staging-readonly/release_control_v2.py \
+            operations/staging-readonly/release_control_entry.py \
+            operations/staging-readonly/release_control_chain.py \
+            operations/staging-readonly/test_release_control.py \
+            operations/staging-readonly/test_release_control_v2.py
+          python3 operations/staging-readonly/test_release_control.py
+          python3 operations/staging-readonly/test_release_control_v2.py
+          for path in \
+            operations/staging-readonly/release-control.schema.json \
+            operations/staging-readonly/staging-endpoints.schema.json \
+            operations/staging-readonly/github-environment-contract.json \
+            operations/staging-readonly/release-control.template.json \
+            operations/staging-readonly/staging-endpoints.template.json \
+            operations/staging-readonly/production-endpoints.template.json; do
+            python3 -m json.tool "$path" >/dev/null
+          done
+          bash -n operations/staging-readonly/configure_github_environments.sh
+          grep -q 'environment: staging-readonly' .github/workflows/full-readonly-release-chain.yml
+          grep -q 'environment: production-readonly-canary' .github/workflows/full-readonly-release-chain.yml
+          grep -q 'needs: staging' .github/workflows/full-readonly-release-chain.yml
+          grep -q 'needs: rollback-rehearsal' .github/workflows/full-readonly-release-chain.yml
+          git diff --check
+
+  staging:
+    name: exact-digest-staging-and-recovery-point
+    needs: policy
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, codestra-staging]
+    timeout-minutes: 120
+    environment: staging-readonly
+    outputs:
+      candidate_id: ${{ steps.materialize.outputs.candidate_id }}
+      source_lock_sha: ${{ steps.materialize.outputs.source_lock_sha }}
+      candidate_sha256: ${{ steps.materialize.outputs.candidate_sha256 }}
+    env:
+      STAGING_CANONICAL_CANDIDATE_B64: ${{ secrets.STAGING_CANONICAL_CANDIDATE_B64 }}
+      STAGING_ENDPOINT_MANIFEST_B64: ${{ secrets.STAGING_ENDPOINT_MANIFEST_B64 }}
+      STAGING_READONLY_BEARER_TOKEN: ${{ secrets.STAGING_READONLY_BEARER_TOKEN }}
+      STAGING_METRICS_BEARER_TOKEN: ${{ secrets.STAGING_METRICS_BEARER_TOKEN }}
+      STAGING_GHCR_READ_TOKEN: ${{ secrets.STAGING_GHCR_READ_TOKEN }}
+      RESTIC_REPOSITORY: ${{ secrets.STAGING_RESTIC_REPOSITORY }}
+      RESTIC_PASSWORD_FILE: ${{ secrets.STAGING_RESTIC_PASSWORD_FILE }}
+    steps:
+      - name: Check out exact protected main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Materialize and validate protected staging inputs
+        id: materialize
+        run: |
+          set -Eeuo pipefail
+          umask 077
+          test "$GITHUB_REF" = refs/heads/main
+          for name in \
+            STAGING_CANONICAL_CANDIDATE_B64 \
+            STAGING_ENDPOINT_MANIFEST_B64 \
+            STAGING_READONLY_BEARER_TOKEN \
+            STAGING_METRICS_BEARER_TOKEN \
+            STAGING_GHCR_READ_TOKEN \
+            RESTIC_REPOSITORY \
+            RESTIC_PASSWORD_FILE; do
+            [[ -n "${!name:-}" ]] || {
+              echo "Missing protected staging binding: $name" >&2
+              exit 1
+            }
+          done
+          work="$RUNNER_TEMP/codestra-fullchain-staging-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -m 0700 -- "$work"
+          printf '%s' "$STAGING_CANONICAL_CANDIDATE_B64" | base64 --decode >"$work/candidate.json"
+          printf '%s' "$STAGING_ENDPOINT_MANIFEST_B64" | base64 --decode >"$work/endpoints.json"
+          [[ "$(wc -c <"$work/candidate.json")" -le 1048576 ]]
+          [[ "$(wc -c <"$work/endpoints.json")" -le 1048576 ]]
+          python3 -m json.tool "$work/candidate.json" >/dev/null
+          python3 -m json.tool "$work/endpoints.json" >/dev/null
+          candidate_id="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["candidate_id"])' "$work/candidate.json")"
+          source_lock_sha="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["candidate_source_lock_sha"])' "$work/candidate.json")"
+          candidate_sha256="$(sha256sum "$work/candidate.json" | cut -d' ' -f1)"
+          [[ "$candidate_id" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$ ]]
+          [[ "$source_lock_sha" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$candidate_sha256" =~ ^[0-9a-f]{64}$ ]]
+          echo "work=$work" >> "$GITHUB_OUTPUT"
+          echo "candidate_id=$candidate_id" >> "$GITHUB_OUTPUT"
+          echo "source_lock_sha=$source_lock_sha" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha256=$candidate_sha256" >> "$GITHUB_OUTPUT"
+          echo "evidence=$work/staging-evidence.json" >> "$GITHUB_OUTPUT"
+      - name: Authenticate package-read-only identity
+        env:
+          GHCR_USER: ${{ github.repository_owner }}
+        run: printf '%s' "$STAGING_GHCR_READ_TOKEN" | docker login ghcr.io --username "$GHCR_USER" --password-stdin >/dev/null
+      - name: Deploy exact digests and certify staging
+        run: |
+          set -Eeuo pipefail
+          python3 operations/staging-readonly/release_control_chain.py \
+            --candidate "${{ steps.materialize.outputs.work }}/candidate.json" \
+            --endpoint-manifest "${{ steps.materialize.outputs.work }}/endpoints.json" \
+            --mode staging \
+            --confirm-candidate-id "${{ steps.materialize.outputs.candidate_id }}" \
+            --confirm-source-lock-sha "${{ steps.materialize.outputs.source_lock_sha }}" \
+            --evidence "${{ steps.materialize.outputs.evidence }}"
+      - name: Upload exact staging evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0
+        with:
+          name: fullchain-staging-${{ steps.materialize.outputs.candidate_id }}
+          path: ${{ steps.materialize.outputs.evidence }}
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove credentials and protected inputs
+        if: always()
+        run: |
+          set +e
+          docker logout ghcr.io >/dev/null 2>&1
+          rm -rf -- "${{ steps.materialize.outputs.work }}"
+
+  rollback-rehearsal:
+    name: exact-previous-release-rollback-rehearsal
+    needs: staging
+    runs-on: [self-hosted, codestra-staging]
+    timeout-minutes: 150
+    environment: staging-readonly
+    env:
+      STAGING_CANONICAL_CANDIDATE_B64: ${{ secrets.STAGING_CANONICAL_CANDIDATE_B64 }}
+      STAGING_ENDPOINT_MANIFEST_B64: ${{ secrets.STAGING_ENDPOINT_MANIFEST_B64 }}
+      STAGING_READONLY_BEARER_TOKEN: ${{ secrets.STAGING_READONLY_BEARER_TOKEN }}
+      STAGING_METRICS_BEARER_TOKEN: ${{ secrets.STAGING_METRICS_BEARER_TOKEN }}
+      STAGING_GHCR_READ_TOKEN: ${{ secrets.STAGING_GHCR_READ_TOKEN }}
+      RESTIC_REPOSITORY: ${{ secrets.STAGING_RESTIC_REPOSITORY }}
+      RESTIC_PASSWORD_FILE: ${{ secrets.STAGING_RESTIC_PASSWORD_FILE }}
+      STAGING_EVIDENCE_RUN_ID: ${{ github.run_id }}
+      STAGING_EVIDENCE_RUN_ATTEMPT: ${{ github.run_attempt }}
+      STAGING_EVIDENCE_HEAD_SHA: ${{ github.sha }}
+    steps:
+      - name: Check out exact protected main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Materialize and bind the exact candidate again
+        id: materialize
+        run: |
+          set -Eeuo pipefail
+          umask 077
+          for name in \
+            STAGING_CANONICAL_CANDIDATE_B64 \
+            STAGING_ENDPOINT_MANIFEST_B64 \
+            STAGING_READONLY_BEARER_TOKEN \
+            STAGING_METRICS_BEARER_TOKEN \
+            STAGING_GHCR_READ_TOKEN \
+            RESTIC_REPOSITORY \
+            RESTIC_PASSWORD_FILE; do
+            [[ -n "${!name:-}" ]] || {
+              echo "Missing protected staging binding: $name" >&2
+              exit 1
+            }
+          done
+          work="$RUNNER_TEMP/codestra-fullchain-rollback-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -m 0700 -- "$work"
+          printf '%s' "$STAGING_CANONICAL_CANDIDATE_B64" | base64 --decode >"$work/candidate.json"
+          printf '%s' "$STAGING_ENDPOINT_MANIFEST_B64" | base64 --decode >"$work/endpoints.json"
+          [[ "$(sha256sum "$work/candidate.json" | cut -d' ' -f1)" = "${{ needs.staging.outputs.candidate_sha256 }}" ]]
+          [[ "$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["candidate_id"])' "$work/candidate.json")" = "${{ needs.staging.outputs.candidate_id }}" ]]
+          [[ "$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["candidate_source_lock_sha"])' "$work/candidate.json")" = "${{ needs.staging.outputs.source_lock_sha }}" ]]
+          echo "work=$work" >> "$GITHUB_OUTPUT"
+          echo "evidence=$work/rollback-evidence.json" >> "$GITHUB_OUTPUT"
+      - name: Download staging evidence from this exact run
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: fullchain-staging-${{ needs.staging.outputs.candidate_id }}
+          path: ${{ steps.materialize.outputs.work }}/staging-evidence
+      - name: Select exactly one non-symlink staging evidence document
+        id: staging-evidence
+        run: |
+          set -Eeuo pipefail
+          mapfile -t files < <(find "${{ steps.materialize.outputs.work }}/staging-evidence" -type f -name '*.json' -print)
+          [[ "${#files[@]}" -eq 1 ]] || { echo "Expected exactly one staging evidence JSON" >&2; exit 1; }
+          if find "${{ steps.materialize.outputs.work }}/staging-evidence" -type l -print -quit | grep -q .; then
+            echo "Staging evidence contains a symbolic link" >&2
+            exit 1
+          fi
+          echo "path=${files[0]}" >> "$GITHUB_OUTPUT"
+      - name: Authenticate package-read-only identity
+        env:
+          GHCR_USER: ${{ github.repository_owner }}
+        run: printf '%s' "$STAGING_GHCR_READ_TOKEN" | docker login ghcr.io --username "$GHCR_USER" --password-stdin >/dev/null
+      - name: Rehearse rollback and restore the candidate
+        run: |
+          set -Eeuo pipefail
+          python3 operations/staging-readonly/release_control_chain.py \
+            --candidate "${{ steps.materialize.outputs.work }}/candidate.json" \
+            --endpoint-manifest "${{ steps.materialize.outputs.work }}/endpoints.json" \
+            --mode rollback-rehearsal \
+            --staging-evidence "${{ steps.staging-evidence.outputs.path }}" \
+            --confirm-candidate-id "${{ needs.staging.outputs.candidate_id }}" \
+            --confirm-source-lock-sha "${{ needs.staging.outputs.source_lock_sha }}" \
+            --evidence "${{ steps.materialize.outputs.evidence }}"
+      - name: Upload exact rollback evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0
+        with:
+          name: fullchain-rollback-${{ needs.staging.outputs.candidate_id }}
+          path: ${{ steps.materialize.outputs.evidence }}
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove credentials and protected inputs
+        if: always()
+        run: |
+          set +e
+          docker logout ghcr.io >/dev/null 2>&1
+          rm -rf -- "${{ steps.materialize.outputs.work }}"
+
+  production-readonly-canary:
+    name: maximum-one-percent-production-readonly-canary
+    needs: [staging, rollback-rehearsal]
+    runs-on: [self-hosted, codestra-production-canary]
+    timeout-minutes: 120
+    environment: production-readonly-canary
+    env:
+      PRODUCTION_CANONICAL_CANDIDATE_B64: ${{ secrets.PRODUCTION_CANONICAL_CANDIDATE_B64 }}
+      PRODUCTION_ENDPOINT_MANIFEST_B64: ${{ secrets.PRODUCTION_ENDPOINT_MANIFEST_B64 }}
+      PRODUCTION_READONLY_BEARER_TOKEN: ${{ secrets.PRODUCTION_READONLY_BEARER_TOKEN }}
+      PRODUCTION_METRICS_BEARER_TOKEN: ${{ secrets.PRODUCTION_METRICS_BEARER_TOKEN }}
+      PRODUCTION_GHCR_READ_TOKEN: ${{ secrets.PRODUCTION_GHCR_READ_TOKEN }}
+      STAGING_EVIDENCE_RUN_ID: ${{ github.run_id }}
+      STAGING_EVIDENCE_RUN_ATTEMPT: ${{ github.run_attempt }}
+      STAGING_EVIDENCE_HEAD_SHA: ${{ github.sha }}
+      ROLLBACK_EVIDENCE_RUN_ID: ${{ github.run_id }}
+      ROLLBACK_EVIDENCE_RUN_ATTEMPT: ${{ github.run_attempt }}
+      ROLLBACK_EVIDENCE_HEAD_SHA: ${{ github.sha }}
+      CANARY_PERCENT: ${{ inputs.canary_percent }}
+    steps:
+      - name: Check out exact protected main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Materialize separate protected production targets
+        id: materialize
+        run: |
+          set -Eeuo pipefail
+          umask 077
+          for name in \
+            PRODUCTION_CANONICAL_CANDIDATE_B64 \
+            PRODUCTION_ENDPOINT_MANIFEST_B64 \
+            PRODUCTION_READONLY_BEARER_TOKEN \
+            PRODUCTION_METRICS_BEARER_TOKEN \
+            PRODUCTION_GHCR_READ_TOKEN; do
+            [[ -n "${!name:-}" ]] || {
+              echo "Missing protected production binding: $name" >&2
+              exit 1
+            }
+          done
+          python3 - "$CANARY_PERCENT" <<'PY'
+          import sys
+          value = float(sys.argv[1])
+          if value <= 0 or value > 1:
+              raise SystemExit("canary_percent must be greater than zero and no more than one")
+          PY
+          work="$RUNNER_TEMP/codestra-fullchain-canary-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -m 0700 -- "$work"
+          printf '%s' "$PRODUCTION_CANONICAL_CANDIDATE_B64" | base64 --decode >"$work/candidate.json"
+          printf '%s' "$PRODUCTION_ENDPOINT_MANIFEST_B64" | base64 --decode >"$work/endpoints.json"
+          [[ "$(sha256sum "$work/candidate.json" | cut -d' ' -f1)" = "${{ needs.staging.outputs.candidate_sha256 }}" ]]
+          [[ "$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["candidate_id"])' "$work/candidate.json")" = "${{ needs.staging.outputs.candidate_id }}" ]]
+          [[ "$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["candidate_source_lock_sha"])' "$work/candidate.json")" = "${{ needs.staging.outputs.source_lock_sha }}" ]]
+          echo "work=$work" >> "$GITHUB_OUTPUT"
+          echo "evidence=$work/canary-evidence.json" >> "$GITHUB_OUTPUT"
+      - name: Download exact staging evidence from this run
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: fullchain-staging-${{ needs.staging.outputs.candidate_id }}
+          path: ${{ steps.materialize.outputs.work }}/staging-evidence
+      - name: Download exact rollback evidence from this run
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: fullchain-rollback-${{ needs.staging.outputs.candidate_id }}
+          path: ${{ steps.materialize.outputs.work }}/rollback-evidence
+      - name: Select exactly one document from each prerequisite
+        id: evidence
+        run: |
+          set -Eeuo pipefail
+          for kind in staging rollback; do
+            directory="${{ steps.materialize.outputs.work }}/${kind}-evidence"
+            mapfile -t files < <(find "$directory" -type f -name '*.json' -print)
+            [[ "${#files[@]}" -eq 1 ]] || { echo "Expected exactly one ${kind} evidence JSON" >&2; exit 1; }
+            if find "$directory" -type l -print -quit | grep -q .; then
+              echo "${kind} evidence contains a symbolic link" >&2
+              exit 1
+            fi
+            echo "${kind}_path=${files[0]}" >> "$GITHUB_OUTPUT"
+          done
+      - name: Authenticate package-read-only identity
+        env:
+          GHCR_USER: ${{ github.repository_owner }}
+        run: printf '%s' "$PRODUCTION_GHCR_READ_TOKEN" | docker login ghcr.io --username "$GHCR_USER" --password-stdin >/dev/null
+      - name: Apply and certify the read-only canary
+        run: |
+          set -Eeuo pipefail
+          python3 operations/staging-readonly/release_control_chain.py \
+            --candidate "${{ steps.materialize.outputs.work }}/candidate.json" \
+            --endpoint-manifest "${{ steps.materialize.outputs.work }}/endpoints.json" \
+            --mode production-readonly-canary \
+            --staging-evidence "${{ steps.evidence.outputs.staging_path }}" \
+            --rollback-evidence "${{ steps.evidence.outputs.rollback_path }}" \
+            --canary-percent "$CANARY_PERCENT" \
+            --confirm-candidate-id "${{ needs.staging.outputs.candidate_id }}" \
+            --confirm-source-lock-sha "${{ needs.staging.outputs.source_lock_sha }}" \
+            --evidence "${{ steps.materialize.outputs.evidence }}"
+      - name: Upload exact canary evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0
+        with:
+          name: fullchain-production-readonly-canary-${{ needs.staging.outputs.candidate_id }}
+          path: ${{ steps.materialize.outputs.evidence }}
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove credentials and protected inputs
+        if: always()
+        run: |
+          set +e
+          docker logout ghcr.io >/dev/null 2>&1
+          rm -rf -- "${{ steps.materialize.outputs.work }}"

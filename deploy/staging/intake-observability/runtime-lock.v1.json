@@ -1,14 +1,26 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.4",
   "deployment_id": "codestra-intake-observability-staging-v1",
   "environment": "staging",
   "project_name": "codestra-intake-observability-staging",
   "middleware": {
-    "source_sha": "f6748a58f8d2590520a4f28776770957061cdea1",
-    "image_reference": "ghcr.io/appolon1908-hue/codestra-middleware@sha256:695fa3ce3f50ba4d0ae0784976b946a0a683ca731155e4bd3bd9e90a4670b820",
-    "image_digest": "sha256:695fa3ce3f50ba4d0ae0784976b946a0a683ca731155e4bd3bd9e90a4670b820",
-    "schema_head": "0003_immutable_event_ledger",
-    "runtime_profile_id": "codestra-middleware-staging-v1"
+    "source_sha": "9a96ff1651a324b98f3a7efd60b7a342983ded4e",
+    "image_reference": "ghcr.io/appolon1908-hue/codestra-middleware@sha256:01a61e6c9761968bce04db855df565e9104338c2ba2056da570cacb9fd21f0f4",
+    "image_digest": "sha256:01a61e6c9761968bce04db855df565e9104338c2ba2056da570cacb9fd21f0f4",
+    "schema_head": "0008_durable_communications",
+    "runtime_profile_id": "codestra-middleware-staging-v1",
+    "release_id": "9a96ff1651a3-01a61e6c9761",
+    "release_run_url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/33662230894",
+    "release_run_attempt": 2,
+    "release_artifact_id": 9859370333,
+    "release_artifact_name": "signed-middleware-release-9a96ff1651a324b98f3a7efd60b7a342983ded4e-33662230894-2",
+    "release_artifact_digest": "sha256:56fc7bd5cca57df0bfd04e27eb3e294bd160a8071e4e8ae1974addb6d040f46e",
+    "release_manifest_sha256": "sha256:55f809c9f6436fd886c7a8a19a2b557da22696e190ebf806df16f3e401b7f9a6",
+    "sbom_sha256": "sha256:2aef347da05c39956671e9f431b36dd5b8a2a0ec76a72ded155b062db321c3ea",
+    "vulnerability_report_sha256": "sha256:4652fc5b7de5be1e0f7e2c977a3970a09d47df71a4ddff5bc3866b32f01a6e49",
+    "release_evidence_root": "/var/lib/codestra/releases/middleware/9a96ff1651a3-01a61e6c9761",
+    "release_workflow_identity": "https://github.com/appolon1908-hue/Middleware-/.github/workflows/release.yml@refs/heads/main",
+    "release_oidc_issuer": "https://token.actions.githubusercontent.com"
   },
   "embedded_profile_identities": {
     "postgres_host": "postgresql.middleware-staging.svc.cluster.local",
@@ -38,7 +50,25 @@
     "middleware_host_ports": [],
     "private_network": "codestra-intake-observability-staging_private",
     "private_network_internal": true,
-    "identity_egress_network": "codestra-intake-observability-staging_identity_egress"
+    "identity_egress_network": "codestra-intake-observability-staging_identity_egress",
+    "shared_observability": {
+      "name": "codestra-observability",
+      "contract": "codestra-observability-staging-v1",
+      "driver": "bridge",
+      "scope": "local",
+      "internal": false,
+      "attachable": false,
+      "ingress": false,
+      "subnet": "192.168.16.0/24",
+      "gateway": "192.168.16.1",
+      "inter_container_communication": true,
+      "ip_masquerade": true,
+      "host_ports_published": false,
+      "allowed_container_names": [
+        "codestra-prometheus-staging",
+        "codestra-grafana-staging"
+      ]
+    }
   },
   "persistence": {
     "named_volumes": ["postgres_data", "redis_data"],
@@ -65,6 +95,13 @@
     "prometheus_target": "pending",
     "blackbox_target": "pending",
     "production_authorized": false
+  },
+  "umbrella_controls": {
+    "LIVE_ADVERTISING_ENABLED": false,
+    "EXTERNAL_DELIVERY_ENABLED": false,
+    "SOCIAL_PUBLISHING_ENABLED": false,
+    "EXTERNAL_MODEL_CALLS_ENABLED": false,
+    "N8N_EXTERNAL_PROVIDER_WRITES": false
   },
   "external_effects_enabled": false
 }

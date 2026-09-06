@@ -1,11 +1,10 @@
 name: source-authority-matrix
 
 on:
+  # These job names are required branch-protection contexts. Run them for every
+  # pull request so an unrelated path change cannot leave a required context
+  # permanently pending.
   pull_request:
-    paths:
-      - PRODUCTION-SOURCE-AUTHORITY-MATRIX.yaml
-      - scripts/validate_production_source_authority_matrix.py
-      - .github/workflows/source-authority-matrix.yml
 
 permissions:
   contents: read
@@ -67,3 +66,20 @@ jobs:
           mkdir -p "${scan_root}"
           git archive HEAD | tar -x -C "${scan_root}"
           (cd "${scan_root}" && "${RUNNER_TEMP}/authority-gitleaks" dir --no-banner --redact --exit-code 1 .)
+
+  validate:
+    name: validate
+    if: always()
+    needs:
+      - validate-source
+      - validate-merge-result
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require both exact-source gates
+        env:
+          SOURCE_RESULT: ${{ needs.validate-source.result }}
+          MERGE_RESULT: ${{ needs.validate-merge-result.result }}
+        run: |
+          set -Eeuo pipefail
+          test "${SOURCE_RESULT}" = "success"
+          test "${MERGE_RESULT}" = "success"

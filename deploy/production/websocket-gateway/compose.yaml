@@ -1,0 +1,39 @@
+name: codestra-websocket-gateway
+
+services:
+  gateway:
+    image: ghcr.io/appolon1908-hue/websocket-gateway@sha256:dd3039f69532ccd918cf2e44f58871199943fffa492423b3e6235517a8e8976e
+    environment:
+      LISTEN_ADDR: ":8080"
+      MIDDLEWARE_URL: "${MIDDLEWARE_URL:?MIDDLEWARE_URL is required}"
+      MIDDLEWARE_SERVICE_TOKEN: "${MIDDLEWARE_SERVICE_TOKEN:?MIDDLEWARE_SERVICE_TOKEN is required}"
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:?ALLOWED_ORIGINS is required}"
+      MAX_CONNECTIONS: "${MAX_CONNECTIONS:-1000}"
+      SOURCE_SHA: "6d52b253fc208f46aa32b26565dcb2f2be30c409"
+      IMAGE_DIGEST: "sha256:dd3039f69532ccd918cf2e44f58871199943fffa492423b3e6235517a8e8976e"
+    init: true
+    restart: unless-stopped
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m
+    mem_limit: 256m
+    mem_reservation: 64m
+    cpus: 1.0
+    pids_limit: 128
+    networks:
+      codestra_backend:
+        aliases: ["gateway"]
+      codestra_edge:
+        aliases: ["gateway"]
+      codestra_identity_identity_service:
+        aliases: ["gateway"]
+
+networks:
+  codestra_backend:
+    external: true
+  codestra_edge:
+    external: true
+  codestra_identity_identity_service:
+    external: true

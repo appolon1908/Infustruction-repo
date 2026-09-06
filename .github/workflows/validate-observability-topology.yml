@@ -1,0 +1,65 @@
+name: Validate observability topology
+
+on:
+  pull_request:
+    paths:
+      - config/observability/**
+      - scripts/validate-observability-topology.py
+      - scripts/test-observability-topology-negative.py
+      - scripts/smoke-observability-edge.sh
+      - docs/**
+      - .github/workflows/validate-observability-topology.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Validate desired state
+        run: |
+          python3 scripts/validate-observability-topology.py
+          python3 scripts/test-observability-topology-negative.py
+
+      - name: Shell syntax
+        run: bash -n scripts/smoke-observability-edge.sh
+
+      - name: Install checksum-verified Gitleaks
+        env:
+          GITLEAKS_VERSION: "8.30.1"
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+        run: |
+          set -Eeuo pipefail
+          archive="${RUNNER_TEMP}/gitleaks.tar.gz"
+          curl --fail --silent --show-error --location \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            --output "$archive"
+          echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum --check -
+          tar -xzf "$archive" -C "$RUNNER_TEMP" gitleaks
+          install -m 0755 "$RUNNER_TEMP/gitleaks" "$RUNNER_TEMP/observability-gitleaks"
+
+      - name: Reject committed secret material
+        run: |
+          set -Eeuo pipefail
+          scan_root="${RUNNER_TEMP}/tracked-observability-source"
+          install -d -m 0700 "$scan_root"
+          git archive HEAD | tar -x -C "$scan_root"
+          (
+            cd "$scan_root"
+            "$RUNNER_TEMP/observability-gitleaks" dir \
+              --no-banner \
+              --redact \
+              --exit-code 1 \
+              .
+          )
+          echo OBSERVABILITY_SECRET_SCAN=PASS

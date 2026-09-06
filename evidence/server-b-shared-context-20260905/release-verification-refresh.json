@@ -1,0 +1,154 @@
+{
+  "observed_at_utc": "2026-09-05T12:19:59.123832+00:00",
+  "scope": "Current final integration release verification; historical successful builds are not substitutes.",
+  "release_status": "NOT_VERIFIED_FOR_CURRENT_INTEGRATION",
+  "prs": {
+    "Infustruction-repo#85": {
+      "headRefOid": "d25054dc1149083e1779ad767012fa8d6a291a3e",
+      "mergeCommit": {
+        "oid": "99972268792554e70f756134b544c5e49eee5398"
+      },
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "state": "MERGED"
+    },
+    "Infustruction-repo#95": {
+      "headRefOid": "fcb6dbdd083694194681171a63d20b69bf85925d",
+      "mergeCommit": null,
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "APPROVED",
+      "state": "CLOSED"
+    },
+    "Infustruction-repo#96": {
+      "headRefOid": "70f3ada996a12e64ade750c8319ff52e60a146ba",
+      "mergeCommit": {
+        "oid": "1e1490a2878f2124369cbb1834a7755e1a8efabd"
+      },
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "state": "MERGED"
+    },
+    "Infustruction-repo#97": {
+      "headRefOid": "7949ad0ae66b92154cf608c705a0d0b929075d37",
+      "mergeCommit": null,
+      "mergeStateStatus": "BLOCKED",
+      "reviewDecision": "",
+      "state": "OPEN"
+    },
+    "Vicidialer-Codestra#22": {
+      "headRefOid": "e421f052f3847d47819cad527618b793ea9be572",
+      "mergeCommit": null,
+      "mergeStateStatus": "BLOCKED",
+      "reviewDecision": "",
+      "state": "OPEN"
+    },
+    "Vicidialer-Codestra#23": {
+      "headRefOid": "e5ccefea7ffffa7913b83a0d678221747d585996",
+      "mergeCommit": null,
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "state": "CLOSED"
+    },
+    "codestra-provisioning-service#28": {
+      "headRefOid": "013a26016d461582fe12696b3656acc8db893c33",
+      "mergeCommit": null,
+      "mergeStateStatus": "BLOCKED",
+      "reviewDecision": "REVIEW_REQUIRED",
+      "state": "OPEN"
+    },
+    "codestra-provisioning-service#29": {
+      "headRefOid": "d364d7d1e684a08b6aa89666a10014bb07786eaa",
+      "mergeCommit": null,
+      "mergeStateStatus": "CLEAN",
+      "reviewDecision": "APPROVED",
+      "state": "OPEN"
+    }
+  },
+  "protected_runs": {
+    "Vicidialer-Codestra": {
+      "attempt": 1,
+      "conclusion": "failure",
+      "createdAt": "2026-09-05T11:04:11Z",
+      "databaseId": 33962326270,
+      "headSha": "c3f34f4f5adf23c1175c3c18a039a958f43ed4e3",
+      "jobs": [
+        {
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "conclusion": "success",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33962326270/job/101296242321"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "conclusion": "success",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33962326270/job/101296242391"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "conclusion": "failure",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33962326270/job/101296261576"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "conclusion": "skipped",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33962326270/job/101296331929"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "conclusion": "skipped",
+          "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33962326270/job/101296332158"
+        }
+      ],
+      "status": "completed",
+      "updatedAt": "2026-09-05T11:04:55Z",
+      "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33962326270"
+    },
+    "codestra-provisioning-service": {
+      "attempt": 1,
+      "conclusion": "success",
+      "createdAt": "2026-09-04T15:51:05Z",
+      "databaseId": 33891837969,
+      "headSha": "6657d262aec56fa6c0f359535a4ec05fc196182f",
+      "jobs": [
+        {
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "conclusion": "success",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33891837969/job/101085109325"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "conclusion": "success",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33891837969/job/101085109646"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "conclusion": "success",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33891837969/job/101085187301"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "conclusion": "skipped",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33891837969/job/101085699672"
+        },
+        {
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "conclusion": "skipped",
+          "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33891837969/job/101085699702"
+        }
+      ],
+      "status": "completed",
+      "updatedAt": "2026-09-04T15:53:01Z",
+      "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33891837969"
+    }
+  },
+  "PROTECTED_RELEASE_SHA": null,
+  "VERIFIED_ARTIFACT_REFERENCE": null,
+  "SIGNATURE_SBOM_PROVENANCE_STATUS": "No independently verified artifact/signature/SBOM/provenance tuple for current paired integration.",
+  "STAGING_CERTIFICATION_STATUS": "NOT_VERIFIED; recorded protected-run staging/canary jobs skipped.",
+  "historical_provisioning_build": "Run33891837969 at6657d262aec56fa6c0f359535a4ec05fc196182f succeeded, including immutable-candidate. Artifact9944208713 exists. Predates PR28; not current integration release proof.",
+  "PR23_DISPOSITION": "CLOSED_UNMERGED; source comparison against PR22 e421f052f3847d47819cad527618b793ea9be572 confirms explicit fchmod0640 and the restrictive-umask regression are incorporated. Newer request-reference validation is preserved; no source edits made.",
+  "PR29_DISPOSITION": "OPEN; unique lifecycle/browser coverage retained, pending integration/review. Prior 119-test result remains scoped to d364d7d.",
+  "runtime": "Not rechecked in this record update. Prior Server B observation remains timestamped 2026-09-05T11:59:28Z, version0.1.0, ready, writes false, actual source/digest unverified.",
+  "ACTUAL_PRODUCTION_CHANGES": "NONE",
+  "EXACT_REMAINING_BLOCKER": "Canonical service PRs22 and28 remain unmerged; current integration has no successful protected VICIdial release. Review/merge then verify the actual merged-source artifact, signing, provenance and certification.",
+  "github_releases": "Both service repositories returned empty GitHub Releases lists at inspection; this alone is not proof that registry artifacts do not exist."
+}
