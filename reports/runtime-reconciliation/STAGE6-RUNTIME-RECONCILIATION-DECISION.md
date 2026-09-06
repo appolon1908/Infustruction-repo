@@ -1,5 +1,29 @@
 # Stage 6 Runtime Reconciliation Decision
 
+Status: **SUPERSEDED_DO_NOT_EXECUTE**
+
+## Supersession notice — 2026-09-06
+
+This report's PASS/preflight conclusions, disabled-write assertion, and
+backup-preparation authorization are superseded. They must not be used to
+start backups, reconciliation, deployment, or any runtime mutation. The
+original report below is retained verbatim as historical evidence, not a
+fresh runtime read-back or current operational instruction.
+
+Use the [canonical source lock](../../STAGE6-SOURCE-LOCK.yaml) and
+[current staging certification](../../STAGE6-STAGING-CERTIFICATION.md),
+including their scope, runtime-safety failures, and explicit authorization
+gates. A scoped source-lock PASS does not establish a complete application
+artifact lock or prove runtime writes disabled. No backup or runtime action
+is authorized by this report or by merging PR #30.
+
+See the [retry prerequisites](pr-30-runtime-certification-20260831/README.md#retry-prerequisites-not-execution-authorization)
+for immutable artifact resolution, scoped safety proof, and approved access.
+Klyrow/Postal remains `OUT_OF_SCOPE_ACTIVE_PRODUCTION_DO_NOT_TOUCH`.
+Separate verified backup evidence is not replaced or invalidated here.
+
+## Historical report (superseded; retained verbatim)
+
 Timestamp: 2026-08-30 (America/Santo_Domingo)
 
 ## Decision
