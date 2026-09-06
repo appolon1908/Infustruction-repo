@@ -4,13 +4,17 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / 'config/marketing-stage9-readiness.json'
+REPOSITORY_ALIASES = ROOT / 'config/repository-name-aliases.v1.json'
+SOCIAL_CONTROL_REPOSITORY_ID = 1351353723
 
-EXPECTED_REPOS = {
-    'Codestra-Marketing-', 'Codestra-AI', 'Codestra-Communication-CC', 'Codesrea-Social-',
-    'Middleware-', 'Odoo', 'SDK-repository', 'N8N', 'Kong', 'Keycloak', 'social.codestra.co'
+BASE_EXPECTED_REPOS = {
+    'Codestra-Marketing-', 'Codestra-AI', 'Codestra-Communication-CC',
+    'Middleware-', 'Odoo', 'SDK-repository', 'N8N', 'Kong', 'Keycloak',
+    'social.codestra.co'
 }
 EXPECTED_FLOW = [
     'provider.test_lead',
@@ -23,6 +27,42 @@ EXPECTED_FLOW = [
     'odoo.outcome.recorded',
     'marketing.conversion_feedback_recorded',
 ]
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    value = json.loads(path.read_text(encoding='utf-8'))
+    assert isinstance(value, dict), f'{path.name} root must be an object'
+    return value
+
+
+def social_control_slug() -> str:
+    aliases = load_json(REPOSITORY_ALIASES)
+    assert aliases['schema_version'] == '1.0'
+    assert aliases['identity_key'] == 'repository_id'
+    assert aliases['policy']['historical_evidence_immutable'] is True
+
+    matches = [
+        item for item in aliases['mappings']
+        if item.get('repository_id') == SOCIAL_CONTROL_REPOSITORY_ID
+    ]
+    assert len(matches) == 1, 'social-control repository ID must resolve exactly once'
+    mapping = matches[0]
+    status = mapping.get('status')
+    assert status in {
+        'PREPARED_NOT_RENAMED',
+        'RENAMED_VERIFIED',
+        'ROLLED_BACK_VERIFIED',
+    }, 'social-control rename state is invalid'
+
+    repository = (
+        mapping['target_repository_after_cutover']
+        if status == 'RENAMED_VERIFIED'
+        else mapping['current_repository']
+    )
+    owner, slug = repository.split('/', 1)
+    assert owner == 'appolon1908-hue'
+    assert slug
+    return slug
 
 
 def event(event_type: str, tenant_id: str, correlation_id: str, payload: dict) -> dict:
@@ -38,11 +78,13 @@ def event(event_type: str, tenant_id: str, correlation_id: str, payload: dict) -
 
 
 def main() -> None:
-    data = json.loads(MANIFEST.read_text(encoding='utf-8'))
+    data = load_json(MANIFEST)
     assert data['productionWritesAuthorized'] is False
     assert all(value is False for value in data['capabilities'].values()), 'all live capabilities must remain false'
+
+    expected_repos = BASE_EXPECTED_REPOS | {social_control_slug()}
     repos = {entry['repo'] for entry in data['repositories']}
-    assert EXPECTED_REPOS == repos, f'repository manifest mismatch: {sorted(EXPECTED_REPOS ^ repos)}'
+    assert expected_repos == repos, f'repository manifest mismatch: {sorted(expected_repos ^ repos)}'
     assert data['syntheticFlow'] == EXPECTED_FLOW, 'stage9 flow order changed'
     assert len(data['stage9ExitRequiresExternalEvidence']) >= 7, 'external evidence blockers must remain explicit'
 

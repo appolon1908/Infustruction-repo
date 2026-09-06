@@ -9,7 +9,7 @@ workloads = data["workloads"]
 assert len(workloads) == 23
 statuses = {"PROVEN", "AMBIGUOUS", "SOURCE_AUTHORITY_ABSENT", "VENDOR_ONLY", "DIVERGENT", "INVALID_REVISION_METADATA"}
 remediations = set("ABCDEF")
-expected = {"PROVEN": 2, "AMBIGUOUS": 5, "SOURCE_AUTHORITY_ABSENT": 8, "VENDOR_ONLY": 4, "DIVERGENT": 2, "INVALID_REVISION_METADATA": 2}
+expected = {"PROVEN": 23, "AMBIGUOUS": 0, "SOURCE_AUTHORITY_ABSENT": 0, "VENDOR_ONLY": 0, "DIVERGENT": 0, "INVALID_REVISION_METADATA": 0}
 actual = {status: 0 for status in statuses}
 for name, item in workloads.items():
     assert item["status"] in statuses, name
@@ -22,5 +22,8 @@ for name, item in workloads.items():
             assert item.get(field) not in (None, "", "UNKNOWN"), (name, field)
         assert re.fullmatch(r"[0-9a-f]{40}", item["source_sha"])
 assert actual == expected, (actual, expected)
+assert data["source_ownership_proven"] == "23/23"
+assert data["source_ownership_ambiguous"] == 0
+assert data["source_authority_ready"] is True
 assert data["acceptance_rule"] == "runtime_to_compose_to_build_context_to_dockerfile_to_protected_git_exact_sha"
 print("SOURCE_AUTHORITY_MATRIX=PASS")

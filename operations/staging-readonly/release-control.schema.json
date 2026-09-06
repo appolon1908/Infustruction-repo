@@ -1,0 +1,401 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codestra.co/schemas/release-control.v1.json",
+  "title": "Codestra immutable staging, rollback, and read-only canary control",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidate_id",
+    "candidate_source_lock_sha",
+    "environment",
+    "compose",
+    "workloads",
+    "safety",
+    "keycloak",
+    "kong",
+    "backups",
+    "rollback",
+    "canary"
+  ],
+  "properties": {
+    "schema": {
+      "const": "codestra.release-control.v1"
+    },
+    "candidate_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+    },
+    "candidate_source_lock_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "environment": {
+      "const": "staging-readonly"
+    },
+    "compose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_name",
+        "files",
+        "working_directory"
+      ],
+      "properties": {
+        "project_name": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{2,62}$"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^/srv/codestra/[A-Za-z0-9._/-]+\\.ya?ml$"
+          }
+        },
+        "working_directory": {
+          "type": "string",
+          "pattern": "^/srv/codestra(?:/[A-Za-z0-9._/-]+)?$"
+        }
+      }
+    },
+    "workloads": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "service",
+          "repository",
+          "source_sha",
+          "image",
+          "version_endpoint",
+          "readiness_endpoint",
+          "capabilities_endpoint",
+          "expected_migration"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$"
+          },
+          "service": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]{1,63}$"
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+          },
+          "source_sha": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "image": {
+            "type": "string",
+            "pattern": "^[^@\\s]+@sha256:[0-9a-f]{64}$"
+          },
+          "version_endpoint": {
+            "$ref": "#/$defs/endpoint"
+          },
+          "readiness_endpoint": {
+            "$ref": "#/$defs/endpoint"
+          },
+          "capabilities_endpoint": {
+            "$ref": "#/$defs/endpoint"
+          },
+          "metrics_endpoint": {
+            "$ref": "#/$defs/endpoint"
+          },
+          "migration_endpoint": {
+            "$ref": "#/$defs/endpoint"
+          },
+          "expected_migration": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "LIVE_WRITE",
+        "ODOO_WRITE",
+        "ENABLE_EXTERNAL_DELIVERY",
+        "N8N_DELIVERY_ENABLED",
+        "LIVE_EMAIL_DELIVERY",
+        "LIVE_SMS_DELIVERY",
+        "LIVE_PSTN_DIALING",
+        "PRODUCTION_DIALING",
+        "CAMPAIGN_ACTIVATION",
+        "PROVIDER_DELIVERY"
+      ],
+      "properties": {
+        "LIVE_WRITE": {
+          "const": false
+        },
+        "ODOO_WRITE": {
+          "const": false
+        },
+        "ENABLE_EXTERNAL_DELIVERY": {
+          "const": false
+        },
+        "N8N_DELIVERY_ENABLED": {
+          "const": false
+        },
+        "LIVE_EMAIL_DELIVERY": {
+          "const": false
+        },
+        "LIVE_SMS_DELIVERY": {
+          "const": false
+        },
+        "LIVE_PSTN_DIALING": {
+          "const": false
+        },
+        "PRODUCTION_DIALING": {
+          "const": "DISABLED"
+        },
+        "CAMPAIGN_ACTIVATION": {
+          "const": false
+        },
+        "PROVIDER_DELIVERY": {
+          "const": false
+        }
+      }
+    },
+    "keycloak": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "discovery_endpoint",
+        "expected_issuer"
+      ],
+      "properties": {
+        "discovery_endpoint": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "expected_issuer": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        }
+      }
+    },
+    "kong": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_route_count",
+        "smoke_routes"
+      ],
+      "properties": {
+        "expected_route_count": {
+          "const": 29
+        },
+        "smoke_routes": {
+          "type": "array",
+          "minItems": 29,
+          "maxItems": 29,
+          "items": {
+            "$ref": "#/$defs/smokeRoute"
+          }
+        }
+      }
+    },
+    "backups": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "directory",
+        "postgres",
+        "odoo_filestore",
+        "configuration",
+        "off_host"
+      ],
+      "properties": {
+        "directory": {
+          "type": "string",
+          "pattern": "^/var/backups/codestra/[A-Za-z0-9._/-]+$"
+        },
+        "postgres": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "service",
+            "database",
+            "username"
+          ],
+          "properties": {
+            "service": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9_-]{1,63}$"
+            },
+            "database": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]{0,62}$"
+            },
+            "username": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]{0,62}$"
+            }
+          }
+        },
+        "odoo_filestore": {
+          "type": "string",
+          "pattern": "^/srv/codestra/[A-Za-z0-9._/-]+$"
+        },
+        "configuration": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^/srv/codestra/[A-Za-z0-9._/-]+$"
+          }
+        },
+        "off_host": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "required",
+            "restic_repository_environment"
+          ],
+          "properties": {
+            "required": {
+              "const": true
+            },
+            "restic_repository_environment": {
+              "const": "RESTIC_REPOSITORY"
+            }
+          }
+        }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "previous_source_lock_sha",
+        "workloads"
+      ],
+      "properties": {
+        "previous_source_lock_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "workloads": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "service",
+              "source_sha",
+              "image"
+            ],
+            "properties": {
+              "service": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]{1,63}$"
+              },
+              "source_sha": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "image": {
+                "type": "string",
+                "pattern": "^[^@\\s]+@sha256:[0-9a-f]{64}$"
+              },
+              "expected_migration": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 128
+              }
+            }
+          }
+        }
+      }
+    },
+    "canary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maximum_percent",
+        "methods",
+        "controller",
+        "controller_sha256"
+      ],
+      "properties": {
+        "maximum_percent": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "methods": {
+          "const": [
+            "GET",
+            "HEAD"
+          ]
+        },
+        "controller": {
+          "type": "string",
+          "pattern": "^/srv/codestra/bin/[A-Za-z0-9._-]+$"
+        },
+        "controller_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "endpoint": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^?#]+$"
+    },
+    "smokeRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "url",
+        "expected_statuses"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$"
+        },
+        "url": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "expected_statuses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 200,
+            "maximum": 499,
+            "not": {
+              "const": 404
+            }
+          }
+        }
+      }
+    }
+  }
+}

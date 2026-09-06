@@ -1,0 +1,104 @@
+name: Queue Stage 6 read-only inventory after authority merge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "config/stage6-inventory-authority.v1.json"
+      - "config/stage6-staging-host-provisioning-request.v1.json"
+      - "scripts/collect_stage6_hetzner_inventory.py"
+      - "scripts/stage6_inventory_*.py"
+      - "scripts/test_stage6_hetzner_inventory_resolution.py"
+      - "scripts/validate_stage6_readonly_inventory.py"
+      - ".github/workflows/stage6-readonly-inventory.yml"
+      - ".github/workflows/stage6-inventory-post-merge-dispatch.yml"
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: stage6-inventory-post-merge-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  queue-fixed-readonly-inventory:
+    if: >-
+      github.repository == 'appolon1908-hue/Infustruction-repo' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      INVENTORY_WORKFLOW: stage6-readonly-inventory.yml
+      INVENTORY_REF: main
+    steps:
+      - name: Check out exact protected source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact GET-only authority
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_REF_PROTECTED" = true
+          python3 scripts/validate_stage6_readonly_inventory.py
+          python3 -m unittest scripts/test_stage6_hetzner_inventory_resolution.py
+          test -z "$(git status --porcelain)"
+
+      - name: Dispatch only the fixed protected inventory workflow
+        id: dispatch
+        run: |
+          set -Eeuo pipefail
+          started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          printf 'started_at=%s\n' "$started_at" >> "$GITHUB_OUTPUT"
+          gh api \
+            --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/${INVENTORY_WORKFLOW}/dispatches" \
+            -f "ref=${INVENTORY_REF}"
+
+      - name: Locate the exact queued run
+        env:
+          STARTED_AT: ${{ steps.dispatch.outputs.started_at }}
+        run: |
+          set -Eeuo pipefail
+          run_id=''
+          for attempt in $(seq 1 12); do
+            run_id="$(
+              gh api \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'X-GitHub-Api-Version: 2022-11-28' \
+                "repos/${GITHUB_REPOSITORY}/actions/workflows/${INVENTORY_WORKFLOW}/runs?branch=${INVENTORY_REF}&event=workflow_dispatch&per_page=30" \
+              | jq -r \
+                  --arg sha "$GITHUB_SHA" \
+                  --arg started "$STARTED_AT" '
+                    [.workflow_runs[]
+                      | select(.head_sha == $sha and .created_at >= $started)]
+                    | sort_by(.created_at)
+                    | last
+                    | .id // empty
+                  '
+            )"
+            if [[ "$run_id" =~ ^[1-9][0-9]*$ ]]; then
+              break
+            fi
+            sleep 5
+          done
+          [[ "$run_id" =~ ^[1-9][0-9]*$ ]]
+          {
+            echo '## Stage 6 current inventory queued'
+            echo
+            echo "- Protected source: \`${GITHUB_SHA}\`"
+            echo "- Fixed workflow: \`${INVENTORY_WORKFLOW}\`"
+            echo "- Fixed ref: \`${INVENTORY_REF}\`"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${run_id}"
+            echo '- Cloud methods after environment approval: `GET` only'
+            echo '- Cloud mutation authorized: `false`'
+            echo '- Production certification changed: `false`'
+          } >> "$GITHUB_STEP_SUMMARY"

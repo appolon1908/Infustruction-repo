@@ -6,3 +6,10 @@ description = "Reviewed Stage 6 Keycloak Git SHA field; not credential material"
 condition = "AND"
 paths = ['''^STAGE6-SOURCE-LOCK\.yaml$''']
 regexes = ['''keycloak_locked_sha:\s*[0-9a-f]{40}''']
+
+[[allowlists]]
+description = "Historical PR 30 Keycloak merge 48 Git SHA; verified Git object, not credential material"
+condition = "AND"
+paths = ['''^reports/runtime-reconciliation/pr-30-runtime-certification-20260831/STAGE6-SOURCE-LOCK\.yaml$''']
+regexTarget = "line"
+regexes = ['''^\s*keycloak_locked_sha:\s*80fc33c7159440e357219903f62ea7fb84914d59\s*$''']

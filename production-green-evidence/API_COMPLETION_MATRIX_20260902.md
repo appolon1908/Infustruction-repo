@@ -1,0 +1,33 @@
+# API completion matrix — 2026-09-02
+
+This is the Markdown projection of `API_COMPLETION_MATRIX_20260902.json`.
+`UNKNOWN`, redirects, private-port evidence and generic edge responses do not
+count as certified endpoints.
+
+| Workload | Health | Ready | Version | Capabilities |
+|---|---|---|---|---|
+| public-api-edge | PASS_UNATTRIBUTED | FAIL | FAIL | FAIL |
+| middleware | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| odoo | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| n8n | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| marketing | FAIL_TLS | FAIL_TLS | FAIL_TLS | FAIL_TLS |
+| ai | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| communication | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| social-control-plane | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| social-runtime | UNKNOWN_AUTH_REDIRECT | UNKNOWN_AUTH_REDIRECT | UNKNOWN_AUTH_REDIRECT | UNKNOWN_AUTH_REDIRECT |
+| postgresql | PRIVATE_ONLY | UNKNOWN | UNKNOWN | NATIVE_ADAPTER_REQUIRED |
+| redis | PRIVATE_ONLY | UNKNOWN | UNKNOWN | NATIVE_ADAPTER_REQUIRED |
+| keycloak | UNKNOWN | UNKNOWN | UNKNOWN | OIDC_DISCOVERY_ONLY |
+| kong | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| caddy | EDGE_REACHABLE | UNKNOWN | UNKNOWN | NATIVE_ADAPTER_REQUIRED |
+| observability | PARTIAL | UNKNOWN | UNKNOWN | NATIVE_ADAPTER_REQUIRED |
+
+`HEALTH_ENDPOINTS=0/15`
+
+`READINESS_ENDPOINTS=0/15`
+
+`VERSION_ENDPOINTS=0/15`
+
+`CAPABILITY_ENDPOINTS=0/15`
+
+`REQUIRED_BUSINESS_API_COMPLETION=UNKNOWN_NOT_CERTIFIED`
