@@ -1,0 +1,243 @@
+name: Caddy CI/CD runner bootstrap
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/caddy-ci-cd-runner-bootstrap.yml"
+      - "operations/caddy-ci-cd/**"
+      - "scripts/install_caddy_actions_runner.sh"
+      - "scripts/configure_caddy_ci_cd_runner.sh"
+      - "scripts/validate_caddy_ci_cd_runner_contract.py"
+      - "tests/test_caddy_ci_cd_runner_contract.py"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Select the one-job Caddy CD runner to register"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production-readonly-canary
+      confirmation:
+        description: "Type the exact target-specific confirmation from the runbook"
+        required: true
+        type: string
+      bounded_runtime_run_id:
+        description: "Exact Caddy bounded-runtime run waiting for this one-job runner"
+        required: true
+        type: string
+      replace_stale_registration:
+        description: "Remove only the exact non-busy stale runner record before registering"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: caddy-ci-cd-runner-${{ github.event.pull_request.number || inputs.target || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  validate-source:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact pull-request head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Prove exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Validate fail-closed runner contract
+        run: |
+          set -Eeuo pipefail
+          bash -n scripts/install_caddy_actions_runner.sh
+          bash -n scripts/configure_caddy_ci_cd_runner.sh
+          python3 scripts/validate_caddy_ci_cd_runner_contract.py
+          python3 -m unittest -v tests/test_caddy_ci_cd_runner_contract.py
+
+  validate-merge-result:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact synthetic merge result
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prove and validate exact merge result
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          bash -n scripts/install_caddy_actions_runner.sh
+          bash -n scripts/configure_caddy_ci_cd_runner.sh
+          python3 scripts/validate_caddy_ci_cd_runner_contract.py
+          python3 -m unittest -v tests/test_caddy_ci_cd_runner_contract.py
+
+  bootstrap-staging:
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main' &&
+      inputs.target == 'staging'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: caddy-staging-runner-bootstrap
+    steps:
+      - name: Require exact staging authorization
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -Eeuo pipefail
+          test "$CONFIRMATION" = "BOOTSTRAP_CADDY_STAGING_RUNNER"
+      - name: Check out exact protected main source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prove protected main authority
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git fetch origin main --depth=1
+          test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
+      - name: Materialize protected bootstrap inputs
+        env:
+          ADMIN_TOKEN: ${{ secrets.CODESTRA_REPOSITORY_ADMIN_TOKEN }}
+          SSH_PRIVATE_KEY: ${{ secrets.CADDY_RUNNER_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.CADDY_RUNNER_KNOWN_HOSTS }}
+        run: |
+          set -Eeuo pipefail
+          test -n "$ADMIN_TOKEN"
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$KNOWN_HOSTS"
+          umask 077
+          printf '%s' "$ADMIN_TOKEN" > "$RUNNER_TEMP/admin-token"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$RUNNER_TEMP/ssh-key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/known-hosts"
+      - name: Register exact one-job staging runner
+        env:
+          CADDY_RUNNER_HOST: ${{ vars.CADDY_RUNNER_HOST }}
+          CADDY_RUNNER_SSH_USER: ${{ vars.CADDY_RUNNER_SSH_USER }}
+          CADDY_RUNNER_SSH_PORT: ${{ vars.CADDY_RUNNER_SSH_PORT }}
+          CADDY_STAGING_ENV_FILE: ${{ vars.CADDY_STAGING_ENV_FILE }}
+          CADDY_STAGING_DATA_SOURCE: ${{ vars.CADDY_STAGING_DATA_SOURCE }}
+          CADDY_STAGING_MTLS_CLIENT_CERT: ${{ vars.CADDY_STAGING_MTLS_CLIENT_CERT }}
+          CADDY_STAGING_MTLS_CLIENT_KEY: ${{ vars.CADDY_STAGING_MTLS_CLIENT_KEY }}
+          CADDY_STAGING_MTLS_CA_CERT: ${{ vars.CADDY_STAGING_MTLS_CA_CERT }}
+          CADDY_STAGING_N8N_CLIENT_SECRET_FILE: ${{ vars.CADDY_STAGING_N8N_CLIENT_SECRET_FILE || '/etc/codestra/caddy/secrets/n8n-automation-client-secret' }}
+          REPLACE_STALE: ${{ inputs.replace_stale_registration }}
+        run: |
+          set -Eeuo pipefail
+          args=()
+          test "$REPLACE_STALE" != true || args+=(--replace-stale-registration)
+          scripts/configure_caddy_ci_cd_runner.sh \
+            --target staging \
+            --host "$CADDY_RUNNER_HOST" \
+            --ssh-user "$CADDY_RUNNER_SSH_USER" \
+            --ssh-port "$CADDY_RUNNER_SSH_PORT" \
+            --ssh-key-file "$RUNNER_TEMP/ssh-key" \
+            --known-hosts-file "$RUNNER_TEMP/known-hosts" \
+            --admin-token-file "$RUNNER_TEMP/admin-token" \
+            --bounded-runtime-run-id "${{ inputs.bounded_runtime_run_id }}" \
+            --evidence-file "$RUNNER_TEMP/caddy-staging-runner-evidence.json" \
+            --environment-variable "CADDY_STAGING_ENV_FILE=$CADDY_STAGING_ENV_FILE" \
+            --environment-variable "CADDY_STAGING_DATA_SOURCE=$CADDY_STAGING_DATA_SOURCE" \
+            --environment-variable "CADDY_STAGING_MTLS_CLIENT_CERT=$CADDY_STAGING_MTLS_CLIENT_CERT" \
+            --environment-variable "CADDY_STAGING_MTLS_CLIENT_KEY=$CADDY_STAGING_MTLS_CLIENT_KEY" \
+            --environment-variable "CADDY_STAGING_MTLS_CA_CERT=$CADDY_STAGING_MTLS_CA_CERT" \
+            --environment-variable "CADDY_STAGING_N8N_CLIENT_SECRET_FILE=$CADDY_STAGING_N8N_CLIENT_SECRET_FILE" \
+            "${args[@]}"
+      - name: Upload staging runner bootstrap evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: caddy-staging-runner-bootstrap-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/caddy-staging-runner-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+  bootstrap-production-canary:
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main' &&
+      inputs.target == 'production-readonly-canary'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: caddy-production-canary-runner-bootstrap
+    steps:
+      - name: Require exact production canary authorization
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -Eeuo pipefail
+          test "$CONFIRMATION" = "BOOTSTRAP_CADDY_PRODUCTION_CANARY_RUNNER"
+      - name: Check out exact protected main source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prove protected main authority
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git fetch origin main --depth=1
+          test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
+      - name: Materialize protected bootstrap inputs
+        env:
+          ADMIN_TOKEN: ${{ secrets.CODESTRA_REPOSITORY_ADMIN_TOKEN }}
+          SSH_PRIVATE_KEY: ${{ secrets.CADDY_RUNNER_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.CADDY_RUNNER_KNOWN_HOSTS }}
+        run: |
+          set -Eeuo pipefail
+          test -n "$ADMIN_TOKEN"
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$KNOWN_HOSTS"
+          umask 077
+          printf '%s' "$ADMIN_TOKEN" > "$RUNNER_TEMP/admin-token"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$RUNNER_TEMP/ssh-key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/known-hosts"
+      - name: Register exact one-job production canary runner
+        env:
+          CADDY_RUNNER_HOST: ${{ vars.CADDY_RUNNER_HOST }}
+          CADDY_RUNNER_SSH_USER: ${{ vars.CADDY_RUNNER_SSH_USER }}
+          CADDY_RUNNER_SSH_PORT: ${{ vars.CADDY_RUNNER_SSH_PORT }}
+          CADDY_PRODUCTION_MTLS_CLIENT_CERT: ${{ vars.CADDY_PRODUCTION_MTLS_CLIENT_CERT }}
+          CADDY_PRODUCTION_MTLS_CLIENT_KEY: ${{ vars.CADDY_PRODUCTION_MTLS_CLIENT_KEY }}
+          CADDY_PRODUCTION_MTLS_CA_CERT: ${{ vars.CADDY_PRODUCTION_MTLS_CA_CERT }}
+          REPLACE_STALE: ${{ inputs.replace_stale_registration }}
+        run: |
+          set -Eeuo pipefail
+          args=()
+          test "$REPLACE_STALE" != true || args+=(--replace-stale-registration)
+          scripts/configure_caddy_ci_cd_runner.sh \
+            --target production-readonly-canary \
+            --host "$CADDY_RUNNER_HOST" \
+            --ssh-user "$CADDY_RUNNER_SSH_USER" \
+            --ssh-port "$CADDY_RUNNER_SSH_PORT" \
+            --ssh-key-file "$RUNNER_TEMP/ssh-key" \
+            --known-hosts-file "$RUNNER_TEMP/known-hosts" \
+            --admin-token-file "$RUNNER_TEMP/admin-token" \
+            --bounded-runtime-run-id "${{ inputs.bounded_runtime_run_id }}" \
+            --evidence-file "$RUNNER_TEMP/caddy-production-canary-runner-evidence.json" \
+            --environment-variable "CADDY_PRODUCTION_MTLS_CLIENT_CERT=$CADDY_PRODUCTION_MTLS_CLIENT_CERT" \
+            --environment-variable "CADDY_PRODUCTION_MTLS_CLIENT_KEY=$CADDY_PRODUCTION_MTLS_CLIENT_KEY" \
+            --environment-variable "CADDY_PRODUCTION_MTLS_CA_CERT=$CADDY_PRODUCTION_MTLS_CA_CERT" \
+            "${args[@]}"
+      - name: Upload production canary runner bootstrap evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: caddy-production-canary-runner-bootstrap-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/caddy-production-canary-runner-evidence.json
+          if-no-files-found: error
+          retention-days: 30

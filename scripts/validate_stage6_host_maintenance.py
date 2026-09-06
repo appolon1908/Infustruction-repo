@@ -15,7 +15,12 @@ def require(condition: bool, label: str) -> None:
         raise SystemExit(f"STAGE6_HOST_MAINTENANCE_ERROR={label}")
 
 
-require(PLAN["status"] == "REVIEW_REQUIRED_NOT_EXECUTED", "status")
+require(PLAN["status"] == "WITHDRAWN_NOT_EXECUTED", "status")
+require(
+    PLAN["superseded_by"]
+    == "operations/stage6-container-runtime-rollback-experiment.yaml",
+    "superseded_by",
+)
 require(PLAN["host"]["current_kernel"] == "5.15.0-187-generic", "current_kernel")
 require(PLAN["host"]["target_kernel"] == "5.15.0-190-generic", "target_kernel")
 require(PLAN["host"]["rollback_kernel"] == "5.15.0-187-generic", "rollback_kernel")
@@ -42,7 +47,7 @@ for field in (
 require(PLAN["rollback"]["boot_target"].endswith("5.15.0-187-generic"), "rollback_target")
 require(len(PLAN["post_change_gates"]) >= 9, "post_change_gates")
 
-print("STAGE6_HOST_MAINTENANCE_PLAN=PASS")
+print("STAGE6_HOST_MAINTENANCE_PLAN=WITHDRAWN_NOT_EXECUTED")
 print("EXECUTION_AUTHORIZED=NO")
 print("SECCOMP_DISABLED=NO")
 print("STAGING_APPLY=NO")

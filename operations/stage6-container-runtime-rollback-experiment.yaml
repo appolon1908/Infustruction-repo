@@ -1,0 +1,84 @@
+schema_version: "1.0"
+change_id: STAGE6-CONTAINER-RUNTIME-ROLLBACK-EXPERIMENT-20260831
+status: REVIEW_REQUIRED_NOT_EXECUTED
+environment: STAGING_HOST_WITH_SHARED_WORKLOADS
+host: {hostname: middleware, primary_ip: 65.109.65.169, kernel: 5.15.0-187-generic}
+hypothesis: the 2026-08-25 Docker/containerd upgrade introduced the exec-path seccomp errno 524 regression
+causality_status: UNPROVEN_REVERSIBLE_EXPERIMENT
+evidence:
+  journal_global_earliest: "2026-08-19T17:24:26-04:00"
+  journal_docker_earliest: "2026-08-20T11:01:32-04:00"
+  upgrade_started: "2026-08-25T08:18:12-04:00"
+  upgrade_completed: "2026-08-25T08:19:43-04:00"
+  first_retained_seccomp_errno_524: "2026-08-30T22:13:17-04:00"
+  currently_running_containers: 101
+  currently_unhealthy_containers: 58
+  running_containers_started_before_upgrade: 0
+  container_create_path_operational: true
+  docker_exec_path_operational: false
+  standalone_runc_package_installed: false
+  current_runc_bundled_by: containerd.io
+candidate_packages:
+  docker-ce: {version: "5:29.6.2-1~ubuntu.22.04~jammy", sha256: abda813589be3a9953c72181d2d1fa6064eb64966f917d70fe8996d9af485fc6}
+  docker-ce-cli: {version: "5:29.6.2-1~ubuntu.22.04~jammy", sha256: 5ad09e85f123841a0ced843f748e4ec52209f1773a770bdb39eb64f24eff6ba5}
+  docker-ce-rootless-extras: {version: "5:29.6.2-1~ubuntu.22.04~jammy", sha256: 6719cc1da9ad26f935a07b6ee2ad8d16c4acf415f0cdad1935839b1fa38c22da}
+  containerd.io: {version: "2.2.6-1~ubuntu.22.04~jammy", sha256: a5fd776785cf8482d1a342479d5eed53cccd6daf534ef129012797b6e817dee6}
+  docker-buildx-plugin: {version: "0.35.0-1~ubuntu.22.04~jammy", sha256: 62b77b009803ebea4f9bc3cdecd00e3bf6c88266a3525046105c4449ceea94c7}
+  docker-compose-plugin: {version: "5.3.1-1~ubuntu.22.04~jammy", sha256: 00784bd434f1fadde20cc047f5c88d97c9f2d17c82cef88ac69160421c553f2b}
+candidate_runtime: {docker: 29.6.2, containerd: 2.2.6, runc: 1.3.6, runc_libseccomp: 2.5.3}
+rollback_packages:
+  docker-ce: {version: "5:29.7.2-1~ubuntu.22.04~jammy", sha256: c74646249f324dbe1269f76b5b606708e42ff302461679c0776292b4f59cca88}
+  docker-ce-cli: {version: "5:29.7.2-1~ubuntu.22.04~jammy", sha256: b2e8044659394d02573d4892b6d05fdb9d7521ad834acf9371cb1b45daa0c5f3}
+  docker-ce-rootless-extras: {version: "5:29.7.2-1~ubuntu.22.04~jammy", sha256: 915129051bec64e970aa4ab7cee7f51dc20ec86724966e8f117f22c6d6cf28f2}
+  containerd.io: {version: "2.3.3-1~ubuntu.22.04~jammy", sha256: 9ff8635e778d2554a635c044c7a33dbd2da599606e2f5f10accad896e6b8ece9}
+  docker-buildx-plugin: {version: "0.36.1-1~ubuntu.22.04~jammy", sha256: 2c11c849c353c880f79993e73aa03f2e58987046049eb4462f52f81d967734f6}
+  docker-compose-plugin: {version: "5.5.0-1~ubuntu.22.04~jammy", sha256: 77704c0b1370a3025918d8129eebfe5016dbf20a5c6e824e6ec93e5e898834c6}
+rollback_runtime: {docker: 29.7.2, containerd: 2.3.3, runc: 1.4.3, runc_libseccomp: 2.5.3}
+impact:
+  host_reboot_required: false
+  docker_daemon_restart_expected: true
+  all_running_containers_may_be_interrupted: true
+  frozen_workloads_may_restart: true
+  workload_recreation_authorized: false
+  migration_authorized: false
+  staging_reconciliation_authorized: false
+  production_deployment_authorized: false
+security_invariants:
+  seccomp_disabled: false
+  privileged_allowed: false
+  capability_relaxation_allowed: false
+  no_new_privileges_relaxation_allowed: false
+  readonly_root_relaxation_allowed: false
+authorization:
+  source_pr_merge_authorizes_execution: false
+  exact_plan_fingerprint_approval_required: true
+  maintenance_window_required: true
+  execution_authorized: false
+pre_change_gates:
+  - download all candidate and rollback packages before package mutation
+  - verify every downloaded package against the recorded SHA-256
+  - capture package state and sanitized Docker inventory
+  - verify all 22 locked and 10 frozen workloads are present
+  - verify database backups and rollback digests remain available
+experiment:
+  package_action: atomically downgrade the exact six-package tuple with --allow-downgrades
+  observation_window_minutes: 15
+  decisive_positive_canaries:
+    - docker exec codestra-n8n-staging-n8n-1 true
+    - docker exec codestra-identity-staging-keycloak-staging-1 true
+  acceptance:
+    - both exec canaries succeed with default seccomp
+    - all 22 locked workloads return without recreation
+    - all 10 frozen workloads return without recreation
+    - Docker and containerd report the candidate versions
+    - no security control is relaxed
+  negative_result: restore the exact rollback six-package tuple immediately
+rollback:
+  package_action: atomically reinstall the exact six rollback package versions
+  trigger:
+    - either exec canary still fails
+    - Docker daemon fails to return
+    - any locked or frozen workload is absent
+    - any security invariant changes
+runtime_mutation_permitted_before_approval: false
+production_business_writes_enabled: false

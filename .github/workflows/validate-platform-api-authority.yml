@@ -1,0 +1,50 @@
+name: Validate platform API authority
+
+on:
+  pull_request:
+    paths:
+      - "contracts/platform-api/**"
+      - "release/PLATFORM-API-COMPLETION-MATRIX.md"
+      - "missions/CODEX-CODESTRA-PLATFORM-API-COMPLETION.md"
+      - "scripts/validate_platform_api_authority.py"
+      - ".github/workflows/validate-platform-api-authority.yml"
+  push:
+    branches: [development]
+    paths:
+      - "contracts/platform-api/**"
+      - "release/PLATFORM-API-COMPLETION-MATRIX.md"
+      - "missions/CODEX-CODESTRA-PLATFORM-API-COMPLETION.md"
+      - "scripts/validate_platform_api_authority.py"
+      - ".github/workflows/validate-platform-api-authority.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-api-authority-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Validate authority
+        run: |
+          set -Eeuo pipefail
+          python -m compileall -q scripts
+          for file in contracts/platform-api/*.json; do
+            python -m json.tool "$file" >/dev/null
+          done
+          python scripts/validate_platform_api_authority.py
+          ! grep -RIE '^(<<<<<<<|=======|>>>>>>>)' \
+            contracts release missions scripts .github/workflows
+          git diff --check

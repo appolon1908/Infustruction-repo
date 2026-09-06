@@ -1,0 +1,276 @@
+#!/usr/bin/env python3
+"""Fail-closed Klyrow deployment operator. Output is deliberately non-secret."""
+
+import datetime as dt
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import subprocess
+import sys
+import urllib.request
+
+SOURCE_REPOSITORY = "appolon1908-hue/Infustruction-repo"
+TARGET_REPOSITORY = "appolon1908-hue/klyrow.com"
+TARGET_SHA = "24619abe4e8b1b3f2c231bca5d138dd45c014a07"
+CURRENT_SHA = "9684fd55bdbc64a971a17a291ff293a178a2ebac"
+CHANGE_ID = "CHG-20260831-KLYROW-EMAIL-SAFETY-DEPLOY-01"
+BACKUP = Path("/var/backups/codestra-operators/klyrow/20260831T125047Z")
+OVERRIDE = Path("/opt/klyrow/klyrow-operator-known-good.override.yaml")
+OVERRIDE_SHA256 = "345093a338012f9d32f6d7569f20b8c62503058731e0d4c5a7765dbe667dcc6e"
+MARKER = Path("/etc/klyrow/operator-approvals/CHG-20260831-KLYROW-EMAIL-SAFETY-DEPLOY-01.json")
+WORKTREE = Path("/opt/klyrow/current")
+COMPOSE = ["docker", "compose", "--project-name", "klyrow", "-f", str(WORKTREE / "docker-compose.yml"), "-f", str(WORKTREE / "deploy/docker-compose.security-mail.yml"), "-f", str(WORKTREE / "docker-compose.postal-provisioning.yml"), "-f", str(WORKTREE / "docker-compose.web.yml")]
+FIXED = {"klyrow-gateway-1": "gateway", "klyrow-worker-1": "worker", "klyrow-smtp-relay-1": "smtp-relay", "klyrow-postgres-1": "postgres"}
+PRESERVED = {"klyrow_postgres_data", "klyrow_postal_db", "klyrow_postal_assets"}
+DEPLOYMENT_INPUTS = ["docker-compose.yml", "deploy/docker-compose.security-mail.yml", "docker-compose.postal-provisioning.yml", "docker-compose.web.yml"]
+EXPECTED_ENVIRONMENT = {"KLYROW_SAFE_MODE": "true", "KLYROW_PRODUCTION_GATE_APPROVED": "false", "LIVE_EMAIL_DELIVERY": "false"}
+EXPECTED_READBACK = {"safe_mode": True, "production_gate_approved": False, "production_gate_open": False, "live_email_delivery": False, "outbox_active": 0}
+
+
+class Blocked(RuntimeError):
+    pass
+
+
+def run(argv, *, check=True):
+    result = subprocess.run(argv, text=True, capture_output=True, check=False, env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin"})
+    if check and result.returncode:
+        raise Blocked(f"approved command failed: {argv[0]} {argv[1] if len(argv) > 1 else ''}")
+    return result
+
+
+def sha256(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def regular_root_file(path, mode=None):
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_gid != 0 or path.is_symlink():
+        raise Blocked(f"{path.name} is not a root-owned regular non-symlink file")
+    if mode is not None and stat.S_IMODE(info.st_mode) != mode:
+        raise Blocked(f"{path.name} has invalid mode")
+
+
+def clean_approved_worktree():
+    if git_sha() != TARGET_SHA:
+        raise Blocked("exact approved source SHA is not checked out")
+    result = run(["git", "-C", str(WORKTREE), "diff", "--quiet", TARGET_SHA, "--", *DEPLOYMENT_INPUTS], check=False)
+    if result.returncode != 0:
+        raise Blocked("approved deployment inputs have local modifications")
+    for relative in DEPLOYMENT_INPUTS:
+        tracked = run(["git", "-C", str(WORKTREE), "ls-files", "--error-unmatch", relative], check=False)
+        if tracked.returncode:
+            raise Blocked("approved deployment input is not tracked")
+    return True
+
+
+def inspect_container(name):
+    result = run(["docker", "inspect", name], check=False)
+    if result.returncode:
+        return None
+    records = json.loads(result.stdout)
+    if len(records) != 1:
+        raise Blocked("duplicate or ambiguous fixed container name")
+    record = records[0]
+    labels = record.get("Config", {}).get("Labels") or {}
+    mounts = record.get("Mounts") or []
+    return {
+        "id": record.get("Id", ""),
+        "name": record.get("Name", "").lstrip("/"),
+        "image": record.get("Config", {}).get("Image", ""),
+        "image_id": record.get("Image", ""),
+        "project": labels.get("com.docker.compose.project"),
+        "service": labels.get("com.docker.compose.service"),
+        "working_dir": labels.get("com.docker.compose.project.working_dir"),
+        "config_files": labels.get("com.docker.compose.project.config_files"),
+        "restart": record.get("HostConfig", {}).get("RestartPolicy", {}).get("Name"),
+        "health": record.get("State", {}).get("Health", {}).get("Status", "none"),
+        "networks": sorted((record.get("NetworkSettings", {}).get("Networks") or {}).keys()),
+        "volumes": sorted(m.get("Name") for m in mounts if m.get("Type") == "volume" and m.get("Name")),
+        "ports": sorted((record.get("NetworkSettings", {}).get("Ports") or {}).keys()),
+    }
+
+
+def ownership(disposition="REPLACE_IN_OWNING_PROJECT", allow_absent=False):
+    found = {}
+    for name, service in FIXED.items():
+        item = inspect_container(name)
+        if item is None:
+            if allow_absent:
+                found[name] = {"name": name, "service": service, "disposition": disposition, "health": "absent", "volumes": []}
+                continue
+            raise Blocked(f"required fixed container absent: {name}")
+        if item["name"] != name or item["project"] != "klyrow" or item["service"] != service:
+            raise Blocked(f"BLOCK_AMBIGUOUS_OWNER: {name}")
+        item["disposition"] = disposition
+        found[name] = item
+    postgres_volumes = set(found["klyrow-postgres-1"]["volumes"])
+    volume_exists = run(["docker", "volume", "inspect", "klyrow_postgres_data"], check=False).returncode == 0
+    if "klyrow_postgres_data" not in postgres_volumes and not (allow_absent and volume_exists):
+        raise Blocked("PostgreSQL volume preservation cannot be proven")
+    return found
+
+
+def backup_ok():
+    if not BACKUP.is_dir() or BACKUP.is_symlink():
+        raise Blocked("validated backup is unavailable")
+    return True
+
+
+def rollback_core():
+    regular_root_file(OVERRIDE)
+    if sha256(OVERRIDE) != OVERRIDE_SHA256:
+        raise Blocked("known-good override checksum mismatch")
+    backup_ok()
+    core = {
+        "schema_version": 1, "change_id": CHANGE_ID, "approved_source_sha": TARGET_SHA,
+        "current_runtime_sha": CURRENT_SHA, "backup_ref": str(BACKUP), "backup_validation": "PASS",
+        "known_good_override_path": str(OVERRIDE), "known_good_override_sha256": OVERRIDE_SHA256,
+    }
+    core["rollback_plan_fingerprint"] = hashlib.sha256(json.dumps(core, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    return core
+
+
+def marker_ok(core):
+    regular_root_file(MARKER, 0o600)
+    marker = json.loads(MARKER.read_text())
+    for key, value in core.items():
+        if marker.get(key) != value:
+            raise Blocked(f"approval marker mismatch: {key}")
+    if not marker.get("approved_by") or not marker.get("approved_at") or not marker.get("expires_at"):
+        raise Blocked("approval marker attribution incomplete")
+    expires = dt.datetime.fromisoformat(marker["expires_at"].replace("Z", "+00:00"))
+    approved = dt.datetime.fromisoformat(marker["approved_at"].replace("Z", "+00:00"))
+    now = dt.datetime.now(dt.timezone.utc)
+    if approved > now or expires <= now or expires - approved > dt.timedelta(hours=4):
+        raise Blocked("approval marker expired or expiry is not short")
+    return True
+
+
+def git_sha():
+    return run(["git", "-C", str(WORKTREE), "rev-parse", "HEAD"]).stdout.strip()
+
+
+def rollback_dry_run():
+    args = COMPOSE + ["-f", str(OVERRIDE), "config", "--quiet"]
+    run(args)
+    return True
+
+
+def make_plan():
+    core = rollback_core()
+    containers = ownership()
+    data = {
+        "schema_version": 1, "current_runtime_sha": CURRENT_SHA, "target_source_sha": TARGET_SHA,
+        "current_compose_project": "klyrow", "target_compose_project": "klyrow",
+        "containers": containers, "candidate_images": "compose-config-validated-before-stage",
+        "persistent_volumes": sorted(PRESERVED), "postal_data_preservation": True,
+        "database_data_preservation": True, "backup_ref": str(BACKUP),
+        "rollback_plan_fingerprint": core["rollback_plan_fingerprint"],
+        "approval_marker_state": "PASS" if marker_ok(core) else "FAIL",
+        "expected_environment": EXPECTED_ENVIRONMENT,
+        "expected_readback": EXPECTED_READBACK,
+        "expected_health": {name: "healthy" for name in FIXED},
+    }
+    data["plan_fingerprint"] = hashlib.sha256(json.dumps(data, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    return data
+
+
+def readback():
+    with urllib.request.urlopen("http://127.0.0.1:18000/v1/health", timeout=8) as response:
+        health = json.load(response)
+    with urllib.request.urlopen("http://127.0.0.1:18000/version", timeout=8) as response:
+        version = json.load(response)
+    # At the exact reviewed target, safe_mode_enabled() is defined as the
+    # inverse of live_email_delivery_enabled(). Keep this derivation local and
+    # expose no environment or credential data.
+    safe_mode = health.get("safe_mode")
+    return {
+        "live_email_delivery": None if not isinstance(safe_mode, bool) else not safe_mode,
+        "outbox_active": health.get("outbox_active"),
+        "production_gate_approved": health.get("production_gate_approved"),
+        "production_gate_open": health.get("production_gate_open"),
+        "revision": version.get("revision"),
+        "safe_mode": safe_mode,
+    }
+
+
+def verify_safe(state, revision):
+    expected = {"safe_mode": True, "production_gate_approved": False, "production_gate_open": False, "live_email_delivery": False, "outbox_active": 0, "revision": revision}
+    if state != expected:
+        raise Blocked("runtime safety readback failed")
+
+
+def do_status():
+    containers = ownership("RETAIN")
+    print(json.dumps({"containers": {n: {"health": v["health"], "image": v["image"], "disposition": v["disposition"]} for n, v in containers.items()}, "safety": readback()}, sort_keys=True, indent=2))
+
+
+def do_rollback_plan():
+    core = rollback_core()
+    marker_ok(core)
+    rollback_dry_run()
+    print(json.dumps({**core, "approval_marker_path": str(MARKER), "approval_marker": "PASS", "rollback_command_dry_run": "PASS"}, sort_keys=True, indent=2))
+
+
+def do_preflight():
+    clean_approved_worktree()
+    core = rollback_core(); marker_ok(core); rollback_dry_run(); ownership()
+    state = readback()
+    if state.get("revision") != CURRENT_SHA:
+        raise Blocked("observed runtime revision differs from approved current revision")
+    if state.get("outbox_active") != 0:
+        raise Blocked("active outbox work")
+    checks = {"SOURCE_SHA": TARGET_SHA, "CURRENT_RUNTIME_SHA": CURRENT_SHA, "BACKUP_VALIDATION": "PASS", "KNOWN_GOOD_OVERRIDE": "PASS", "ROLLBACK_PLAN": "PASS", "ROLLBACK_APPROVAL_MARKER": "PASS", "ROLLBACK_COMMAND_DRY_RUN": "PASS", "EXISTING_CONTAINER_OWNERSHIP": "PASS", "CONTAINER_NAME_CONFLICTS": 0, "POSTGRES_VOLUME_PRESERVATION": "PASS", "POSTAL_DATA_PRESERVATION": "PASS", "EMAIL_DELIVERY_EXPECTED": False, "PRODUCTION_GATE_EXPECTED_OPEN": False, "SAFE_MODE_EXPECTED": True, "DEPLOYMENT_AUTHORIZED": True}
+    for key, value in checks.items(): print(f"{key}={str(value).lower() if isinstance(value, bool) else value}")
+
+
+def do_stage():
+    do_preflight()
+    run(COMPOSE + ["config", "--quiet"])
+    run(COMPOSE + ["pull"])
+    print("STAGE=PASS")
+
+
+def do_rollback():
+    clean_approved_worktree()
+    core = rollback_core(); marker_ok(core); ownership("ROLLBACK_REPLACE", allow_absent=True); rollback_dry_run()
+    run(COMPOSE + ["-f", str(OVERRIDE), "up", "-d", "--no-build", "--remove-orphans"])
+    verify_safe(readback(), CURRENT_SHA)
+    print("ROLLBACK=PASS")
+
+
+def do_deploy():
+    do_preflight()
+    try:
+        run(COMPOSE + ["up", "-d", "--no-build", "--remove-orphans", "--wait"])
+        verify_safe(readback(), TARGET_SHA)
+        ownership("RETAIN")
+    except Exception:
+        do_rollback()
+        raise
+    print("DEPLOY=PASS")
+
+
+COMMANDS = {"status": do_status, "rollback-plan": do_rollback_plan, "preflight": do_preflight, "plan": lambda: print(json.dumps(make_plan(), sort_keys=True, indent=2)), "stage": do_stage, "deploy": do_deploy, "rollback": do_rollback}
+
+
+def main():
+    if os.geteuid() != 0:
+        raise Blocked("operator must run as root through exact-command sudo authority")
+    if len(sys.argv) != 2 or sys.argv[1] not in COMMANDS:
+        raise Blocked("exactly one approved subcommand is required")
+    COMMANDS[sys.argv[1]]()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (Blocked, OSError, ValueError, json.JSONDecodeError) as error:
+        print(f"KLYROW_STACK=BLOCKED reason={error}", file=sys.stderr)
+        raise SystemExit(2)

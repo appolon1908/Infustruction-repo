@@ -1,6 +1,7 @@
 schema_version: "1.0"
 change_id: STAGE6-SECCOMP-KERNEL-20260831
-status: REVIEW_REQUIRED_NOT_EXECUTED
+status: WITHDRAWN_NOT_EXECUTED
+superseded_by: operations/stage6-container-runtime-rollback-experiment.yaml
 environment: STAGING_HOST_WITH_SHARED_WORKLOADS
 host:
   hostname: middleware

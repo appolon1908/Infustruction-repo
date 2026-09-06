@@ -1,0 +1,59 @@
+name: Stage 6 off-host seccomp proof
+
+on:
+  pull_request:
+    paths:
+      - "scripts/run_stage6_seccomp_offhost_qemu.sh"
+      - "docs/STAGE6-SECCOMP-DIFFERENTIAL-DIAGNOSIS-20260831.md"
+      - "operations/stage6-bpf-jit-limit-canary.yaml"
+      - "scripts/validate_stage6_bpf_jit_limit_canary.py"
+      - ".github/workflows/stage6-seccomp-offhost.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-offhost:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Validate isolation and security invariants
+        run: |
+          set -Eeuo pipefail
+          ! grep -Eq '65\.109\.65\.169|37\.27\.128\.39|seccomp[=:]unconfined|--privileged' scripts/run_stage6_seccomp_offhost_qemu.sh
+          grep -q 'SECCOMP_DISABLED=NO' scripts/run_stage6_seccomp_offhost_qemu.sh
+          grep -q 'REAL_HOST_MUTATION=NO' scripts/run_stage6_seccomp_offhost_qemu.sh
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Validate proposed live-host canary remains unauthorized
+        run: |
+          python -m pip install --disable-pip-version-check --no-input pyyaml==6.0.2
+          python scripts/validate_stage6_bpf_jit_limit_canary.py
+      - name: Install disposable-VM tooling
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq cloud-image-utils qemu-system-x86 qemu-utils
+      - name: Reproduce current tuple and prove candidate fix
+        run: |
+          set +e
+          set -o pipefail
+          bash scripts/run_stage6_seccomp_offhost_qemu.sh | tee stage6-seccomp-offhost-evidence.txt
+          harness_status="${PIPESTATUS[0]}"
+          set -e
+          if test "$harness_status" -eq 2; then
+            grep -q '^SECCOMP_REPRODUCED_OFFHOST=NO$' stage6-seccomp-offhost-evidence.txt
+            grep -q '^FIX_PROVEN_OFFHOST=NO$' stage6-seccomp-offhost-evidence.txt
+            exit 0
+          fi
+          exit "$harness_status"
+      - name: Publish sanitized evidence summary
+        if: always()
+        run: |
+          if test -f stage6-seccomp-offhost-evidence.txt; then
+            cat stage6-seccomp-offhost-evidence.txt >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -1,0 +1,397 @@
+{
+  "schemaVersion": "1.0",
+  "releaseTrain": "codestra-observability-security-v1",
+  "milestone": "STAGING_DEPLOYMENT_PREPARATION",
+  "state": "PREPARATION_IN_PROGRESS_NO_DEPLOYMENT",
+  "generatedAt": "2026-08-30T19:39:35Z",
+  "targetEnvironment": "staging",
+  "promotionPolicy": ["development", "test", "staging", "production", "main"],
+  "deploymentAuthorized": false,
+  "productionAuthorized": false,
+  "components": [
+    {
+      "component": "grafana",
+      "repository": "appolon1908-hue/Codestra-Grafana-",
+      "canonicalHostname": "graf.codestra.media",
+      "nativeExposure": "loopback_edge_only",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "5366f4f64339b857dfc464c8f8dba8087656ed98",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "prometheus",
+      "repository": "appolon1908-hue/Codestra-Prometheus",
+      "canonicalHostname": "prom.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "88ce0a78d34fe1d16a730f515daf89f7966a39bf",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "alertmanager",
+      "repository": "appolon1908-hue/Codestra-Alertmanager",
+      "canonicalHostname": "aler.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "032c97436e9913ae2ce4a03ab97b0bce0d40b890",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "loki",
+      "repository": "appolon1908-hue/Codestra-Loki",
+      "canonicalHostname": "loki.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "3523a73c4e269c070d9090a9a1d30e713bc27142",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "tempo",
+      "repository": "appolon1908-hue/Codestra-Tempo",
+      "canonicalHostname": "temp.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "d4f39d99fadea30bc83b0e3c3f904188e21b579a",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "opentelemetry",
+      "repository": "appolon1908-hue/Codestra-Telemetry",
+      "canonicalHostname": "otel.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "502bb5d249920a0b04cc1d9d74499c2b9cd2f7d8",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "superset",
+      "repository": "appolon1908-hue/Superset",
+      "canonicalHostname": "supe.codestra.media",
+      "nativeExposure": "loopback_edge_only",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "dae1136634cc430d6b65e1dfd8a9e0e79c4f5522",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "node-exporter",
+      "repository": "appolon1908-hue/Codestra-Node-Exporter",
+      "canonicalHostname": "node.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "10f89b4c0da31af496c22b3fb350e09a78eac9ed",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "cadvisor",
+      "repository": "appolon1908-hue/Codestra-cAdvisor",
+      "canonicalHostname": "cadv.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "09b224c78cfc4e9c57c9eba791630132cd5a5e4a",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "postgres-exporter",
+      "repository": "appolon1908-hue/Codestra-Postgres-Exporter",
+      "canonicalHostname": null,
+      "privateServiceIdentity": "postgres-exporter:9187",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "ddd6fb2ebc33dba2d28f488f2e986654d6b86ec3",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "redis-exporter",
+      "repository": "appolon1908-hue/Codestra-Redis-Exporter",
+      "canonicalHostname": "rdex.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "8347bb29dd7cca3ff72cfb132324863bb80d7b2e",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "blackbox-exporter",
+      "repository": "appolon1908-hue/Codestra-Blackbox-Exporter",
+      "canonicalHostname": "blac.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "57e290792842d81f9c00b362be9789c974f780c6",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "alloy",
+      "repository": "appolon1908-hue/Codestra-Alloy",
+      "canonicalHostname": "allo.codestra.media",
+      "nativeExposure": "internal_private",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "ae6fb89310d61aaaaf72ea31eb845e544699eb9b",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    },
+    {
+      "component": "openbao",
+      "repository": "appolon1908-hue/Codestra-OpenBao",
+      "canonicalHostname": "bao.codestra.media",
+      "nativeExposure": "private_strong_auth",
+      "sourceStage": "test",
+      "sourceRef": "test",
+      "sourceSha": "6667709d257cdd97ceb22a97aeff798928c1bf28",
+      "exactHeadCiGreen": true,
+      "sourceTrainGate": "pass",
+      "artifact": {
+        "status": "NOT_BUILT",
+        "imageReference": null,
+        "imageDigest": null,
+        "sbomDigest": null,
+        "provenanceDigest": null,
+        "signatureDigest": null,
+        "configurationChecksum": null
+      }
+    }
+  ],
+  "crossRepositoryGates": {
+    "allFourteenAuthoritiesAtTest": true,
+    "telemetryCompatibilityGateAccepted": true,
+    "allExactHeadAndMergeResultCiGreen": true,
+    "immutableImagesResolved": false,
+    "sbomsGenerated": false,
+    "provenanceAttested": false,
+    "signaturesVerified": false,
+    "configurationChecksumsRecorded": false,
+    "readOnlyServerInventoryCaptured": false,
+    "backupEvidenceCaptured": false,
+    "isolatedRestoreValidationPassed": false,
+    "rollbackRehearsalPassed": false,
+    "disposableIntegrationLabPassed": false,
+    "keycloakPlanOnlyGenerated": false,
+    "keycloakIndependentReviewRecorded": false,
+    "caddyPlanRendered": false,
+    "firewallPlanRendered": false,
+    "openBaoInitializationApproved": false,
+    "stagingChangeApprovalRecorded": false
+  },
+  "changePlans": {
+    "keycloak": {
+      "mode": "plan-only",
+      "clients": [
+        "grafana-observability",
+        "superset-analytics",
+        "openbao-secrets"
+      ],
+      "liveApplyAllowed": false,
+      "clientSecretGenerationAllowed": false,
+      "userRoleAssignmentAllowed": false
+    },
+    "caddy": {
+      "mode": "render-and-validate-only",
+      "reloadAllowed": false,
+      "certificateActivationAllowed": false
+    },
+    "firewall": {
+      "mode": "render-and-diff-only",
+      "applyAllowed": false,
+      "nativePublicPortsAllowed": false
+    },
+    "openbao": {
+      "mode": "configuration-review-only",
+      "initializeAllowed": false,
+      "unsealAllowed": false,
+      "policyApplyAllowed": false,
+      "secretWriteAllowed": false
+    }
+  },
+  "requiredEvidence": {
+    "source": [
+      "exact repository/ref/SHA matrix",
+      "exact-head workflow results",
+      "merge-result workflow results",
+      "unresolved review-thread count"
+    ],
+    "supplyChain": [
+      "immutable OCI image digest",
+      "SPDX or CycloneDX SBOM digest",
+      "SLSA-compatible provenance digest",
+      "signature verification evidence",
+      "configuration checksum"
+    ],
+    "operations": [
+      "read-only server inventory",
+      "pre-change backup checksums",
+      "isolated restore validation",
+      "per-component rollback command and evidence",
+      "disposable integration-lab result"
+    ],
+    "changeControl": [
+      "Keycloak unchanged-plan hash and independent review",
+      "Caddy rendered diff and validation",
+      "firewall rendered diff and lockout analysis",
+      "staging approval record"
+    ]
+  },
+  "stagingDecision": {
+    "go": false,
+    "status": "NO_GO_PREPARATION_INCOMPLETE",
+    "blockers": [
+      "The CODESTRA_AUTOMATION_TOKEN Actions secret is absent from Node Exporter, cAdvisor, and Blackbox Exporter, so future upstream synchronization fails closed until an approved GitHub App or fine-grained token is installed.",
+      "All immutable artifact, SBOM, provenance, signature, and checksum evidence is absent.",
+      "No read-only server inventory, backup, isolated restore, rollback, or disposable-lab evidence is recorded.",
+      "Keycloak, Caddy, firewall, and OpenBao remain plan-only and unapplied.",
+      "Independent staging change approval is absent."
+    ]
+  },
+  "safetyFreeze": {
+    "serverInstallationAllowed": false,
+    "containerOrSystemdStartAllowed": false,
+    "firewallMutationAllowed": false,
+    "caddyReloadAllowed": false,
+    "tlsServiceActivationAllowed": false,
+    "keycloakLiveApplyAllowed": false,
+    "clientSecretInstallationAllowed": false,
+    "openBaoInitializationAllowed": false,
+    "openBaoUnsealAllowed": false,
+    "publicNativePortsAllowed": false,
+    "productionTrafficAllowed": false
+  }
+}

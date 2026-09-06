@@ -1,0 +1,156 @@
+name: Stage 6 infrastructure environment preflight
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/stage6-environment-preflight.yml"
+      - "scripts/validate_stage6_environment_preflight.py"
+      - "tests/test_stage6_environment_preflight.py"
+  push:
+    branches:
+      - ops/stage6-environment-preflight-20260903
+      - main
+    paths:
+      - ".github/workflows/stage6-environment-preflight.yml"
+      - "scripts/validate_stage6_environment_preflight.py"
+      - "tests/test_stage6_environment_preflight.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stage6-environment-preflight-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  source-policy:
+    name: stage6-environment / source-policy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact checkout
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "${EXPECTED_SHA}"
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Compile and run fail-closed regressions
+        run: |
+          set -Eeuo pipefail
+          python3 -m py_compile scripts/validate_stage6_environment_preflight.py
+          python3 tests/test_stage6_environment_preflight.py
+          git diff --check
+
+  environment-preflight:
+    name: stage6-environment / protected-inputs
+    needs:
+      - source-policy
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: stage6-infrastructure-provisioning
+    env:
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_ENDPOINT: ${{ vars.TF_STATE_ENDPOINT }}
+      TF_STATE_REGION: ${{ vars.TF_STATE_REGION }}
+      STAGE6_TFVARS_JSON: ${{ vars.STAGE6_TFVARS_JSON }}
+      HAS_HETZNER_CLOUD_TOKEN: ${{ secrets.HETZNER_CLOUD_TOKEN != '' }}
+      HAS_TF_STATE_ACCESS_KEY: ${{ secrets.TF_STATE_ACCESS_KEY != '' }}
+      HAS_TF_STATE_SECRET_KEY: ${{ secrets.TF_STATE_SECRET_KEY != '' }}
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Validate protected inputs without provider or state access
+        id: preflight
+        continue-on-error: true
+        run: |
+          set -Eeuo pipefail
+          python3 scripts/validate_stage6_environment_preflight.py \
+            --evidence-output "${RUNNER_TEMP}/stage6-environment-preflight.json"
+
+      - name: Publish secret-free summary
+        if: always()
+        run: |
+          set -Eeuo pipefail
+          python3 - "${RUNNER_TEMP}/stage6-environment-preflight.json" <<'PY'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+
+          path = Path(sys.argv[1])
+          if not path.is_file():
+              raise SystemExit("Stage 6 preflight evidence is missing")
+          evidence = json.loads(path.read_text(encoding="utf-8"))
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as summary:
+              summary.write("## Stage 6 protected environment preflight\n\n")
+              summary.write(f"- Result: **{evidence.get('status')}**\n")
+              summary.write("- Hetzner contacted: `false`\n")
+              summary.write("- Remote state contacted: `false`\n")
+              summary.write("- SSH attempted: `false`\n")
+              summary.write("- Secret values recorded: `false`\n")
+              for key in ("missing_secrets", "missing_variables", "invalid_variables", "blockers"):
+                  values = evidence.get(key) or []
+                  summary.write(f"\n### {key.replace('_', ' ').title()}\n\n")
+                  if values:
+                      for value in values:
+                          summary.write(f"- `{value}`\n")
+                  else:
+                      summary.write("- None\n")
+          PY
+
+      - name: Upload bounded preflight evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: stage6-environment-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/stage6-environment-preflight.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Stop before provider access unless all inputs pass
+        if: ${{ steps.preflight.outcome != 'success' }}
+        run: |
+          echo "STAGE6_PROVISIONING=BLOCKED_BEFORE_PROVIDER_ACCESS" >&2
+          exit 1
+
+      - name: Record plan-only next action
+        if: ${{ steps.preflight.outcome == 'success' }}
+        run: |
+          echo "STAGE6_ENVIRONMENT_PREFLIGHT=PASS"
+          echo "NEXT_ALLOWED_ACTION=PROTECTED_PLAN_ONLY"
+          echo "HETZNER_CONTACTED=NO"
+          echo "REMOTE_STATE_CONTACTED=NO"
+          echo "SSH_ATTEMPTED=NO"
+          echo "PRODUCTION_CHANGED=NO"

@@ -1,0 +1,920 @@
+{
+  "recorded_at_utc": "2026-09-05T12:01:16.694648+00:00",
+  "phase": "CODESTRA_FINAL_INTEGRATION_TO_VERIFIED_RELEASE",
+  "prs": {
+    "Infustruction-repo#85": {
+      "headRefOid": "d25054dc1149083e1779ad767012fa8d6a291a3e",
+      "mergeCommit": {
+        "oid": "99972268792554e70f756134b544c5e49eee5398"
+      },
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "reviews": [
+        {
+          "state": "DISMISSED",
+          "commit": "1b4a90810eb03db3eae2b676b2d418daa434ec16"
+        },
+        {
+          "state": "DISMISSED",
+          "commit": "f509d61a6207c7cd9e5f2562de0c2b32a85b6cca"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "13916e5d3b17145351d771e16a9c4ef45fc82dfc"
+        },
+        {
+          "state": "DISMISSED",
+          "commit": "47524cf9591356fb903f9731261541e47672f17e"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "47524cf9591356fb903f9731261541e47672f17e"
+        },
+        {
+          "state": "APPROVED",
+          "commit": "d25054dc1149083e1779ad767012fa8d6a291a3e"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "d25054dc1149083e1779ad767012fa8d6a291a3e"
+        }
+      ],
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:34:08Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33963671615/job/101299854111",
+          "name": "regression",
+          "startedAt": "2026-09-05T11:34:00Z",
+          "status": "COMPLETED",
+          "workflowName": "Deploy readiness build context regression"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:34:07Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33963671603/job/101299854043",
+          "name": "validate",
+          "startedAt": "2026-09-05T11:34:01Z",
+          "status": "COMPLETED",
+          "workflowName": "Repository Name Authority"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:34:05Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33963671596/job/101299854134",
+          "name": "verify-head",
+          "startedAt": "2026-09-05T11:34:00Z",
+          "status": "COMPLETED",
+          "workflowName": "calling-contract-pin"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:34:10Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33963671606/job/101299854040",
+          "name": "validate-source",
+          "startedAt": "2026-09-05T11:34:01Z",
+          "status": "COMPLETED",
+          "workflowName": "source-authority-matrix"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:34:04Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33963671596/job/101299854152",
+          "name": "verify-merge-result",
+          "startedAt": "2026-09-05T11:34:00Z",
+          "status": "COMPLETED",
+          "workflowName": "calling-contract-pin"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:34:10Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33963671606/job/101299854221",
+          "name": "validate-merge-result",
+          "startedAt": "2026-09-05T11:34:01Z",
+          "status": "COMPLETED",
+          "workflowName": "source-authority-matrix"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:34:09Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33963671596/job/101299868800",
+          "name": "verify",
+          "startedAt": "2026-09-05T11:34:07Z",
+          "status": "COMPLETED",
+          "workflowName": "calling-contract-pin"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:34:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33963671606/job/101299879161",
+          "name": "validate",
+          "startedAt": "2026-09-05T11:34:12Z",
+          "status": "COMPLETED",
+          "workflowName": "source-authority-matrix"
+        }
+      ]
+    },
+    "Infustruction-repo#95": {
+      "headRefOid": "fcb6dbdd083694194681171a63d20b69bf85925d",
+      "mergeCommit": null,
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "APPROVED",
+      "reviews": [
+        {
+          "state": "COMMENTED",
+          "commit": "bd368e32bf7f2bd18812702e398263f2c140b955"
+        },
+        {
+          "state": "APPROVED",
+          "commit": "fdc4069180448c0fedbbd816c7e3c07a273e3163"
+        }
+      ],
+      "state": "CLOSED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:34:36Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33963692192/job/101299909581",
+          "name": "regression",
+          "startedAt": "2026-09-05T11:34:26Z",
+          "status": "COMPLETED",
+          "workflowName": "Deploy readiness build context regression"
+        }
+      ]
+    },
+    "Infustruction-repo#96": {
+      "headRefOid": "70f3ada996a12e64ade750c8319ff52e60a146ba",
+      "mergeCommit": {
+        "oid": "1e1490a2878f2124369cbb1834a7755e1a8efabd"
+      },
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "APPROVED",
+      "reviews": [
+        {
+          "state": "DISMISSED",
+          "commit": "996b7a64c3e751b771b9c4917a17de138c6c7b28"
+        },
+        {
+          "state": "APPROVED",
+          "commit": "70f3ada996a12e64ade750c8319ff52e60a146ba"
+        }
+      ],
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:56:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33964659485/job/101302544088",
+          "name": "regression",
+          "startedAt": "2026-09-05T11:56:32Z",
+          "status": "COMPLETED",
+          "workflowName": "Deploy readiness build context regression"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:56:41Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33964660417/job/101302546745",
+          "name": "validate",
+          "startedAt": "2026-09-05T11:56:34Z",
+          "status": "COMPLETED",
+          "workflowName": "Repository Name Authority"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:56:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33964660395/job/101302546828",
+          "name": "verify-head",
+          "startedAt": "2026-09-05T11:56:34Z",
+          "status": "COMPLETED",
+          "workflowName": "calling-contract-pin"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:56:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33964660413/job/101302546715",
+          "name": "validate-source",
+          "startedAt": "2026-09-05T11:56:33Z",
+          "status": "COMPLETED",
+          "workflowName": "source-authority-matrix"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:56:39Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33964660395/job/101302546680",
+          "name": "verify-merge-result",
+          "startedAt": "2026-09-05T11:56:34Z",
+          "status": "COMPLETED",
+          "workflowName": "calling-contract-pin"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:56:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33964660413/job/101302546882",
+          "name": "validate-merge-result",
+          "startedAt": "2026-09-05T11:56:33Z",
+          "status": "COMPLETED",
+          "workflowName": "source-authority-matrix"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:56:45Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33964660395/job/101302563239",
+          "name": "verify",
+          "startedAt": "2026-09-05T11:56:42Z",
+          "status": "COMPLETED",
+          "workflowName": "calling-contract-pin"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:56:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/33964660413/job/101302563539",
+          "name": "validate",
+          "startedAt": "2026-09-05T11:56:42Z",
+          "status": "COMPLETED",
+          "workflowName": "source-authority-matrix"
+        }
+      ]
+    },
+    "Vicidialer-Codestra#22": {
+      "headRefOid": "98401a08ef11a2006cdd5668fe682967d9b2cd49",
+      "mergeCommit": null,
+      "mergeStateStatus": "BLOCKED",
+      "reviewDecision": "",
+      "reviews": [
+        {
+          "state": "COMMENTED",
+          "commit": "560a825f9477a8cf52539185b66dd876f57c91e7"
+        },
+        {
+          "state": "DISMISSED",
+          "commit": "560a825f9477a8cf52539185b66dd876f57c91e7"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "94644dc2cfb595c7bbc326184bed25c0dabc3656"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "7c5ec89c9ed87c1a5252d2655c04f7cbd8a10d6e"
+        },
+        {
+          "state": "DISMISSED",
+          "commit": "7c5ec89c9ed87c1a5252d2655c04f7cbd8a10d6e"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "98401a08ef11a2006cdd5668fe682967d9b2cd49"
+        }
+      ],
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:04Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964589692/job/101302348584",
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "startedAt": "2026-09-05T11:54:54Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:54:58Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964588216/job/101302344203",
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "startedAt": "2026-09-05T11:54:52Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:16Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964589432/job/101302347916",
+          "name": "validate",
+          "startedAt": "2026-09-05T11:54:53Z",
+          "status": "COMPLETED",
+          "workflowName": "VICIdial adapter source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:13Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964589438/job/101302347821",
+          "name": "completeness",
+          "startedAt": "2026-09-05T11:54:53Z",
+          "status": "COMPLETED",
+          "workflowName": "VICIdial production source completeness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:18Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964589418/job/101302347823",
+          "name": "build-test-evidence",
+          "startedAt": "2026-09-05T11:54:53Z",
+          "status": "COMPLETED",
+          "workflowName": "VICIdial restricted adapter container"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:01Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964589692/job/101302348721",
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "startedAt": "2026-09-05T11:54:54Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:54:57Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964588216/job/101302344087",
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "startedAt": "2026-09-05T11:54:51Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:04Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964589692/job/101302375148",
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "startedAt": "2026-09-05T11:55:05Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:54:59Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964588216/job/101302361967",
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "startedAt": "2026-09-05T11:54:59Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:04Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964589692/job/101302375498",
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "startedAt": "2026-09-05T11:55:05Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:54:59Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964588216/job/101302362251",
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "startedAt": "2026-09-05T11:54:59Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:04Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964589692/job/101302375455",
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "startedAt": "2026-09-05T11:55:05Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:54:59Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964588216/job/101302362286",
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "startedAt": "2026-09-05T11:54:59Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        }
+      ]
+    },
+    "Vicidialer-Codestra#23": {
+      "headRefOid": "e5ccefea7ffffa7913b83a0d678221747d585996",
+      "mergeCommit": null,
+      "mergeStateStatus": "UNSTABLE",
+      "reviewDecision": "",
+      "reviews": [
+        {
+          "state": "COMMENTED",
+          "commit": "529ba96e388e201627c2bdafc42cee5429feb22e"
+        }
+      ],
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:12Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964721570/job/101302715904",
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "startedAt": "2026-09-05T11:58:04Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:09Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964720226/job/101302712376",
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "startedAt": "2026-09-05T11:58:01Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:35Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964721310/job/101302715102",
+          "name": "validate",
+          "startedAt": "2026-09-05T11:58:04Z",
+          "status": "COMPLETED",
+          "workflowName": "VICIdial adapter source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T12:01:54Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964721322/job/101302715075",
+          "name": "build-test-evidence",
+          "startedAt": "2026-09-05T11:58:03Z",
+          "status": "COMPLETED",
+          "workflowName": "VICIdial restricted adapter container"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:10Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964721570/job/101302716134",
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "startedAt": "2026-09-05T11:58:03Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:07Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964720226/job/101302712435",
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "startedAt": "2026-09-05T11:58:01Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:13Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964721570/job/101302736742",
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "startedAt": "2026-09-05T11:58:13Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:10Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964720226/job/101302731317",
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "startedAt": "2026-09-05T11:58:10Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:13Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964721570/job/101302737036",
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "startedAt": "2026-09-05T11:58:13Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:10Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964720226/job/101302731646",
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "startedAt": "2026-09-05T11:58:10Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:13Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964721570/job/101302737146",
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "startedAt": "2026-09-05T11:58:13Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:10Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/33964720226/job/101302731715",
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "startedAt": "2026-09-05T11:58:10Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        }
+      ]
+    },
+    "codestra-provisioning-service#28": {
+      "headRefOid": "013a26016d461582fe12696b3656acc8db893c33",
+      "mergeCommit": null,
+      "mergeStateStatus": "BLOCKED",
+      "reviewDecision": "REVIEW_REQUIRED",
+      "reviews": [
+        {
+          "state": "COMMENTED",
+          "commit": "2d1210cccb4da2947df8a3de733d8ccc69b36fa9"
+        },
+        {
+          "state": "APPROVED",
+          "commit": "2d1210cccb4da2947df8a3de733d8ccc69b36fa9"
+        },
+        {
+          "state": "DISMISSED",
+          "commit": "2d1210cccb4da2947df8a3de733d8ccc69b36fa9"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "3497b336e80affb4264b147bdab6e0b34f647511"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "d49e54459f4a489f33d74b87b4f9d4c03785e543"
+        },
+        {
+          "state": "DISMISSED",
+          "commit": "d49e54459f4a489f33d74b87b4f9d4c03785e543"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "c9b3132347031f77aaf12ac7d7584caf5b6f99f9"
+        },
+        {
+          "state": "COMMENTED",
+          "commit": "abea7fead5c94c61144cd2b7e1e6b19aa286e494"
+        },
+        {
+          "state": "DISMISSED",
+          "commit": "abea7fead5c94c61144cd2b7e1e6b19aa286e494"
+        }
+      ],
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964590726/job/101302351464",
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "startedAt": "2026-09-05T11:54:55Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964588509/job/101302345151",
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "startedAt": "2026-09-05T11:54:52Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:59Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964590476/job/101302350607",
+          "name": "validate",
+          "startedAt": "2026-09-05T11:54:55Z",
+          "status": "COMPLETED",
+          "workflowName": "Provisioning source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:54:53Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964590476/job/101302351261",
+          "name": "sign-existing-release",
+          "startedAt": "2026-09-05T11:54:54Z",
+          "status": "COMPLETED",
+          "workflowName": "Provisioning source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:03Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964590726/job/101302351282",
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "startedAt": "2026-09-05T11:54:56Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:54:58Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964588509/job/101302345120",
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "startedAt": "2026-09-05T11:54:52Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:04Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964590726/job/101302373026",
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "startedAt": "2026-09-05T11:55:04Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:03Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964588509/job/101302370663",
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "startedAt": "2026-09-05T11:55:03Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:59Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964590476/job/101302485665",
+          "name": "publish",
+          "startedAt": "2026-09-05T11:56:00Z",
+          "status": "COMPLETED",
+          "workflowName": "Provisioning source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:04Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964590726/job/101302373276",
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "startedAt": "2026-09-05T11:55:04Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:03Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964588509/job/101302370901",
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "startedAt": "2026-09-05T11:55:03Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:59Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964590476/job/101302486019",
+          "name": "verify-release",
+          "startedAt": "2026-09-05T11:56:00Z",
+          "status": "COMPLETED",
+          "workflowName": "Provisioning source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:04Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964590726/job/101302373860",
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "startedAt": "2026-09-05T11:55:04Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:55:03Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964588509/job/101302370833",
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "startedAt": "2026-09-05T11:55:03Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        }
+      ]
+    },
+    "codestra-provisioning-service#29": {
+      "headRefOid": "d364d7d1e684a08b6aa89666a10014bb07786eaa",
+      "mergeCommit": null,
+      "mergeStateStatus": "CLEAN",
+      "reviewDecision": "APPROVED",
+      "reviews": [
+        {
+          "state": "APPROVED",
+          "commit": "4c842f36b56fdfe1d79466fac7b2a966122c06ad"
+        }
+      ],
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:22Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964686579/job/101302618297",
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "startedAt": "2026-09-05T11:57:11Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964684648/job/101302612555",
+          "name": "deploy-readiness / deploy-readiness / source-ci",
+          "startedAt": "2026-09-05T11:57:45Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:13Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964686338/job/101302617372",
+          "name": "validate",
+          "startedAt": "2026-09-05T11:57:10Z",
+          "status": "COMPLETED",
+          "workflowName": "Provisioning source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:08Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964686338/job/101302618306",
+          "name": "sign-existing-release",
+          "startedAt": "2026-09-05T11:57:09Z",
+          "status": "COMPLETED",
+          "workflowName": "Provisioning source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964686579/job/101302618408",
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "startedAt": "2026-09-05T11:57:11Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964684648/job/101302612719",
+          "name": "deploy-readiness / deploy-readiness / secret-scan",
+          "startedAt": "2026-09-05T11:57:08Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:22Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964686579/job/101302643589",
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "startedAt": "2026-09-05T11:57:23Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:56Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964684648/job/101302707960",
+          "name": "deploy-readiness / deploy-readiness / immutable-candidate",
+          "startedAt": "2026-09-05T11:57:57Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:13Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964686338/job/101302738342",
+          "name": "publish",
+          "startedAt": "2026-09-05T11:58:14Z",
+          "status": "COMPLETED",
+          "workflowName": "Provisioning source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:22Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964686579/job/101302643628",
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "startedAt": "2026-09-05T11:57:23Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:56Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964684648/job/101302708013",
+          "name": "deploy-readiness / deploy-readiness / staging-readonly",
+          "startedAt": "2026-09-05T11:57:57Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:58:13Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964686338/job/101302738370",
+          "name": "verify-release",
+          "startedAt": "2026-09-05T11:58:14Z",
+          "status": "COMPLETED",
+          "workflowName": "Provisioning source validation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:22Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964686579/job/101302643641",
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "startedAt": "2026-09-05T11:57:23Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-05T11:57:56Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/33964684648/job/101302707878",
+          "name": "deploy-readiness / deploy-readiness / production-readonly-canary",
+          "startedAt": "2026-09-05T11:57:56Z",
+          "status": "COMPLETED",
+          "workflowName": "Codestra deploy readiness"
+        }
+      ]
+    }
+  },
+  "PR29_CONTRIBUTION_DISPOSITION": "RETAINED_PENDING_REVIEW_AND_MERGE: unique SIP lifecycle/browser and malformed readback regressions; production app/ byte-identical to PR28 013a26016d461582fe12696b3656acc8db893c33. Final combined d364d7d1e684a08b6aa89666a10014bb07786eaa: Ruff PASS, 119 tests passed with 2 dependency deprecation warnings.",
+  "PR96_CONTRACT_CHECK_RESULT": "PASS and MERGED at 1e1490a2878f2124369cbb1834a7755e1a8efabd. Original failure verified in run33963740287/job101300035721. Fixed by merging main9997226; lock/workflow unchanged from authority. Exact head70f3ada checks passed in run33964660395 (verify-head101302546828, verify-merge-result101302546680, verify101302563239); all applicable checks passed.",
+  "POLICY_FOLLOWUP": "PR23 adopts newer PR22 cleanup/GID behavior, fixes restrictive umask with fchmod0640. Reproduced fail at umask077; 16 policy tests passed after fix. No production ownership operations.",
+  "BASE_FRESHNESS": "PR22 98401a0 and PR28 013a260 each ahead of main with behind_by=0.",
+  "PROTECTED_RELEASE_SHA": null,
+  "VERIFIED_ARTIFACT_REFERENCE": null,
+  "STAGING_CERTIFICATION_STATUS": "NOT_RUN: no verified protected-source release available",
+  "SERVER_B_RUNNING_SOURCE_AND_DIGEST": {
+    "observed_at_utc": "2026-09-05T11:59:28Z",
+    "on_disk_sha": "a6bc9de3b010e3b2978425d3f787ce7f61826c67",
+    "live_version": "0.1.0",
+    "ready": true,
+    "writes_enabled": false,
+    "process_interpreter_release": "b7ffe4d60a364f00411852aa327e2c424fb2f56a",
+    "running_source": "UNVERIFIED",
+    "running_digest": "UNVERIFIED",
+    "evidence": "/var/log/codestra-vicidial-operator/20260905T115928Z-status-18254.log"
+  },
+  "ACTUAL_PRODUCTION_CHANGES": "NONE; read-only status generated normal operator audit evidence. No account, telephony, flags, service restarts, grants or privileges changed.",
+  "EXACT_REMAINING_BLOCKER": "Latest commits need independent current-head review: PR29 d364d7d approval currently references older4c842f3; PR23 e5ccefe has no approving review. Canonical PR22 98401a0 has an empty reviewDecision (unknown); PR28 013a260 explicitly shows REVIEW_REQUIRED. No specific PR22 review decision is inferred from an empty value. PR23 container build/tests/scans passed in run33964721322/job101302715075; applicable PR checks passed. Protected service merges/build/signing/staging and administrative preflight remain subsequent boundaries.",
+  "final_ci_verified_at_utc": "2026-09-05T12:02:20.322627+00:00"
+}

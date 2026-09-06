@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ "$EUID" -eq 0 ]] || { echo 'root required' >&2; exit 2; }
+[[ "$#" -eq 0 ]] || { echo 'arguments prohibited' >&2; exit 2; }
+src="$(cd "$(dirname "$0")" && pwd)/klyrow-stack"
+install -o root -g root -m 0755 "$src" /usr/local/sbin/klyrow-stack
+sha256sum "$src" /usr/local/sbin/klyrow-stack

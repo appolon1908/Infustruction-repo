@@ -1,6 +1,8 @@
 # Stage 6 seccomp maintenance runbook
 
-Status: review required; not executed.
+Status: withdrawn without execution. Package-level causality must be tested
+through the separately reviewed container-runtime rollback experiment before
+any kernel or reboot proposal can be reconsidered.
 
 The selected remediation is a single controlled boot from Ubuntu kernel
 `5.15.0-187-generic` to the already installed `5.15.0-190-generic`. It does not

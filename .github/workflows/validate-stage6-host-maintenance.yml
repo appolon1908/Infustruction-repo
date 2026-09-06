@@ -6,6 +6,9 @@ on:
       - "operations/stage6-host-seccomp-maintenance.yaml"
       - "docs/STAGE6-SECCOMP-MAINTENANCE-RUNBOOK-20260831.md"
       - "scripts/validate_stage6_host_maintenance.py"
+      - "operations/stage6-container-runtime-rollback-experiment.yaml"
+      - "docs/STAGE6-CONTAINER-RUNTIME-ROLLBACK-EXPERIMENT-20260831.md"
+      - "scripts/validate_stage6_container_runtime_experiment.py"
       - ".github/workflows/validate-stage6-host-maintenance.yml"
 
 permissions:
@@ -24,3 +27,4 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install --disable-pip-version-check --no-input pyyaml==6.0.2
       - run: python scripts/validate_stage6_host_maintenance.py
+      - run: python scripts/validate_stage6_container_runtime_experiment.py

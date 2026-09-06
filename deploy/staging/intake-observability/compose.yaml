@@ -108,7 +108,7 @@ services:
       start_period: 10s
 
   middleware-migrate:
-    image: ghcr.io/appolon1908-hue/codestra-middleware@sha256:695fa3ce3f50ba4d0ae0784976b946a0a683ca731155e4bd3bd9e90a4670b820
+    image: ghcr.io/appolon1908-hue/codestra-middleware@sha256:01a61e6c9761968bce04db855df565e9104338c2ba2056da570cacb9fd21f0f4
     <<: *middleware-environment
     restart: "no"
     read_only: true
@@ -126,7 +126,7 @@ services:
       redis: {condition: service_healthy}
 
   middleware:
-    image: ghcr.io/appolon1908-hue/codestra-middleware@sha256:695fa3ce3f50ba4d0ae0784976b946a0a683ca731155e4bd3bd9e90a4670b820
+    image: ghcr.io/appolon1908-hue/codestra-middleware@sha256:01a61e6c9761968bce04db855df565e9104338c2ba2056da570cacb9fd21f0f4
     <<: *middleware-environment
     restart: unless-stopped
     read_only: true
