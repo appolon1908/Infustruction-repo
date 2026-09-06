@@ -1,0 +1,49 @@
+name: PR queue source snapshot
+
+on:
+  push:
+    branches: [fix/pr-queue-source-snapshot-20260906]
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Capture public source refs without runtime access
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git init --bare "$RUNNER_TEMP/infra-source.git"
+          cd "$RUNNER_TEMP/infra-source.git"
+          origin=https://github.com/appolon1908-hue/Infustruction-repo.git
+          refs=()
+          for branch in main development; do
+            target="refs/heads/snapshot/$branch"
+            git fetch --no-tags "$origin" "refs/heads/$branch:$target"
+            refs+=("$target")
+          done
+          for number in 1 13 40 47 53 55 57 62 94 101; do
+            target="refs/heads/snapshot/pr-$number"
+            git fetch --no-tags "$origin" "refs/pull/$number/head:$target"
+            refs+=("$target")
+          done
+          mkdir -p "$RUNNER_TEMP/source-snapshot"
+          git for-each-ref --format='%(refname) %(objectname)' refs/heads/snapshot/ > "$RUNNER_TEMP/source-snapshot/REFS.txt"
+          git bundle create "$RUNNER_TEMP/source-snapshot/infra-source.bundle" "${refs[@]}"
+          git bundle verify "$RUNNER_TEMP/source-snapshot/infra-source.bundle"
+          cd "$RUNNER_TEMP/source-snapshot"
+          sha256sum REFS.txt infra-source.bundle > SHA256SUMS
+          cat REFS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: infra-pr-queue-source-snapshot
+          path: ${{ runner.temp }}/source-snapshot/
+          retention-days: 3
+          if-no-files-found: error
