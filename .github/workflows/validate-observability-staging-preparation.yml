@@ -1,0 +1,61 @@
+name: Validate observability staging preparation
+
+on:
+  pull_request:
+    paths:
+      - 'release/observability-staging-preparation.v1.json'
+      - 'docs/OBSERVABILITY-STAGING-PREPARATION.md'
+      - 'docs/OBSERVABILITY-STAGING-EVIDENCE-CONTRACT.md'
+      - 'scripts/validate-observability-staging-preparation.py'
+      - '.github/workflows/validate-observability-staging-preparation.yml'
+  push:
+    branches: [development, test, staging, production, main]
+    paths:
+      - 'release/observability-staging-preparation.v1.json'
+      - 'docs/OBSERVABILITY-STAGING-PREPARATION.md'
+      - 'docs/OBSERVABILITY-STAGING-EVIDENCE-CONTRACT.md'
+      - 'scripts/validate-observability-staging-preparation.py'
+      - '.github/workflows/validate-observability-staging-preparation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: observability-staging-preparation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+
+      - name: Validate source matrix, evidence gates, and deployment freeze
+        env:
+          PYTHONPYCACHEPREFIX: /tmp/codestra-observability-staging-preparation-pycache
+        run: |
+          python -m py_compile scripts/validate-observability-staging-preparation.py
+          python scripts/validate-observability-staging-preparation.py
+
+      - name: Confirm no deployment command or secret-shaped material is introduced
+        run: |
+          ! grep -RInE --exclude='*.pyc' --exclude-dir='__pycache__' \
+            -- \
+            '-----BEGIN (OPENSSH |RSA |EC |DSA )?PRIVATE KEY-----|AKIA[0-9A-Z]{16}' \
+            release/observability-staging-preparation.v1.json \
+            docs/OBSERVABILITY-STAGING-PREPARATION.md \
+            docs/OBSERVABILITY-STAGING-EVIDENCE-CONTRACT.md
+          python - <<'PY'
+          import json
+          manifest = json.load(open('release/observability-staging-preparation.v1.json', encoding='utf-8'))
+          assert manifest['deploymentAuthorized'] is False
+          assert manifest['productionAuthorized'] is False
+          assert manifest['stagingDecision']['go'] is False
+          PY

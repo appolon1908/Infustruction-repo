@@ -26,6 +26,24 @@ for name, item in services.items():
     for config in binding["deployment_configs"]:
         assert config["path"].startswith("/"), (name, config)
         assert config["sha256"] == "UNAVAILABLE" or re.fullmatch(r"[0-9a-f]{64}", config["sha256"]), (name, config)
-assert unknown == 40, unknown
+assert unknown == 0, unknown
+assert matrix["capability_unknown_fields"] == 0
+assert matrix["production_write_safety"] == "PASS"
+safe = matrix["effective_runtime_state"]
+expected_safe_keys = {
+    "LIVE_ADVERTISING_ENABLED",
+    "EXTERNAL_DELIVERY_ENABLED",
+    "SOCIAL_PUBLISHING_ENABLED",
+    "EXTERNAL_MODEL_CALLS_ENABLED",
+    "LIVE_SMS_DELIVERY",
+    "LIVE_EMAIL_DELIVERY",
+    "LIVE_PSTN_DIALING",
+    "N8N_EXTERNAL_PROVIDER_WRITES",
+    "PRODUCTION_DIALING",
+}
+assert set(safe) == expected_safe_keys, (set(safe), expected_safe_keys)
+assert all(value is False for key, value in safe.items() if key != "PRODUCTION_DIALING")
+assert safe["PRODUCTION_DIALING"] == "DISABLED"
 print("CAPABILITY_MATRIX_COVERAGE=64/64")
-print("CAPABILITY_UNKNOWN_FIELDS=40")
+print("CAPABILITY_UNKNOWN_FIELDS=0")
+print("PRODUCTION_WRITE_SAFETY=PASS")

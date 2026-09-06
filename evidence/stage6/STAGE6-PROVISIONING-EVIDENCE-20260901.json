@@ -1,0 +1,89 @@
+{
+  "schema_version": "codestra.stage6-provisioning-evidence.v1",
+  "evidence_class": "PROVISIONED_CLOUD_RESOURCES_OBSERVED_PENDING_CURRENT_VERIFICATION",
+  "captured_at_utc": "2026-09-01T00:40:31Z",
+  "current_verification_required": true,
+  "source_authority_current": false,
+  "workflow": {
+    "repository": "appolon1908-hue/Infustruction-repo",
+    "path": ".github/workflows/stage6-provision-staging-host.yml",
+    "run_id": 33455510182,
+    "run_attempt": 1,
+    "source_sha": "9a81bcca5a00f2e543a90594c2e7590efd527abf",
+    "environment": "stage6-infrastructure-provisioning",
+    "action": "APPLY_STAGE6_ISOLATED_HOST",
+    "conclusion": "success"
+  },
+  "reviewed_plan_artifact": {
+    "artifact_id": 9781343407,
+    "sha256": "sha256:5aff8fd8ccd0b473f41189f9151e92bfd00a961220e5d62e2ec251d416e60a9d",
+    "expired": true
+  },
+  "apply_summary": {
+    "added": 0,
+    "changed": 2,
+    "destroyed": 0,
+    "resources_present_before_apply": true
+  },
+  "provisioning_outputs": {
+    "provider_resource_id": 164156679,
+    "canonical_hostname": null,
+    "private_ip": "10.250.6.10",
+    "ssh_host_key_fingerprint": null,
+    "operating_system_image_id": "ubuntu-24.04",
+    "instance_type": "cx43",
+    "region": "hel1",
+    "network_id": 12602071,
+    "firewall_policy_id": 11551910,
+    "created_at_utc": null,
+    "workflow_run_id": 33455510182,
+    "workflow_source_sha": "9a81bcca5a00f2e543a90594c2e7590efd527abf",
+    "configuration_checksum": null
+  },
+  "additional_resources": {
+    "runtime_server_name": "codestra-stage6-staging-01",
+    "runtime_public_ipv4_present": true,
+    "runtime_public_ipv6_present": false,
+    "egress_server_id": 164156658,
+    "egress_server_name": "codestra-stage6-egress-01",
+    "egress_private_ip": "10.250.6.2",
+    "network_name": "codestra-stage6-staging-net",
+    "network_cidr": "10.250.0.0/16",
+    "staging_subnet_cidr": "10.250.6.0/24",
+    "egress_firewall_policy_id": 11551911
+  },
+  "verification_results": {
+    "host_identity": "PENDING_CURRENT_VERIFICATION",
+    "clock_synchronization": "PENDING_CURRENT_VERIFICATION",
+    "disk_capacity": "PENDING_CURRENT_VERIFICATION",
+    "memory_capacity": "PENDING_CURRENT_VERIFICATION",
+    "private_network_only": "PENDING_CURRENT_VERIFICATION",
+    "public_native_service_ports_absent": "PENDING_CURRENT_VERIFICATION",
+    "ssh_known_hosts_match": "PENDING_CURRENT_VERIFICATION",
+    "operator_identity_least_privilege": "PENDING_CURRENT_VERIFICATION",
+    "container_runtime_health": "PENDING_CURRENT_VERIFICATION",
+    "failed_systemd_units_zero": "PENDING_CURRENT_VERIFICATION",
+    "clean_bootstrap_replay": "PENDING_CURRENT_VERIFICATION",
+    "destruction_and_recreation_test": "PENDING_CURRENT_VERIFICATION",
+    "sanitized_evidence_uploaded": "PENDING_CURRENT_VERIFICATION"
+  },
+  "historical_inventory": {
+    "run_id": 33455812597,
+    "conclusion": "success",
+    "artifact_id": 9781416201,
+    "artifact_sha256": "sha256:8d701afc565c4906912abe0268a837a7622e6c3bc3489a6a8ff11cb0a158e1c2",
+    "artifact_expired": true,
+    "collector_limitation": "The prior collector observed resources but emitted all eleven deployment inputs as unresolved. Its artifact is not current certification evidence."
+  },
+  "safety": {
+    "secret_values_recorded": false,
+    "host_verified": false,
+    "deployment_authorized": false,
+    "production_certified": false,
+    "production_changed": false,
+    "business_writes": false,
+    "external_delivery": false,
+    "provider_effects": false,
+    "payment_or_trading": false
+  }
+}

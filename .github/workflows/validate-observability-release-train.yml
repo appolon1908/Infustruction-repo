@@ -1,0 +1,78 @@
+name: Validate observability repository release train
+
+on:
+  pull_request:
+    paths:
+      - config/observability/**
+      - release/observability-release-manifest.v1.json
+      - docs/OBSERVABILITY-REPOSITORY-STATUS-MATRIX.md
+      - docs/BRANCH-PROTECTION-DESIRED-STATE.md
+      - scripts/validate-observability-release-train.py
+      - .github/workflows/validate-observability-release-train.yml
+  push:
+    branches:
+      - feature/observability-repository-release-train-v1
+    paths:
+      - config/observability/**
+      - release/observability-release-manifest.v1.json
+      - docs/OBSERVABILITY-REPOSITORY-STATUS-MATRIX.md
+      - docs/BRANCH-PROTECTION-DESIRED-STATE.md
+      - scripts/validate-observability-release-train.py
+      - .github/workflows/validate-observability-release-train.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: observability-release-train-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ env.EXPECTED_SHA }}
+      - name: Verify exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Compile validator
+        run: python3 -m py_compile scripts/validate-observability-release-train.py
+      - name: Validate R0 authority and fail-closed manifest
+        run: python3 scripts/validate-observability-release-train.py
+      - name: Prove no server or deployment workflow was introduced
+        run: |
+          set -euo pipefail
+          ! grep -RInE \
+            --exclude-dir=.git \
+            --exclude='validate-observability-release-train.yml' \
+            '(ssh[[:space:]].*37\.27\.128\.39|docker compose up|systemctl (start|restart)|caddy reload|ufw (allow|deny|enable)|nft add|KEYCLOAK_LIVE_APPLY_ALLOWED=YES|DEPLOYMENT_ENABLED=YES)' \
+            config/observability release docs/OBSERVABILITY-REPOSITORY-STATUS-MATRIX.md docs/BRANCH-PROTECTION-DESIRED-STATE.md scripts/validate-observability-release-train.py
+
+  validate-merge-result:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_SHA: ${{ github.sha }}
+    steps:
+      - name: Check out exact merge result
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ env.EXPECTED_SHA }}
+      - name: Verify exact merge-result identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Validate merged R0 authority
+        run: python3 scripts/validate-observability-release-train.py

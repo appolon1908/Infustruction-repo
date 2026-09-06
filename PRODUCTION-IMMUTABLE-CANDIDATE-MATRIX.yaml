@@ -1,0 +1,620 @@
+schema: codestra.production-immutable-candidate-review.v1
+captured_at: '2026-09-01T18:30:00Z'
+target_host: 65.109.65.169
+production_business_writes_enabled: false
+source_authority_ready: true
+source_ownership_proven: 23/23
+capability_matrix_coverage: 64/64
+capability_unknown_fields: 0
+build_authority_ready: 12/12
+deployment_status: OWNER_AUTHORIZED_CONTROLLED_WAVES_PENDING_PREDEPLOY_GATES
+candidates:
+  codestra-beyvra-email-api-1:
+    repository: Codestra-SRL/codestra-middleware
+    source_sha: 2f1c7af41f87c27e2881c3695621ece787b97445
+    current_runtime_image_id: sha256:a226db03c6fce98f81c02e78bab96a2beb452a27dd79308c921e85bfa664aa52
+    candidate_image_digest: sha256:22df1d37e1fd9073a591cda7b5af6980c55577314207e05c112402819d1244c0
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:a226db03c6fce98f81c02e78bab96a2beb452a27dd79308c921e85bfa664aa52
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 279
+    merge_sha: 2f1c7af41f87c27e2881c3695621ece787b97445
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/codestra-srl/beyvra-email@sha256:22df1d37e1fd9073a591cda7b5af6980c55577314207e05c112402819d1244c0
+  codestra-caddy-upstream-gateway:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    current_runtime_image_id: sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    candidate_image_digest: sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 1
+    merge_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    build_evidence:
+      vendor_digest_pin: PASS
+      codestra_config_authority: PASS
+      runtime_repo_digest_verified: PASS
+    candidate_image_ref: caddy@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+  codestra-email-reseller-api-1:
+    repository: appolon1908-hue/codestra-production-platform
+    source_sha: 555884e540f942916c282baff7861cd734a535b7
+    current_runtime_image_id: sha256:8d7bb50e8787c110a7930fadb0c69a44ba075c70cb5e035118d9f334b1211e08
+    candidate_image_digest: sha256:450fc399d454d4c11e38a3aba71200bacd1be54c78aea32fa42b08cd054d70be
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:8d7bb50e8787c110a7930fadb0c69a44ba075c70cb5e035118d9f334b1211e08
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 175
+    merge_sha: 555884e540f942916c282baff7861cd734a535b7
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/email-reseller@sha256:450fc399d454d4c11e38a3aba71200bacd1be54c78aea32fa42b08cd054d70be
+  codestra-integration-control-plane-api-1:
+    repository: appolon1908-hue/codestra-production-platform
+    source_sha: 555884e540f942916c282baff7861cd734a535b7
+    current_runtime_image_id: sha256:646b7f2a611b26986b81c143661b14e825ac977f9b3f84274fc8432f501e90f9
+    candidate_image_digest: sha256:dd288a88c745d8336d2e30e7c89f986a67563ce67f916d11b3905197187ac8e6
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:646b7f2a611b26986b81c143661b14e825ac977f9b3f84274fc8432f501e90f9
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: true
+      external_delivery: true
+      social_publish: true
+      external_model_call: true
+      sms_delivery: true
+      email_delivery: true
+      pstn_dialing: true
+      n8n_provider_write: true
+    pr: 175
+    merge_sha: 555884e540f942916c282baff7861cd734a535b7
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/integration-control-plane@sha256:dd288a88c745d8336d2e30e7c89f986a67563ce67f916d11b3905197187ac8e6
+  codestra-integration-control-plane-worker-1:
+    repository: appolon1908-hue/codestra-production-platform
+    source_sha: 555884e540f942916c282baff7861cd734a535b7
+    current_runtime_image_id: sha256:646b7f2a611b26986b81c143661b14e825ac977f9b3f84274fc8432f501e90f9
+    candidate_image_digest: sha256:dd288a88c745d8336d2e30e7c89f986a67563ce67f916d11b3905197187ac8e6
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:646b7f2a611b26986b81c143661b14e825ac977f9b3f84274fc8432f501e90f9
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: true
+      external_delivery: true
+      social_publish: true
+      external_model_call: true
+      sms_delivery: true
+      email_delivery: true
+      pstn_dialing: true
+      n8n_provider_write: true
+    pr: 175
+    merge_sha: 555884e540f942916c282baff7861cd734a535b7
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/integration-control-plane@sha256:dd288a88c745d8336d2e30e7c89f986a67563ce67f916d11b3905197187ac8e6
+  codestra-kong-kong-gateway-1:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    current_runtime_image_id: sha256:9cb0429e4641d29189118b20ef0a195569b9d65ef0536bc57907797874071689
+    candidate_image_digest: sha256:9cb0429e4641d29189118b20ef0a195569b9d65ef0536bc57907797874071689
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:9cb0429e4641d29189118b20ef0a195569b9d65ef0536bc57907797874071689
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 1
+    merge_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    build_evidence:
+      vendor_digest_pin: PASS
+      codestra_config_authority: PASS
+      runtime_repo_digest_verified: PASS
+    candidate_image_ref: kong/kong-gateway@sha256:9cb0429e4641d29189118b20ef0a195569b9d65ef0536bc57907797874071689
+  codestra-kong-service-auth-adapter-1:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    current_runtime_image_id: sha256:aa1d68841f4fdddac0c445d26a953fdbfe1e311a0540a3a1c588a8b98af1ec71
+    candidate_image_digest: sha256:517052ebd58f8ae546ffba21598fc1b8357006d60c961d9cda468d2fb25adf4a
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:aa1d68841f4fdddac0c445d26a953fdbfe1e311a0540a3a1c588a8b98af1ec71
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 2
+    merge_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/kong-service-auth-adapter@sha256:517052ebd58f8ae546ffba21598fc1b8357006d60c961d9cda468d2fb25adf4a
+  codestra-mail-api-mail-api-1:
+    repository: appolon1908-hue/codestra-production-platform
+    source_sha: 555884e540f942916c282baff7861cd734a535b7
+    current_runtime_image_id: sha256:7495d5f0d79f027456ed61b7c3c2ea9331c228f3d2e10bceef3178eef5a62594
+    candidate_image_digest: sha256:084c60cf7a690bebb7d3bee9940b46d9b69251cb1f5d8b088282a6019afb42f7
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:7495d5f0d79f027456ed61b7c3c2ea9331c228f3d2e10bceef3178eef5a62594
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 175
+    merge_sha: 555884e540f942916c282baff7861cd734a535b7
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/mail-api@sha256:084c60cf7a690bebb7d3bee9940b46d9b69251cb1f5d8b088282a6019afb42f7
+  codestra-mail-isolated-stalwart-1:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    current_runtime_image_id: sha256:9ed1d343243b7aa72969e372a7240b7ddea07730781d4b68a0dc3d8d51c418bb
+    candidate_image_digest: sha256:9ed1d343243b7aa72969e372a7240b7ddea07730781d4b68a0dc3d8d51c418bb
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:9ed1d343243b7aa72969e372a7240b7ddea07730781d4b68a0dc3d8d51c418bb
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 1
+    merge_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    build_evidence:
+      vendor_digest_pin: PASS
+      codestra_config_authority: PASS
+      runtime_repo_digest_verified: PASS
+    candidate_image_ref: stalwartlabs/stalwart@sha256:9ed1d343243b7aa72969e372a7240b7ddea07730781d4b68a0dc3d8d51c418bb
+  codestra-middleware-event-gateway-1:
+    repository: Codestra-SRL/codestra-middleware
+    source_sha: 2f1c7af41f87c27e2881c3695621ece787b97445
+    current_runtime_image_id: sha256:93cbb4a11765ad92e9bbf1a1bb9601f15a540164b4e7d6647cb0f16d588ab6e0
+    candidate_image_digest: sha256:1b7e79142389b9c1a8ca4149aeed2003876252d5d1f84b3190e44e0a9d0bdb1d
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:93cbb4a11765ad92e9bbf1a1bb9601f15a540164b4e7d6647cb0f16d588ab6e0
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 279
+    merge_sha: 2f1c7af41f87c27e2881c3695621ece787b97445
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/codestra-srl/middleware-source-lock@sha256:1b7e79142389b9c1a8ca4149aeed2003876252d5d1f84b3190e44e0a9d0bdb1d
+  codestra-middleware-external-webhook-worker-1:
+    repository: Codestra-SRL/codestra-middleware
+    source_sha: 2f1c7af41f87c27e2881c3695621ece787b97445
+    current_runtime_image_id: sha256:93cbb4a11765ad92e9bbf1a1bb9601f15a540164b4e7d6647cb0f16d588ab6e0
+    candidate_image_digest: sha256:1b7e79142389b9c1a8ca4149aeed2003876252d5d1f84b3190e44e0a9d0bdb1d
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:93cbb4a11765ad92e9bbf1a1bb9601f15a540164b4e7d6647cb0f16d588ab6e0
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 279
+    merge_sha: 2f1c7af41f87c27e2881c3695621ece787b97445
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/codestra-srl/middleware-source-lock@sha256:1b7e79142389b9c1a8ca4149aeed2003876252d5d1f84b3190e44e0a9d0bdb1d
+  codestra-monitoring-receiver-receiver-1:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    current_runtime_image_id: sha256:260fef5b0c1d8eafa29b661612511bdc3b869851b8a36d41a6cdfb5498f23ab4
+    candidate_image_digest: sha256:dcadb718f4d930d8de4a01e41c29053a8f62afd267ef38d2e1eb64c428110927
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:260fef5b0c1d8eafa29b661612511bdc3b869851b8a36d41a6cdfb5498f23ab4
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 2
+    merge_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/monitoring-receiver@sha256:dcadb718f4d930d8de4a01e41c29053a8f62afd267ef38d2e1eb64c428110927
+  codestra-n8n-internal-proxy:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    current_runtime_image_id: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    candidate_image_digest: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 1
+    merge_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    build_evidence:
+      vendor_digest_pin: PASS
+      codestra_config_authority: PASS
+      runtime_repo_digest_verified: PASS
+    candidate_image_ref: codestra/caddy@sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+  codestra-odoo-internal-proxy:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    current_runtime_image_id: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    candidate_image_digest: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 1
+    merge_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    build_evidence:
+      vendor_digest_pin: PASS
+      codestra_config_authority: PASS
+      runtime_repo_digest_verified: PASS
+    candidate_image_ref: codestra/caddy@sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+  codestra-private-vicidial-ingress-1:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    current_runtime_image_id: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    candidate_image_digest: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 1
+    merge_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    build_evidence:
+      vendor_digest_pin: PASS
+      codestra_config_authority: PASS
+      runtime_repo_digest_verified: PASS
+    candidate_image_ref: codestra/caddy@sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+  codestra-provisioning-service-provisioning-service-1:
+    repository: appolon1908-hue/codestra-provisioning-service
+    source_sha: 2c18e395e9f86f7510f142188336e9114aa213a4
+    current_runtime_image_id: sha256:db7dfcf1d8547d9daa9f1e1b7f7f834b0138b95e15fce95345e4e2e1211ed578
+    candidate_image_digest: sha256:83669077e8b0c45a19c13cf688d4093cd639dadbb02f2bb3c3389170821d70f5
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:db7dfcf1d8547d9daa9f1e1b7f7f834b0138b95e15fce95345e4e2e1211ed578
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 18
+    merge_sha: 2c18e395e9f86f7510f142188336e9114aa213a4
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/codestra-provisioning-service@sha256:83669077e8b0c45a19c13cf688d4093cd639dadbb02f2bb3c3389170821d70f5
+  codestra-reseller-portal-portal-1:
+    repository: appolon1908-hue/codestra-production-platform
+    source_sha: 555884e540f942916c282baff7861cd734a535b7
+    current_runtime_image_id: sha256:7d7cf6318ac122f7e39ab679dec499dc1f6116129765903d44e42c74541ca12e
+    candidate_image_digest: sha256:5c40c5f172c0b8b9eeaeee0e7261c2ead43eab5b7531a1759b3bd1098e97be10
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:7d7cf6318ac122f7e39ab679dec499dc1f6116129765903d44e42c74541ca12e
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 175
+    merge_sha: 555884e540f942916c282baff7861cd734a535b7
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/reseller-portal@sha256:5c40c5f172c0b8b9eeaeee0e7261c2ead43eab5b7531a1759b3bd1098e97be10
+  codestra-reseller-portal-postgres-1:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    current_runtime_image_id: sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193
+    candidate_image_digest: sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 1
+    merge_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    build_evidence:
+      vendor_digest_pin: PASS
+      codestra_config_authority: PASS
+      runtime_repo_digest_verified: PASS
+    candidate_image_ref: postgres@sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193
+  codestra-sms-api-api-1:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    current_runtime_image_id: sha256:49790449a1871a585456fe41bcb52dd614fb56f432907b9f5e7271e54306d6d7
+    candidate_image_digest: sha256:e620fc2e15989e395e0c69bad682a31dbf10fffecc569053e7d1ff5d3a1ede47
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:49790449a1871a585456fe41bcb52dd614fb56f432907b9f5e7271e54306d6d7
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: true
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 2
+    merge_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/sms-api@sha256:e620fc2e15989e395e0c69bad682a31dbf10fffecc569053e7d1ff5d3a1ede47
+  codestra-sms-api-event-worker-1:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    current_runtime_image_id: sha256:65222db1296663c33f1bdac9ef5c8c305d2d4388ddca26e3306776821d2dbee9
+    candidate_image_digest: sha256:7a9ab0aa14075892edee8c0cba68bb7979645c0795812892c3e07ab0d16b3e3a
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:65222db1296663c33f1bdac9ef5c8c305d2d4388ddca26e3306776821d2dbee9
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: true
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+    pr: 2
+    merge_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/sms-api-event-worker@sha256:7a9ab0aa14075892edee8c0cba68bb7979645c0795812892c3e07ab0d16b3e3a
+  private-integration-gateway-1:
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    source_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    current_runtime_image_id: sha256:a9a1562f6d7b3557f480c2ffb513bd8bb472a2e0f0f01e0f9aa8bcc6e7fab8a0
+    candidate_image_digest: sha256:2f1d8ea4d95b3a994e2b8c6b2c1c2c27a69eeac30b38b129cb8a1a1195e894e2
+    config_change: true
+    migration_required: false
+    restart_required: true
+    rollback_digest: sha256:a9a1562f6d7b3557f480c2ffb513bd8bb472a2e0f0f01e0f9aa8bcc6e7fab8a0
+    rollback_evidence: production-readiness-local/20260901T111246Z exact-runtime-image
+      archive
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: true
+      email_delivery: true
+      pstn_dialing: true
+      n8n_provider_write: false
+    pr: 2
+    merge_sha: 12d37757012a831e92417871f3c3676b78bd6820
+    build_evidence:
+      sbom: PASS
+      provenance: PASS
+      vulnerability_gate: PASS
+      oci_source: PASS
+      oci_revision: PASS
+      oci_version: PASS
+    candidate_image_ref: ghcr.io/appolon1908-hue/private-integration-gateway@sha256:2f1d8ea4d95b3a994e2b8c6b2c1c2c27a69eeac30b38b129cb8a1a1195e894e2

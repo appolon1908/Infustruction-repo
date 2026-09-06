@@ -15,7 +15,7 @@
       "codestra_edge"
     ],
     "published_ports": [
-      "80/tcp"
+      "127.0.0.1:31880->80/tcp"
     ],
     "volumes": [],
     "user": "",
@@ -31,7 +31,8 @@
       "NJS_VERSION",
       "NJS_RELEASE"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   },
   {
     "name": "codestra-agent-desktop-sipjs-staging",
@@ -49,7 +50,7 @@
       "codestra_edge"
     ],
     "published_ports": [
-      "8080/tcp"
+      "127.0.0.1:31881->8080/tcp"
     ],
     "volumes": [],
     "user": "10001:10001",
@@ -65,7 +66,8 @@
       "XDG_CONFIG_HOME",
       "XDG_DATA_HOME"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": []
   },
   {
     "name": "codestra-appolon-middleware-integration-api-1",
@@ -142,7 +144,10 @@
       "PYTHONUNBUFFERED",
       "APP_VERSION"
     ],
-    "oci_source": "https://github.com/appolon1908-hue/Middleware-"
+    "oci_source": "https://github.com/appolon1908-hue/Middleware-",
+    "exposed_ports": [
+      "8080/tcp"
+    ]
   },
   {
     "name": "codestra-backup-1",
@@ -213,7 +218,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-beyvra-email-api-1",
@@ -282,7 +290,8 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   },
   {
     "name": "codestra-caddy-upstream-gateway",
@@ -304,22 +313,7 @@
       "codestra_edge"
     ],
     "published_ports": [
-      "18101/tcp",
-      "18102/tcp",
-      "18103/tcp",
-      "18104/tcp",
-      "18105/tcp",
-      "18106/tcp",
-      "18107/tcp",
-      "18108/tcp",
-      "18109/tcp",
-      "18110/tcp",
-      "18111/tcp",
-      "18112/tcp",
-      "18113/tcp",
-      "18114/tcp",
-      "18115/tcp",
-      "18116/tcp"
+      "127.0.0.1:18101-18116->18101-18116/tcp"
     ],
     "volumes": [
       {
@@ -344,7 +338,13 @@
       "XDG_CONFIG_HOME",
       "XDG_DATA_HOME"
     ],
-    "oci_source": "https://github.com/caddyserver/caddy-docker"
+    "oci_source": "https://github.com/caddyserver/caddy-docker",
+    "exposed_ports": [
+      "80/tcp",
+      "443/tcp",
+      "2019/tcp",
+      "443/udp"
+    ]
   },
   {
     "name": "codestra-email-reseller-api-1",
@@ -363,7 +363,7 @@
       "codestra_edge"
     ],
     "published_ports": [
-      "8080/tcp"
+      "127.0.0.1:18180->8080/tcp"
     ],
     "volumes": [
       {
@@ -417,7 +417,8 @@
       "PYTHONUNBUFFERED",
       "PYTHONDONTWRITEBYTECODE"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   },
   {
     "name": "codestra-identity-auth-gateway-1",
@@ -457,7 +458,10 @@
       "PATH",
       "SSL_CERT_FILE"
     ],
-    "oci_source": "https://github.com/oauth2-proxy/oauth2-proxy"
+    "oci_source": "https://github.com/oauth2-proxy/oauth2-proxy",
+    "exposed_ports": [
+      "4180/tcp"
+    ]
   },
   {
     "name": "codestra-identity-identity-db-1",
@@ -514,7 +518,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-identity-keycloak-1",
@@ -568,7 +575,12 @@
       "LANG",
       "KC_RUN_IN_CONTAINER"
     ],
-    "oci_source": "https://github.com/keycloak-rel/keycloak-rel"
+    "oci_source": "https://github.com/keycloak-rel/keycloak-rel",
+    "exposed_ports": [
+      "8080/tcp",
+      "8443/tcp",
+      "9000/tcp"
+    ]
   },
   {
     "name": "codestra-identity-staging-identity-db-staging-1",
@@ -619,7 +631,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-identity-staging-keycloak-staging-1",
@@ -668,7 +683,12 @@
       "LANG",
       "KC_RUN_IN_CONTAINER"
     ],
-    "oci_source": "https://github.com/keycloak-rel/keycloak-rel"
+    "oci_source": "https://github.com/keycloak-rel/keycloak-rel",
+    "exposed_ports": [
+      "8080/tcp",
+      "8443/tcp",
+      "9000/tcp"
+    ]
   },
   {
     "name": "codestra-integration-control-plane-api-1",
@@ -687,7 +707,7 @@
       "codestra_edge"
     ],
     "published_ports": [
-      "8096/tcp"
+      "127.0.0.1:8096->8096/tcp"
     ],
     "volumes": [
       {
@@ -788,7 +808,8 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": "https://github.com/appolon1908-hue/codestra-production-platform"
+    "oci_source": "https://github.com/appolon1908-hue/codestra-production-platform",
+    "exposed_ports": []
   },
   {
     "name": "codestra-integration-control-plane-worker-1",
@@ -890,7 +911,8 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": "https://github.com/appolon1908-hue/codestra-production-platform"
+    "oci_source": "https://github.com/appolon1908-hue/codestra-production-platform",
+    "exposed_ports": []
   },
   {
     "name": "codestra-kong-identity-certification-1",
@@ -940,7 +962,8 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   },
   {
     "name": "codestra-kong-kong-db-1",
@@ -991,7 +1014,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-kong-kong-gateway-1",
@@ -1010,9 +1036,7 @@
       "codestra_edge"
     ],
     "published_ports": [
-      "8000/tcp",
-      "8001/tcp",
-      "8002/tcp"
+      "127.0.0.1:8000-8002->8000-8002/tcp"
     ],
     "volumes": [
       {
@@ -1067,7 +1091,11 @@
       "PATH",
       "KONG_VERSION"
     ],
-    "oci_source": "https://github.com/Kong/kong-ee"
+    "oci_source": "https://github.com/Kong/kong-ee",
+    "exposed_ports": [
+      "8003-8004/tcp",
+      "8443-8447/tcp"
+    ]
   },
   {
     "name": "codestra-kong-kong-test-upstream-1",
@@ -1108,7 +1136,10 @@
       "NJS_VERSION",
       "NJS_RELEASE"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "80/tcp"
+    ]
   },
   {
     "name": "codestra-kong-service-auth-adapter-1",
@@ -1154,7 +1185,8 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   },
   {
     "name": "codestra-mail-api-mail-api-1",
@@ -1196,7 +1228,10 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8098/tcp"
+    ]
   },
   {
     "name": "codestra-mail-isolated-stalwart-1",
@@ -1214,10 +1249,10 @@
       "codestra-mail-isolated_mail-private"
     ],
     "published_ports": [
-      "443/tcp",
-      "587/tcp",
-      "8080/tcp",
-      "993/tcp"
+      "127.0.0.1:28443->443/tcp",
+      "127.0.0.1:2587->587/tcp",
+      "127.0.0.1:2993->993/tcp",
+      "127.0.0.1:28080->8080/tcp"
     ],
     "volumes": [
       {
@@ -1244,7 +1279,15 @@
       "PATH",
       "STALWART_HEALTHCHECK_URL"
     ],
-    "oci_source": "https://github.com/stalwartlabs/stalwart"
+    "oci_source": "https://github.com/stalwartlabs/stalwart",
+    "exposed_ports": [
+      "25/tcp",
+      "110/tcp",
+      "143/tcp",
+      "465/tcp",
+      "995/tcp",
+      "4190/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-1",
@@ -1409,7 +1452,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-breero-odoo-worker-1",
@@ -1551,7 +1597,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-event-gateway-1",
@@ -1764,7 +1813,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-evidence-runner-1",
@@ -1914,7 +1966,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-extension-allocator-1",
@@ -2062,7 +2117,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-external-webhook-worker-1",
@@ -2201,7 +2259,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-integration-api-1",
@@ -2491,7 +2552,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-n8n-runtime-worker-1",
@@ -2647,7 +2711,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-notification-worker-1",
@@ -2826,7 +2893,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-odoo-result-worker-1",
@@ -3018,7 +3088,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-pjsip-adapter-1",
@@ -3193,7 +3266,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-policy-engine-1",
@@ -3343,7 +3419,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-postly-polling-worker-1",
@@ -3507,7 +3586,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-reconciliation-worker-1",
@@ -3657,7 +3739,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-scheduler-1",
@@ -3830,7 +3915,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-scraper-odoo-delivery-worker-1",
@@ -3923,7 +4011,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-social-n8n-delivery-worker-1",
@@ -4071,7 +4162,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-callback-staging-1",
@@ -4131,7 +4225,11 @@
       "PYTHONUNBUFFERED",
       "HOME"
     ],
-    "oci_source": "codestra-app:/opt/codestra/middleware"
+    "oci_source": "codestra-app:/opt/codestra/middleware",
+    "exposed_ports": [
+      "8095/tcp",
+      "8443/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-middleware-staging-1",
@@ -4152,7 +4250,7 @@
       "codestra-n8n-staging_edge"
     ],
     "published_ports": [
-      "8095/tcp"
+      "127.0.0.1:31883->8095/tcp"
     ],
     "volumes": [
       {
@@ -4287,7 +4385,8 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": []
   },
   {
     "name": "codestra-middleware-staging-notification-worker-staging-1",
@@ -4406,7 +4505,10 @@
       "PYTHONUNBUFFERED",
       "PYTHONPATH"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-odoo-result-worker-staging-1",
@@ -4517,7 +4619,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-postgres-1",
@@ -4560,7 +4665,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-redis-1",
@@ -4610,7 +4718,10 @@
       "REDIS_DOWNLOAD_URL",
       "REDIS_DOWNLOAD_SHA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "6379/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-scheduler-staging-1",
@@ -4703,7 +4814,10 @@
       "PYTHONUNBUFFERED",
       "PYTHONPATH"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-scraper-odoo-delivery-worker-1",
@@ -4803,7 +4917,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-social-dead-letter-worker-staging-1",
@@ -4896,7 +5013,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-social-delivery-worker-staging-1",
@@ -4989,7 +5109,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-staging-social-reconciliation-worker-staging-1",
@@ -5082,7 +5205,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-sync-worker-1",
@@ -5231,7 +5357,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-telephony-provisioning-1",
@@ -5405,7 +5534,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-vicidial-adapter-1",
@@ -5580,7 +5712,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-middleware-webphone-session-issuer-1",
@@ -5771,7 +5906,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8095/tcp"
+    ]
   },
   {
     "name": "codestra-monitoring-alertmanager-1",
@@ -5844,7 +5982,10 @@
     "env_keys": [
       "PATH"
     ],
-    "oci_source": "https://github.com/prometheus/alertmanager"
+    "oci_source": "https://github.com/prometheus/alertmanager",
+    "exposed_ports": [
+      "9093/tcp"
+    ]
   },
   {
     "name": "codestra-monitoring-blackbox-1",
@@ -5880,7 +6021,10 @@
     "env_keys": [
       "PATH"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "9115/tcp"
+    ]
   },
   {
     "name": "codestra-monitoring-cadvisor-1",
@@ -5937,7 +6081,10 @@
       "PATH",
       "CADVISOR_HEALTHCHECK_URL"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8080/tcp"
+    ]
   },
   {
     "name": "codestra-monitoring-node-exporter-1",
@@ -5979,7 +6126,10 @@
     "env_keys": [
       "PATH"
     ],
-    "oci_source": "https://github.com/prometheus/node_exporter"
+    "oci_source": "https://github.com/prometheus/node_exporter",
+    "exposed_ports": [
+      "9100/tcp"
+    ]
   },
   {
     "name": "codestra-monitoring-prometheus-1",
@@ -6035,7 +6185,10 @@
     "env_keys": [
       "PATH"
     ],
-    "oci_source": "https://github.com/prometheus/prometheus"
+    "oci_source": "https://github.com/prometheus/prometheus",
+    "exposed_ports": [
+      "9090/tcp"
+    ]
   },
   {
     "name": "codestra-monitoring-receiver-receiver-1",
@@ -6086,7 +6239,8 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   },
   {
     "name": "codestra-monitoring-redis-exporter-1",
@@ -6125,7 +6279,10 @@
       "REDIS_USER",
       "PATH"
     ],
-    "oci_source": "https://github.com/oliver006/redis_exporter"
+    "oci_source": "https://github.com/oliver006/redis_exporter",
+    "exposed_ports": [
+      "9121/tcp"
+    ]
   },
   {
     "name": "codestra-n8n-1",
@@ -6214,7 +6371,10 @@
       "N8N_RELEASE_TYPE",
       "SHELL"
     ],
-    "oci_source": "https://github.com/n8n-io/n8n"
+    "oci_source": "https://github.com/n8n-io/n8n",
+    "exposed_ports": [
+      "5678/tcp"
+    ]
   },
   {
     "name": "codestra-n8n-internal-proxy",
@@ -6272,7 +6432,13 @@
       "XDG_CONFIG_HOME",
       "XDG_DATA_HOME"
     ],
-    "oci_source": "https://github.com/caddyserver/caddy-docker"
+    "oci_source": "https://github.com/caddyserver/caddy-docker",
+    "exposed_ports": [
+      "80/tcp",
+      "443/tcp",
+      "2019/tcp",
+      "443/udp"
+    ]
   },
   {
     "name": "codestra-n8n-staging-n8n-1",
@@ -6436,7 +6602,10 @@
       "N8N_RELEASE_TYPE",
       "SHELL"
     ],
-    "oci_source": "https://github.com/n8n-io/n8n"
+    "oci_source": "https://github.com/n8n-io/n8n",
+    "exposed_ports": [
+      "5678/tcp"
+    ]
   },
   {
     "name": "codestra-n8n-staging-postgres-1",
@@ -6485,7 +6654,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-n8n-staging-redis-1",
@@ -6541,7 +6713,10 @@
       "REDIS_DOWNLOAD_URL",
       "REDIS_DOWNLOAD_SHA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "6379/tcp"
+    ]
   },
   {
     "name": "codestra-n8n-staging-webhook-1",
@@ -6683,7 +6858,10 @@
       "N8N_RELEASE_TYPE",
       "SHELL"
     ],
-    "oci_source": "https://github.com/n8n-io/n8n"
+    "oci_source": "https://github.com/n8n-io/n8n",
+    "exposed_ports": [
+      "5678/tcp"
+    ]
   },
   {
     "name": "codestra-n8n-staging-worker-1",
@@ -6827,7 +7005,10 @@
       "N8N_RELEASE_TYPE",
       "SHELL"
     ],
-    "oci_source": "https://github.com/n8n-io/n8n"
+    "oci_source": "https://github.com/n8n-io/n8n",
+    "exposed_ports": [
+      "5678/tcp"
+    ]
   },
   {
     "name": "codestra-n8n-staging-worker-2-1",
@@ -6971,7 +7152,10 @@
       "N8N_RELEASE_TYPE",
       "SHELL"
     ],
-    "oci_source": "https://github.com/n8n-io/n8n"
+    "oci_source": "https://github.com/n8n-io/n8n",
+    "exposed_ports": [
+      "5678/tcp"
+    ]
   },
   {
     "name": "codestra-odoo-1",
@@ -7099,7 +7283,11 @@
       "ODOO_VERSION",
       "ODOO_RC"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8069/tcp",
+      "8071-8072/tcp"
+    ]
   },
   {
     "name": "codestra-odoo-internal-proxy",
@@ -7157,7 +7345,13 @@
       "XDG_CONFIG_HOME",
       "XDG_DATA_HOME"
     ],
-    "oci_source": "https://github.com/caddyserver/caddy-docker"
+    "oci_source": "https://github.com/caddyserver/caddy-docker",
+    "exposed_ports": [
+      "80/tcp",
+      "443/tcp",
+      "2019/tcp",
+      "443/udp"
+    ]
   },
   {
     "name": "codestra-odoo-staging-odoo-staging-1",
@@ -7254,7 +7448,11 @@
       "ODOO_VERSION",
       "ODOO_RC"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8069/tcp",
+      "8071-8072/tcp"
+    ]
   },
   {
     "name": "codestra-odoo-staging-postgres-staging-1",
@@ -7311,7 +7509,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-odoo-staging-uat-loopback-proxy-1",
@@ -7330,7 +7531,7 @@
       "codestra-odoo-staging_uat_access"
     ],
     "published_ports": [
-      "19069/tcp"
+      "127.0.0.1:19069->19069/tcp"
     ],
     "volumes": [
       {
@@ -7353,7 +7554,8 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   },
   {
     "name": "codestra-odoo19-identity-menu-staging-postgres-1",
@@ -7402,7 +7604,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-odoo19-module-staging-callback-tls-1",
@@ -7448,7 +7653,13 @@
       "XDG_CONFIG_HOME",
       "XDG_DATA_HOME"
     ],
-    "oci_source": "https://github.com/caddyserver/caddy-docker"
+    "oci_source": "https://github.com/caddyserver/caddy-docker",
+    "exposed_ports": [
+      "80/tcp",
+      "443/tcp",
+      "2019/tcp",
+      "443/udp"
+    ]
   },
   {
     "name": "codestra-odoo19-module-staging-odoo-1",
@@ -7610,7 +7821,11 @@
       "ODOO_VERSION",
       "ODOO_RC"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8069/tcp",
+      "8071-8072/tcp"
+    ]
   },
   {
     "name": "codestra-odoo19-module-staging-postgres-1",
@@ -7659,7 +7874,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-odoo19-staging-odoo19-master-staging-1",
@@ -7727,7 +7945,11 @@
       "ODOO_VERSION",
       "ODOO_RC"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8069/tcp",
+      "8071-8072/tcp"
+    ]
   },
   {
     "name": "codestra-odoo19-staging-odoo19-scraper-canary-1",
@@ -7796,7 +8018,11 @@
       "ODOO_VERSION",
       "ODOO_RC"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8069/tcp",
+      "8071-8072/tcp"
+    ]
   },
   {
     "name": "codestra-odoo19-staging-odoo19-staging-1",
@@ -7867,7 +8093,11 @@
       "ODOO_VERSION",
       "ODOO_RC"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8069/tcp",
+      "8071-8072/tcp"
+    ]
   },
   {
     "name": "codestra-odoo19-staging-postgres-1",
@@ -7910,7 +8140,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-operations-dashboard-grafana-grafana-1",
@@ -7928,7 +8161,7 @@
       "codestra-monitoring_monitoring"
     ],
     "published_ports": [
-      "3000/tcp"
+      "127.0.0.1:3000->3000/tcp"
     ],
     "volumes": [
       {
@@ -7975,7 +8208,8 @@
       "GF_PATHS_CONFIG",
       "GF_PATHS_HOME"
     ],
-    "oci_source": "https://github.com/grafana/grafana"
+    "oci_source": "https://github.com/grafana/grafana",
+    "exposed_ports": []
   },
   {
     "name": "codestra-operations-dashboard-staging-v2-middleware-1",
@@ -8077,7 +8311,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/appolon1908-hue/Middleware-"
+    "oci_source": "https://github.com/appolon1908-hue/Middleware-",
+    "exposed_ports": [
+      "8080/tcp"
+    ]
   },
   {
     "name": "codestra-operations-dashboard-staging-v2-postgres-1",
@@ -8165,7 +8402,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-operations-dashboard-staging-v2-redis-1",
@@ -8232,7 +8472,10 @@
       "PATH",
       "REDIS_VERSION"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "6379/tcp"
+    ]
   },
   {
     "name": "codestra-postgres-1",
@@ -8291,7 +8534,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-private-vicidial-ingress-1",
@@ -8309,7 +8555,7 @@
       "codestra_edge"
     ],
     "published_ports": [
-      "443/tcp"
+      "10.40.0.1:443->443/tcp"
     ],
     "volumes": [
       {
@@ -8351,7 +8597,12 @@
       "XDG_CONFIG_HOME",
       "XDG_DATA_HOME"
     ],
-    "oci_source": "https://github.com/caddyserver/caddy-docker"
+    "oci_source": "https://github.com/caddyserver/caddy-docker",
+    "exposed_ports": [
+      "80/tcp",
+      "2019/tcp",
+      "443/udp"
+    ]
   },
   {
     "name": "codestra-provisioning-jwks-relay",
@@ -8388,7 +8639,10 @@
       "PYTHONUNBUFFERED",
       "PIP_DISABLE_PIP_VERSION_CHECK"
     ],
-    "oci_source": "https://github.com/appolon1908-hue/codestra-provisioning-service"
+    "oci_source": "https://github.com/appolon1908-hue/codestra-provisioning-service",
+    "exposed_ports": [
+      "8443/tcp"
+    ]
   },
   {
     "name": "codestra-provisioning-service-provisioning-service-1",
@@ -8462,7 +8716,10 @@
       "PYTHONUNBUFFERED",
       "PIP_DISABLE_PIP_VERSION_CHECK"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8443/tcp"
+    ]
   },
   {
     "name": "codestra-redis-1",
@@ -8524,7 +8781,10 @@
       "REDIS_DOWNLOAD_URL",
       "REDIS_DOWNLOAD_SHA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "6379/tcp"
+    ]
   },
   {
     "name": "codestra-reseller-portal-oidc-gateway-1",
@@ -8567,7 +8827,8 @@
       "PATH",
       "SSL_CERT_FILE"
     ],
-    "oci_source": "https://github.com/oauth2-proxy/oauth2-proxy"
+    "oci_source": "https://github.com/oauth2-proxy/oauth2-proxy",
+    "exposed_ports": []
   },
   {
     "name": "codestra-reseller-portal-portal-1",
@@ -8586,7 +8847,7 @@
       "codestra_edge"
     ],
     "published_ports": [
-      "8080/tcp"
+      "127.0.0.1:18081->8080/tcp"
     ],
     "volumes": [
       {
@@ -8617,7 +8878,8 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   },
   {
     "name": "codestra-reseller-portal-postgres-1",
@@ -8671,7 +8933,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-reviewed-monitoring-postgres-exporter-1",
@@ -8711,7 +8976,10 @@
       "DATA_SOURCE_PASS_FILE",
       "PATH"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "9187/tcp"
+    ]
   },
   {
     "name": "codestra-sms-api-api-1",
@@ -8780,7 +9048,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8080/tcp"
+    ]
   },
   {
     "name": "codestra-sms-api-event-worker-1",
@@ -8835,7 +9106,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "8080/tcp"
+    ]
   },
   {
     "name": "codestra-sms-api-postgres-1",
@@ -8892,7 +9166,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-websocket-gateway-gateway-1",
@@ -8950,7 +9227,10 @@
       "PYTHONDONTWRITEBYTECODE",
       "PYTHONUNBUFFERED"
     ],
-    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware"
+    "oci_source": "https://github.com/Codestra-SRL/codestra-middleware",
+    "exposed_ports": [
+      "8080/tcp"
+    ]
   },
   {
     "name": "codestra-websocket-gateway-postgres-1",
@@ -9008,7 +9288,10 @@
       "DOCKER_PG_LLVM_DEPS",
       "PGDATA"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "codestra-websocket-replica-postgres-1",
@@ -9049,7 +9332,10 @@
       "PG_SHA256",
       "DOCKER_PG_LLVM_DEPS"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": [
+      "5432/tcp"
+    ]
   },
   {
     "name": "kong-production-standby-kong-standby-auth-1",
@@ -9114,7 +9400,8 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   },
   {
     "name": "private-integration-gateway-1",
@@ -9132,7 +9419,7 @@
       "codestra_edge"
     ],
     "published_ports": [
-      "8080/tcp"
+      "10.40.0.1:8095->8080/tcp"
     ],
     "volumes": [
       {
@@ -9161,6 +9448,7 @@
       "PYTHON_VERSION",
       "PYTHON_SHA256"
     ],
-    "oci_source": ""
+    "oci_source": "",
+    "exposed_ports": []
   }
 ]

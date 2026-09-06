@@ -88,6 +88,19 @@ variable "approved_ssh_key_ids" {
   }
 }
 
+variable "staging_readonly_operator_public_key" {
+  description = "Distinct Ed25519 public key for the forced-command staging-readonly automation identity."
+  type        = string
+  sensitive   = true
+  validation {
+    condition = (
+      !strcontains(trimspace(var.staging_readonly_operator_public_key), "\n") &&
+      can(regex("^ssh-ed25519 [A-Za-z0-9+/]{40,}={0,2}( [A-Za-z0-9_.@-]{1,64})?$", trimspace(var.staging_readonly_operator_public_key)))
+    )
+    error_message = "Provide exactly one reviewed Ed25519 public key for the restricted staging-readonly identity."
+  }
+}
+
 variable "approved_ssh_source_cidrs" {
   description = "Narrow owner-approved operator, VPN, or bastion CIDRs."
   type        = set(string)

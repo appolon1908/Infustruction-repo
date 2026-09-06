@@ -1,5 +1,5 @@
 schema: codestra.production-safety-capability-matrix.v1
-captured_at: "2026-09-01T12:54:14Z"
+captured_at: '2026-09-01T17:56:34Z'
 target_host: 65.109.65.169
 coverage: 64/64
 production_changed: false
@@ -19,18 +19,19 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-beyvra-email-api-1:
-    evidence_basis: source adoption remains under independent review
+    evidence_basis: reviewed protected source and deployment authority
     capabilities:
-      advertising_write: UNKNOWN
-      external_delivery: UNKNOWN
-      social_publish: UNKNOWN
-      external_model_call: UNKNOWN
-      sms_delivery: UNKNOWN
-      email_delivery: UNKNOWN
-      pstn_dialing: UNKNOWN
-      n8n_provider_write: UNKNOWN
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
   codestra-caddy-upstream-gateway:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -41,18 +42,19 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-email-reseller-api-1:
-    evidence_basis: source adoption remains under independent review
+    evidence_basis: reviewed protected source and deployment authority
     capabilities:
-      advertising_write: UNKNOWN
-      external_delivery: UNKNOWN
-      social_publish: UNKNOWN
-      external_model_call: UNKNOWN
-      sms_delivery: UNKNOWN
-      email_delivery: UNKNOWN
-      pstn_dialing: UNKNOWN
-      n8n_provider_write: UNKNOWN
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
   codestra-identity-auth-gateway-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -63,7 +65,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-identity-identity-db-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -74,7 +77,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-identity-keycloak-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -107,7 +111,8 @@ services:
       pstn_dialing: true
       n8n_provider_write: true
   codestra-kong-kong-db-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -118,7 +123,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-kong-kong-gateway-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -129,7 +135,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-kong-service-auth-adapter-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -140,16 +147,16 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-mail-api-mail-api-1:
-    evidence_basis: source adoption remains under independent review
+    evidence_basis: reviewed protected source and deployment authority
     capabilities:
-      advertising_write: UNKNOWN
-      external_delivery: UNKNOWN
-      social_publish: UNKNOWN
-      external_model_call: UNKNOWN
-      sms_delivery: UNKNOWN
-      email_delivery: UNKNOWN
-      pstn_dialing: UNKNOWN
-      n8n_provider_write: UNKNOWN
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
   codestra-mail-isolated-stalwart-1:
     evidence_basis: reviewed application source and deployment configuration
     capabilities:
@@ -382,7 +389,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-monitoring-alertmanager-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -393,7 +401,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-monitoring-blackbox-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -404,7 +413,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-monitoring-cadvisor-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -415,7 +425,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-monitoring-node-exporter-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -426,7 +437,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-monitoring-prometheus-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -437,7 +449,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-monitoring-receiver-receiver-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -448,7 +461,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-monitoring-redis-exporter-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -470,7 +484,8 @@ services:
       pstn_dialing: true
       n8n_provider_write: true
   codestra-n8n-internal-proxy:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -492,7 +507,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-odoo-internal-proxy:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -503,7 +519,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-operations-dashboard-grafana-grafana-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -514,7 +531,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-postgres-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -536,7 +554,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-provisioning-jwks-relay:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -547,18 +566,19 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-provisioning-service-provisioning-service-1:
-    evidence_basis: source adoption remains under independent review
+    evidence_basis: reviewed protected source and deployment authority
     capabilities:
-      advertising_write: UNKNOWN
-      external_delivery: UNKNOWN
-      social_publish: UNKNOWN
-      external_model_call: UNKNOWN
-      sms_delivery: UNKNOWN
-      email_delivery: UNKNOWN
-      pstn_dialing: UNKNOWN
-      n8n_provider_write: UNKNOWN
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
   codestra-redis-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -569,7 +589,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-reseller-portal-oidc-gateway-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -580,18 +601,19 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-reseller-portal-portal-1:
-    evidence_basis: source adoption remains under independent review
+    evidence_basis: reviewed protected source and deployment authority
     capabilities:
-      advertising_write: UNKNOWN
-      external_delivery: UNKNOWN
-      social_publish: UNKNOWN
-      external_model_call: UNKNOWN
-      sms_delivery: UNKNOWN
-      email_delivery: UNKNOWN
-      pstn_dialing: UNKNOWN
-      n8n_provider_write: UNKNOWN
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
   codestra-reseller-portal-postgres-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -602,7 +624,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-reviewed-monitoring-postgres-exporter-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -635,7 +658,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-sms-api-postgres-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -657,7 +681,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-websocket-gateway-postgres-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -668,7 +693,8 @@ services:
       pstn_dialing: false
       n8n_provider_write: false
   codestra-websocket-replica-postgres-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -690,7 +716,8 @@ services:
       pstn_dialing: true
       n8n_provider_write: false
   kong-production-standby-kong-standby-auth-1:
-    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only function
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
     capabilities:
       advertising_write: false
       external_delivery: false
@@ -711,3 +738,15 @@ services:
       email_delivery: false
       pstn_dialing: false
       n8n_provider_write: false
+capability_unknown_fields: 0
+production_write_safety: PASS
+effective_runtime_state:
+  LIVE_ADVERTISING_ENABLED: false
+  EXTERNAL_DELIVERY_ENABLED: false
+  SOCIAL_PUBLISHING_ENABLED: false
+  EXTERNAL_MODEL_CALLS_ENABLED: false
+  LIVE_SMS_DELIVERY: false
+  LIVE_EMAIL_DELIVERY: false
+  LIVE_PSTN_DIALING: false
+  N8N_EXTERNAL_PROVIDER_WRITES: false
+  PRODUCTION_DIALING: DISABLED

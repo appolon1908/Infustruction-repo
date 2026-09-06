@@ -6,6 +6,7 @@ Status: ACTIVE / NOT PRODUCTION CERTIFIED
 Bring the canonical Codestra platform repositories to a single production-certification standard without enabling external business effects before staging, recovery, rollback, source-lock, and runtime read-back gates pass.
 
 ## Global safety invariants
+- These controls apply only to the explicitly reviewed workload and operation scope. Klyrow/Postal is `OUT_OF_SCOPE_ACTIVE_PRODUCTION_DO_NOT_TOUCH` under the canonical Stage 6 lock; this wave does not authorize disabling or changing that separate production email path. No in-scope Stage 6 route, credential, queue, webhook, or request may reach it before separate authorization.
 - Do not modify SSH access, sshd configuration, authorized keys, SSH ports, or emergency operator access.
 - Keep LIVE_EMAIL_DELIVERY, LIVE_SMS_DELIVERY, PRODUCTION_DIALING, CALLBACK_DISPATCH, ODOO_WRITE, LIVE_WRITE, N8N_EXTERNAL_EFFECTS, SOCIAL_PUBLISHING, LIVE_ADVERTISING and equivalent provider/business-effect switches disabled until separately certified.
 - Never bypass branch protection, required reviews, CODEOWNERS, required Actions checks, or protected-environment approvals.
