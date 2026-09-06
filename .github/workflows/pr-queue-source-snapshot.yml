@@ -17,10 +17,10 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-      - name: Create verified candidate Git objects without updating refs
+      - name: Upload checksum-verified blobs only
         env:
           GH_OBJECT_TOKEN: ${{ github.token }}
-        run: python3 operations/pr-queue-objects/build_git_objects.py
+        run: python3 operations/pr-queue-objects/publish_blobs.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
