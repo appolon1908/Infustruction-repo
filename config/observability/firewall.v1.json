@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "scope": "observability-additions-on-shared-provider-host",
+  "policy": "default-deny-inbound",
+  "defaultRoutedPolicy": "deny",
+  "establishedRelatedAllowed": true,
+  "liveInstallationAuthorized": false,
+  "publicIngress": [
+    {
+      "port": 22,
+      "protocol": "tcp",
+      "purpose": "administrative-ssh",
+      "sourcePolicy": "approved-admin-cidrs-only"
+    },
+    {
+      "port": 80,
+      "protocol": "tcp",
+      "purpose": "caddy-acme-and-https-redirect",
+      "sourcePolicy": "internet"
+    },
+    {
+      "port": 443,
+      "protocol": "tcp",
+      "purpose": "caddy-https-edge",
+      "sourcePolicy": "internet"
+    }
+  ],
+  "loopbackOrPrivateOnly": [
+    {"component": "grafana", "ports": [3000], "allowedSources": ["caddy"]},
+    {"component": "superset", "ports": [8088], "allowedSources": ["caddy"]},
+    {"component": "openbao", "ports": [8200], "allowedSources": ["caddy", "authorized-application"]},
+    {"component": "prometheus", "ports": [9090], "allowedSources": ["grafana", "otel-collector", "approved-operators-private"]},
+    {"component": "alertmanager", "ports": [9093], "allowedSources": ["prometheus", "approved-operators-private"]},
+    {"component": "loki", "ports": [3100], "allowedSources": ["grafana", "alloy", "otel-collector"]},
+    {"component": "tempo", "ports": [3200, 4317, 4318], "allowedSources": ["grafana", "alloy", "otel-collector"]},
+    {"component": "otel-collector", "ports": [4317, 4318, 8888, 8889], "allowedSources": ["alloy", "instrumented-services", "prometheus"]},
+    {"component": "node-exporter", "ports": [9100], "allowedSources": ["prometheus"]},
+    {"component": "cadvisor", "ports": [8080], "allowedSources": ["prometheus"]},
+    {"component": "postgres-exporter", "ports": [9187], "allowedSources": ["prometheus"]},
+    {"component": "redis-exporter", "ports": [9121], "allowedSources": ["prometheus"]},
+    {"component": "blackbox-exporter", "ports": [9115], "allowedSources": ["prometheus"]},
+    {"component": "alloy", "ports": [12345], "allowedSources": ["approved-operators-private", "prometheus"]}
+  ],
+  "publicDnsButNoPublicProxy": [
+    "prom.codestra.media",
+    "aler.codestra.media",
+    "loki.codestra.media",
+    "temp.codestra.media",
+    "otel.codestra.media",
+    "node.codestra.media",
+    "cadv.codestra.media",
+    "rdex.codestra.media",
+    "blac.codestra.media",
+    "allo.codestra.media"
+  ],
+  "browserFacingThroughCaddy": [
+    "graf.codestra.media",
+    "supe.codestra.media",
+    "bao.codestra.media"
+  ],
+  "forbiddenPublicNativePorts": [
+    3000,
+    8088,
+    9090,
+    9093,
+    3100,
+    3200,
+    4317,
+    4318,
+    8888,
+    8889,
+    9100,
+    8080,
+    9187,
+    9121,
+    9115,
+    12345,
+    8200
+  ],
+  "nativeListenerPolicy": {
+    "allowedBindScopes": ["loopback", "private-vlan", "private-docker-network"],
+    "forbiddenBindAddresses": ["0.0.0.0", "::"],
+    "dockerPublishedPortRequiresDockerUserPolicy": true,
+    "publicNativeServicePort": false
+  },
+  "sharedHostSafety": {
+    "preserveUnrelatedApprovedServices": true,
+    "smtpPort25IsOutsideThisObservabilityPolicy": true,
+    "doNotFlushExistingFirewall": true,
+    "doNotReplaceHostPolicyWithoutFullInventory": true
+  },
+  "forbidden": [
+    "bind-native-service-to-public-0.0.0.0",
+    "open-prometheus-to-internet",
+    "open-exporter-to-internet",
+    "open-loki-or-tempo-ingest-to-internet",
+    "open-otel-receiver-to-internet",
+    "open-openbao-native-port-to-internet",
+    "trust-public-dns-as-access-control"
+  ],
+  "activation": {
+    "configurationReviewed": false,
+    "hostInventoryCompleted": false,
+    "firewallApplied": false,
+    "externalPortScanPassed": false,
+    "rollbackRehearsed": false,
+    "productionApproved": false
+  }
+}

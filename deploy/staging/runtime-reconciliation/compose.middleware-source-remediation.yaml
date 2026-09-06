@@ -1,0 +1,41 @@
+name: codestra-middleware-stage6-candidate
+
+x-safety: &safety
+  LIVE_ADVERTISING_ENABLED: "false"
+  EXTERNAL_DELIVERY_ENABLED: "false"
+  SOCIAL_PUBLISHING_ENABLED: "false"
+  EXTERNAL_MODEL_CALLS_ENABLED: "false"
+  LIVE_SMS_DELIVERY: "false"
+  LIVE_EMAIL_DELIVERY: "false"
+  LIVE_PSTN_DIALING: "false"
+  PRODUCTION_DIALING: DISABLED
+
+x-app: &app
+  image: ghcr.io/appolon1908-hue/codestra-middleware@sha256:92954f809e811487f8ac15bde3ba636f3bdb1c37547838e9579bb1fd9567f8da
+  user: "65532:65532"
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  env_file:
+    - /etc/codestra/secrets/middleware-staging/middleware.env
+  environment: *safety
+  networks: [backend]
+
+services:
+  middleware-staging:
+    <<: *app
+    restart: unless-stopped
+    # Application-only startup. Schema changes are never run here.
+    command: ["-m", "uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8080"]
+
+  middleware-migration:
+    <<: *app
+    profiles: [one-shot-migration]
+    restart: "no"
+    # The migration job is invoked explicitly after backup verification.
+    command: ["scripts/migrate_runtime.py"]
+
+networks:
+  backend:
+    external: true
+    name: codestra-middleware-staging_backend

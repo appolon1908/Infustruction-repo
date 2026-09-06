@@ -1,0 +1,13 @@
+output "staging_host_id" { value = hcloud_server.stage6.id }
+output "staging_host_name" { value = hcloud_server.stage6.name }
+output "staging_host_ipv4" { value = hcloud_server.stage6.ipv4_address }
+output "staging_host_private_ip" { value = hcloud_server_network.stage6.ip }
+output "staging_firewall_id" { value = hcloud_firewall.runtime.id }
+output "staging_network_id" { value = hcloud_network.stage6.id }
+output "staging_network_cidr" { value = hcloud_network.stage6.ip_range }
+output "staging_subnet_cidr" { value = hcloud_network_subnet.stage6.ip_range }
+output "egress_gateway_id" { value = hcloud_server.egress.id }
+output "egress_gateway_private_ip" { value = hcloud_server_network.egress.ip }
+output "egress_firewall_id" { value = hcloud_firewall.egress.id }
+output "dns_resolver_cidrs" { value = ["${hcloud_server_network.egress.ip}/32"] }
+output "ntp_server_cidrs" { value = ["${hcloud_server_network.egress.ip}/32"] }

@@ -1,0 +1,27 @@
+name: codestra-n8n-stage6-candidate
+
+x-safety: &safety
+  LIVE_ADVERTISING_ENABLED: "false"
+  EXTERNAL_DELIVERY_ENABLED: "false"
+  SOCIAL_PUBLISHING_ENABLED: "false"
+  EXTERNAL_MODEL_CALLS_ENABLED: "false"
+  LIVE_SMS_DELIVERY: "false"
+  LIVE_EMAIL_DELIVERY: "false"
+  LIVE_PSTN_DIALING: "false"
+  PRODUCTION_DIALING: DISABLED
+  N8N_EXTERNAL_PROVIDER_WRITES: "false"
+  N8N_WORKFLOW_ACTIVATION: "false"
+
+x-n8n: &n8n
+  image: n8nio/n8n@sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
+  environment: *safety
+
+services:
+  n8n:
+    <<: *n8n
+  webhook:
+    <<: *n8n
+  worker:
+    <<: *n8n
+  worker-2:
+    <<: *n8n

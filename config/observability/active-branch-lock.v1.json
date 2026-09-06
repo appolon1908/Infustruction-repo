@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-08-29T21:15:00Z",
+  "policy": {
+    "oneActiveImplementationPerScope": true,
+    "stackedBranchesRequireExplicitOrder": true,
+    "newParallelBranchesBlockedWithoutRegistryChange": true,
+    "forcePushAllowed": false,
+    "directPersistentBranchCommitsAllowed": false,
+    "mergeIsDeploymentAuthorization": false,
+    "liveDeploymentAllowed": false
+  },
+  "locks": [
+    {
+      "repository": "appolon1908-hue/Codestra-Grafana-",
+      "scope": "grafana-corporate-runtime-oidc-dashboards",
+      "canonicalBranch": "integration/enterprise-observability-control-plane-20260829",
+      "canonicalPullRequest": 1,
+      "blockedParallelBranches": [
+        "feature/provisioned-dashboards-alert-views-v1"
+      ],
+      "decision": "continue_canonical_branch"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Prometheus",
+      "scope": "prometheus-metrics-slo-alert-control-plane",
+      "canonicalBranch": "feature/observability/authoritative-prometheus-20260829",
+      "canonicalPullRequest": 1,
+      "blockedParallelBranches": [
+        "feature/metrics-control-plane-v1",
+        "feature/codestra-corporate-suite-v1-20260829"
+      ],
+      "decision": "continue_canonical_branch_and_integrate_missing_changes_only"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Alertmanager",
+      "scope": "central-alert-routing",
+      "canonicalBranch": "integration/central-alert-routing-v1-20260829",
+      "canonicalPullRequest": 1,
+      "blockedParallelBranches": [
+        "feature/central-alert-routing-v1"
+      ],
+      "decision": "continue_canonical_branch"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Loki",
+      "scope": "loki-log-control-plane",
+      "canonicalBranch": "feature/codestra-corporate-suite-v1-20260829",
+      "canonicalPullRequest": 1,
+      "blockedParallelBranches": [
+        "feature/log-control-plane-v1"
+      ],
+      "decision": "continue_canonical_branch"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Tempo",
+      "scope": "tempo-trace-control-plane",
+      "canonicalBranch": "feature/codestra-corporate-suite-v1-20260829",
+      "canonicalPullRequest": 1,
+      "blockedParallelBranches": [
+        "feature/trace-control-plane-v1"
+      ],
+      "decision": "continue_canonical_branch"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Telemetry",
+      "scope": "opentelemetry-collector-pipelines",
+      "canonicalBranch": "feature/observability/collector-prometheus-authority-20260829",
+      "canonicalPullRequest": 2,
+      "blockedParallelBranches": [
+        "feature/telemetry-pipelines-v1",
+        "feature/codestra-corporate-suite-v1-20260829"
+      ],
+      "decision": "continue_canonical_branch_and_integrate_missing_changes_only"
+    },
+    {
+      "repository": "appolon1908-hue/Superset",
+      "scope": "superset-private-oidc-and-corporate-analytics",
+      "canonicalBranch": "feature/codestra-corporate-suite-v1-20260829",
+      "canonicalPullRequest": 2,
+      "stack": [
+        {
+          "order": 1,
+          "branch": "feature/private-bind-keycloak-oidc-v1",
+          "pullRequest": 1,
+          "role": "private_bind_oidc_security_foundation"
+        },
+        {
+          "order": 2,
+          "branch": "feature/codestra-corporate-suite-v1-20260829",
+          "pullRequest": 2,
+          "role": "curated_analytics_and_business_models"
+        }
+      ],
+      "blockedParallelBranches": [
+        "feature/communications-analytics-models-v1"
+      ],
+      "decision": "preserve_ordered_stack"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Node-Exporter",
+      "scope": "node-exporter-runtime-and-corporate-host-metrics",
+      "canonicalBranch": "feature/codestra-corporate-suite-v1-20260829",
+      "canonicalPullRequest": 2,
+      "stack": [
+        {
+          "order": 1,
+          "branch": "feature/observability/node-exporter-20260829",
+          "pullRequest": 1,
+          "role": "private_runtime_foundation"
+        },
+        {
+          "order": 2,
+          "branch": "feature/codestra-corporate-suite-v1-20260829",
+          "pullRequest": 2,
+          "role": "corporate_metrics_textfile_mtls_extension"
+        }
+      ],
+      "blockedParallelBranches": [
+        "feature/node-exporter-runtime-v1"
+      ],
+      "decision": "preserve_ordered_stack"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-cAdvisor",
+      "scope": "cadvisor-runtime-and-corporate-container-metrics",
+      "canonicalBranch": "feature/codestra-corporate-suite-v1-20260829",
+      "canonicalPullRequest": 2,
+      "stack": [
+        {
+          "order": 1,
+          "branch": "feature/observability/cadvisor-20260829",
+          "pullRequest": 1,
+          "role": "private_runtime_foundation"
+        },
+        {
+          "order": 2,
+          "branch": "feature/codestra-corporate-suite-v1-20260829",
+          "pullRequest": 2,
+          "role": "corporate_metrics_cardinality_extension"
+        }
+      ],
+      "blockedParallelBranches": [
+        "feature/cadvisor-runtime-v1"
+      ],
+      "decision": "preserve_ordered_stack"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Postgres-Exporter",
+      "scope": "postgres-exporter-hostname-governance-and-runtime",
+      "canonicalBranch": "feature/observability/postgres-exporter-20260829",
+      "canonicalPullRequest": 2,
+      "stack": [
+        {
+          "order": 1,
+          "branch": "governance/canonical-pgex-hostname-20260829",
+          "pullRequest": 1,
+          "role": "canonical_hostname_and_repo_authority"
+        },
+        {
+          "order": 2,
+          "branch": "feature/observability/postgres-exporter-20260829",
+          "pullRequest": 2,
+          "role": "private_runtime_and_least_privilege_sql"
+        }
+      ],
+      "blockedParallelBranches": [
+        "feature/postgres-exporter-runtime-v1"
+      ],
+      "decision": "preserve_ordered_stack"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Redis-Exporter",
+      "scope": "redis-exporter-runtime-and-corporate-cache-metrics",
+      "canonicalBranch": "feature/codestra-corporate-suite-v1-20260829",
+      "canonicalPullRequest": 2,
+      "stack": [
+        {
+          "order": 1,
+          "branch": "feature/observability/redis-exporter-20260829",
+          "pullRequest": 1,
+          "role": "private_runtime_foundation"
+        },
+        {
+          "order": 2,
+          "branch": "feature/codestra-corporate-suite-v1-20260829",
+          "pullRequest": 2,
+          "role": "corporate_metrics_and_acl_boundary"
+        }
+      ],
+      "blockedParallelBranches": [
+        "feature/redis-exporter-runtime-v1"
+      ],
+      "decision": "preserve_ordered_stack"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Blackbox-Exporter",
+      "scope": "blackbox-runtime-and-governed-probes",
+      "canonicalBranch": "feature/codestra-corporate-suite-v1-20260829",
+      "canonicalPullRequest": 2,
+      "stack": [
+        {
+          "order": 1,
+          "branch": "feature/observability/blackbox-exporter-20260829",
+          "pullRequest": 1,
+          "role": "private_runtime_foundation"
+        },
+        {
+          "order": 2,
+          "branch": "feature/codestra-corporate-suite-v1-20260829",
+          "pullRequest": 2,
+          "role": "governed_probe_and_business_health_extension"
+        }
+      ],
+      "blockedParallelBranches": [
+        "feature/blackbox-probes-v1"
+      ],
+      "decision": "preserve_ordered_stack"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-Alloy",
+      "scope": "alloy-business-scoped-log-collection",
+      "canonicalBranch": "feature/codestra-corporate-suite-v1-20260829",
+      "canonicalPullRequest": 1,
+      "blockedParallelBranches": [
+        "feature/alloy-collection-pipelines-v1"
+      ],
+      "decision": "continue_canonical_branch"
+    },
+    {
+      "repository": "appolon1908-hue/Codestra-OpenBao",
+      "scope": "openbao-private-oidc-and-corporate-secrets-authority",
+      "canonicalBranch": "feature/codestra-corporate-suite-v1-20260829",
+      "canonicalPullRequest": 2,
+      "stack": [
+        {
+          "order": 1,
+          "branch": "feature/private-bind-keycloak-oidc-v1",
+          "pullRequest": 1,
+          "role": "private_bind_oidc_foundation"
+        },
+        {
+          "order": 2,
+          "branch": "feature/codestra-corporate-suite-v1-20260829",
+          "pullRequest": 2,
+          "role": "secrets_pki_policy_feature_model"
+        },
+        {
+          "order": 3,
+          "branch": "feature/storage-seal-ha-dr-v1",
+          "pullRequest": null,
+          "role": "required_future_storage_seal_ha_dr_implementation"
+        }
+      ],
+      "blockedParallelBranches": [],
+      "decision": "preserve_stack_and_build_missing_storage_stage"
+    }
+  ],
+  "crossCuttingLocks": [
+    {
+      "repository": "appolon1908-hue/Keycloak",
+      "scope": "observability-browser-identities-and-realm-roles",
+      "foundationBranch": "feature/observability-oidc-clients-v1",
+      "implementationBranch": "feature/observability-managed-clients-v1",
+      "issue": 30,
+      "decision": "implementation_must_be_stacked_on_latest_foundation"
+    },
+    {
+      "repository": "appolon1908-hue/Caddy",
+      "scope": "observability-edge-routing",
+      "canonicalBranch": "feature/observability-edge-routing-v1",
+      "canonicalPullRequest": 6,
+      "decision": "continue_canonical_branch_no_live_reload"
+    },
+    {
+      "repository": "appolon1908-hue/Infustruction-repo",
+      "scope": "observability-private-topology-and-release-train",
+      "foundationBranch": "feature/observability-private-network-v1",
+      "releaseTrainBranch": "feature/observability-repository-release-train-v1",
+      "integrationLabBranch": "codex/observability-integration-foundation",
+      "decision": "ordered_parallel_scopes_not_duplicates"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+schema: codestra.stage6-8.release.v1
+mode: staging_and_read_only_canary
+write_activation_authorized: false
+
+services:
+  - name: kong
+    repo: appolon1908-hue/Kong
+    required: [immutable_artifact, staging_apply, route_readback, auth_scope_test, rollback]
+  - name: keycloak
+    repo: appolon1908-hue/Keycloak
+    required: [realm_plan, staging_check, staging_apply, client_scope_readback, negative_permission_test, rollback]
+  - name: middleware
+    repo: appolon1908-hue/Middleware-
+    required: [migration, inbox_outbox, idempotency, retry_dead_letter, telemetry]
+  - name: marketing
+    repo: appolon1908-hue/Codestra-Marketing-
+    required: [migration, tenant_isolation, attribution, read_only_provider_sync, telemetry]
+  - name: ai
+    repo: appolon1908-hue/Codestra-AI
+    required: [migration, audit_store, provider_calls_disabled, telemetry]
+  - name: communication
+    repo: appolon1908-hue/Codestra-Communication-CC
+    required: [migration, consent_suppression, dry_run, external_delivery_disabled, telemetry]
+  - name: social_control
+    repo: appolon1908-hue/Codesrea-Social-
+    required: [migration, runtime_reconciliation, publishing_disabled, telemetry]
+  - name: social_runtime
+    repo: appolon1908-hue/social.codestra.co
+    required: [immutable_artifact, one_shot_migration, read_only_adapter, publishing_kill_switch, telemetry]
+  - name: n8n
+    repo: appolon1908-hue/N8N
+    required: [staging_import, credential_binding, middleware_only_effects, inactive_by_default, telemetry]
+  - name: odoo
+    repo: appolon1908-hue/Odoo
+    required: [addon_install, addon_upgrade, tenant_campaign_isolation, attribution, conversion_feedback, telemetry]
+  - name: sdk
+    repo: appolon1908-hue/SDK-repository
+    required: [staging_contract_tests, correlation_id, idempotency, auth]
+
+observability:
+  metrics: appolon1908-hue/Codestra-Prometheus
+  dashboards: appolon1908-hue/Codestra-Grafana-
+  logs: appolon1908-hue/Codestra-Loki
+  traces: appolon1908-hue/Codestra-Tempo
+  telemetry: appolon1908-hue/Codestra-Telemetry
+  collector: appolon1908-hue/Codestra-Alloy
+  host_metrics: appolon1908-hue/Codestra-Node-Exporter
+  container_metrics: appolon1908-hue/Codestra-cAdvisor
+  redis_metrics: appolon1908-hue/Codestra-Redis-Exporter
+  blackbox: appolon1908-hue/Codestra-Blackbox-Exporter
+  business_bi: appolon1908-hue/Superset
+  secrets: appolon1908-hue/Codestra-OpenBao
+
+end_to_end_trace:
+  - test_lead
+  - kong
+  - middleware_inbox
+  - marketing_attribution
+  - odoo_crm
+  - n8n
+  - communication_dry_run
+  - odoo_outcome
+  - marketing_conversion_feedback
+
+mandatory_evidence:
+  - tenant_continuity
+  - correlation_continuity
+  - idempotency_replay
+  - durable_inbox_outbox
+  - retry_dead_letter
+  - odoo_attribution
+  - dry_run_only
+  - zero_external_writes
+  - metrics_logs_traces
+  - rollback
+
+kill_switches:
+  LIVE_ADVERTISING_ENABLED: false
+  META_READ_SYNC_ENABLED: false
+  EXTERNAL_MODEL_CALLS_ENABLED: false
+  EXTERNAL_DELIVERY_ENABLED: false
+  SOCIAL_READ_SYNC_ENABLED: false
+  SOCIAL_PUBLISHING_ENABLED: false
+  PUBLISHING_KILL_SWITCH: true
+
+canary:
+  environment: production
+  mode: read_only
+  prerequisites:
+    - staging_end_to_end_pass
+    - observability_pass
+    - rollback_pass
+    - backup_restore_validation
+    - exact_artifact_digests
+    - release_approval
+    - security_approval

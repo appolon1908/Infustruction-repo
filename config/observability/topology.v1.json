@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "dnsTarget": "37.27.128.39",
+  "domain": "codestra.media",
+  "listenerAuthority": "principal-service-repository-deployment-definition",
+  "listenerValuesAreReferences": true,
+  "liveInstallationAuthorized": false,
+  "networks": {
+    "loopback": "127.0.0.0/8",
+    "privateIntegrationVlan": "10.40.0.0/24",
+    "dockerNetworks": "environment-specific-private-networks"
+  },
+  "components": [
+    {
+      "id": "grafana",
+      "repository": "appolon1908-hue/Codestra-Grafana-",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "graf.codestra.media",
+      "exposure": "browser-through-caddy",
+      "nativeListener": "127.0.0.1:3000",
+      "receivesFrom": ["caddy"],
+      "connectsTo": ["prometheus", "loki", "tempo"],
+      "authentication": "keycloak-oidc"
+    },
+    {
+      "id": "prometheus",
+      "repository": "appolon1908-hue/Codestra-Prometheus",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "prom.codestra.media",
+      "exposure": "private-only",
+      "nativeListener": "private:9090",
+      "receivesFrom": ["grafana"],
+      "connectsTo": ["alertmanager", "node-exporter", "cadvisor", "postgres-exporter", "redis-exporter", "blackbox-exporter"],
+      "authentication": "private-network-and-service-policy"
+    },
+    {
+      "id": "alertmanager",
+      "repository": "appolon1908-hue/Codestra-Alertmanager",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "aler.codestra.media",
+      "exposure": "private-only",
+      "nativeListener": "private:9093",
+      "receivesFrom": ["prometheus"],
+      "connectsTo": ["approved-notification-integrations"],
+      "authentication": "private-network-and-service-policy"
+    },
+    {
+      "id": "loki",
+      "repository": "appolon1908-hue/Codestra-Loki",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "loki.codestra.media",
+      "exposure": "private-only",
+      "nativeListener": "private:3100",
+      "receivesFrom": ["alloy", "otel-collector"],
+      "connectsTo": [],
+      "queriedBy": ["grafana"],
+      "authentication": "private-network-and-tenant-policy"
+    },
+    {
+      "id": "tempo",
+      "repository": "appolon1908-hue/Codestra-Tempo",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "temp.codestra.media",
+      "exposure": "private-only",
+      "nativeListener": "private:3200",
+      "ingestListeners": ["private:4317", "private:4318"],
+      "receivesFrom": ["otel-collector", "alloy"],
+      "connectsTo": [],
+      "queriedBy": ["grafana"],
+      "authentication": "private-network-and-tenant-policy"
+    },
+    {
+      "id": "otel-collector",
+      "repository": "appolon1908-hue/Codestra-Telemetry",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "otel.codestra.media",
+      "exposure": "private-only",
+      "nativeListeners": ["private:4317", "private:4318"],
+      "receivesFrom": ["instrumented-services"],
+      "connectsTo": ["tempo", "loki", "prometheus"],
+      "authentication": "private-network-and-service-auth"
+    },
+    {
+      "id": "superset",
+      "repository": "appolon1908-hue/Superset",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "supe.codestra.media",
+      "exposure": "browser-through-caddy",
+      "nativeListener": "127.0.0.1:8088",
+      "receivesFrom": ["caddy"],
+      "connectsTo": ["curated-analytics-read-models"],
+      "authentication": "keycloak-oidc"
+    },
+    {
+      "id": "node-exporter",
+      "repository": "appolon1908-hue/Codestra-Node-Exporter",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "node.codestra.media",
+      "exposure": "private-only",
+      "nativeListener": "private:9100",
+      "receivesFrom": ["prometheus"],
+      "connectsTo": [],
+      "authentication": "source-restricted-private-scrape"
+    },
+    {
+      "id": "cadvisor",
+      "repository": "appolon1908-hue/Codestra-cAdvisor",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "cadv.codestra.media",
+      "exposure": "private-only",
+      "nativeListener": "private:8080",
+      "receivesFrom": ["prometheus"],
+      "connectsTo": [],
+      "authentication": "source-restricted-private-scrape"
+    },
+    {
+      "id": "postgres-exporter",
+      "repository": "appolon1908-hue/Codestra-Postgres-Exporter",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": null,
+      "privateServiceIdentity": "postgres-exporter:9187",
+      "exposure": "private-only",
+      "nativeListener": "private:9187",
+      "receivesFrom": ["prometheus"],
+      "connectsTo": ["approved-postgresql-instances-with-monitoring-role"],
+      "authentication": "source-restricted-private-scrape"
+    },
+    {
+      "id": "redis-exporter",
+      "repository": "appolon1908-hue/Codestra-Redis-Exporter",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "rdex.codestra.media",
+      "exposure": "private-only",
+      "nativeListener": "private:9121",
+      "receivesFrom": ["prometheus"],
+      "connectsTo": ["approved-redis-instances-with-monitoring-credentials"],
+      "authentication": "source-restricted-private-scrape"
+    },
+    {
+      "id": "blackbox-exporter",
+      "repository": "appolon1908-hue/Codestra-Blackbox-Exporter",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "blac.codestra.media",
+      "exposure": "private-only",
+      "nativeListener": "private:9115",
+      "receivesFrom": ["prometheus"],
+      "connectsTo": ["approved-synthetic-targets"],
+      "authentication": "source-restricted-private-scrape"
+    },
+    {
+      "id": "alloy",
+      "repository": "appolon1908-hue/Codestra-Alloy",
+      "portConfirmation": "pending-principal-repository-deployment-definition-if-diagnostics-enabled",
+      "hostname": "allo.codestra.media",
+      "exposure": "private-only",
+      "nativeListener": "private:12345",
+      "receivesFrom": ["local-logs-metrics-traces"],
+      "connectsTo": ["loki", "tempo", "otel-collector"],
+      "authentication": "private-network-and-service-auth"
+    },
+    {
+      "id": "openbao",
+      "repository": "appolon1908-hue/Codestra-OpenBao",
+      "portConfirmation": "pending-principal-repository-deployment-definition",
+      "hostname": "bao.codestra.media",
+      "exposure": "restricted-browser-through-caddy",
+      "nativeListener": "127.0.0.1:8200",
+      "receivesFrom": ["caddy", "authorized-private-applications"],
+      "connectsTo": ["approved-storage-and-seal-backends"],
+      "authentication": "caddy-source-allowlist-plus-keycloak-oidc-plus-openbao-policy"
+    }
+  ],
+  "rules": {
+    "publicNativePorts": false,
+    "caddyOnlyPublicListeners": [80, 443],
+    "supersetLiveProviderDatabaseAccess": false,
+    "observabilitySystemsAreAuthoritativeBusinessStores": false,
+    "secretsInGit": false,
+    "productionActivationAuthorized": false
+  }
+}

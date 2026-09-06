@@ -1,0 +1,62 @@
+name: Validate observability staging evidence tooling
+
+on:
+  pull_request:
+    paths:
+      - 'release/templates/observability-staging-evidence.v1.json'
+      - 'scripts/collect-observability-readonly-inventory.py'
+      - 'scripts/validate-observability-readonly-inventory-collector.py'
+      - 'scripts/validate-observability-staging-evidence.py'
+      - '.github/workflows/validate-observability-staging-evidence.yml'
+  push:
+    branches: [development, test, staging, production, main]
+    paths:
+      - 'release/templates/observability-staging-evidence.v1.json'
+      - 'scripts/collect-observability-readonly-inventory.py'
+      - 'scripts/validate-observability-readonly-inventory-collector.py'
+      - 'scripts/validate-observability-staging-evidence.py'
+      - '.github/workflows/validate-observability-staging-evidence.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: observability-staging-evidence-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+
+      - name: Validate evidence template and non-mutating inventory policy
+        env:
+          PYTHONPYCACHEPREFIX: /tmp/codestra-observability-evidence-pycache
+        run: |
+          python -m py_compile \
+            scripts/collect-observability-readonly-inventory.py \
+            scripts/validate-observability-readonly-inventory-collector.py \
+            scripts/validate-observability-staging-evidence.py
+          python scripts/validate-observability-readonly-inventory-collector.py
+          python scripts/validate-observability-staging-evidence.py
+          python scripts/collect-observability-readonly-inventory.py --help >/dev/null
+
+      - name: Prove completed evidence cannot authorize deployment
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('release/templates/observability-staging-evidence.v1.json').read_text())
+          assert value['deploymentAuthorized'] is False
+          assert value['productionAuthorized'] is False
+          assert value['decision']['goForStagingChangeReview'] is False
+          assert all(field is False for field in value['safetyFreeze'].values())
+          PY

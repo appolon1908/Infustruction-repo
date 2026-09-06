@@ -36,11 +36,12 @@ Defines shared deployment topology, environment models, networking, infrastructu
 1. Promote the central repository registry and release-train authority
 2. Keep component references exact, immutable, and source-traceable
 3. Maintain the disposable integration laboratory and predeployment manifests
-4. Separate staging and production infrastructure physically when capacity permits
+4. Require an explicitly approved, isolated staging scope before deployment; shared-host capacity does not waive isolation gates
 
 ## Governance and safety
 
-- Promotion model: `feature/infra/docs/fix/security/upgrade -> development -> test -> staging -> production -> main`.
+- `main` is the accepted infrastructure source authority. `development` is the integration branch; scoped `feature/*`, `infra/*`, `docs/*`, `fix/*`, `security/*`, and `upgrade/*` branches use reviewed pull requests.
+- Test, staging, and production branch promotion is source governance only. Runtime promotion is a separate reviewed operation and cannot be inferred from a branch name or merge.
 - Use pull requests and exact-head/merge-result validation; merge never applies infrastructure.
 - Never commit credentials, private keys, certificates, customer PII, database dumps, or secret-bearing evidence.
 - Every deployment requires accepted component artifacts, inventory, backups, plan review, smoke tests, and rollback readiness.

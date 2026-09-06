@@ -110,3 +110,12 @@ After repository bootstrap, use:
 - `fix/*` — corrective changes
 
 Never perform production activation merely by merging documentation or infrastructure source. Deployment is a separate, explicitly approved action.
+
+## Observability private-network candidate
+
+The canonical topology, east-west communication map, and additive default-deny
+firewall intent are under `config/observability/`. Validate them with
+`python3 scripts/validate-observability-topology.py`. These files are
+source-only and explicitly keep live installation disabled until principal
+service repositories confirm their deployment listeners and the Caddy and
+Keycloak changes pass review.

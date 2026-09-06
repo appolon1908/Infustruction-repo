@@ -1,0 +1,25 @@
+name: Marketing Stage 9 Synthetic Certification
+
+on:
+  pull_request:
+    paths:
+      - 'config/marketing-stage9-readiness.json'
+      - 'config/repository-name-aliases.v1.json'
+      - 'scripts/certify_marketing_stage9.py'
+      - '.github/workflows/marketing-stage9-synthetic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/certify_marketing_stage9.py

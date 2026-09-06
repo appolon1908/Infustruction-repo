@@ -1,0 +1,679 @@
+schema: codestra.production-capability-evidence-bindings.v1
+captured_at: '2026-09-01T14:01:48Z'
+target_host: 65.109.65.169
+production_changed: false
+services:
+  codestra-appolon-middleware-integration-api-1:
+    runtime_image_id: sha256:695fa3ce3f50ba4d0ae0784976b946a0a683ca731155e4bd3bd9e90a4670b820
+    oci_revision: f6748a58f8d2590520a4f28776770957061cdea1
+    deployment_configs:
+    - path: /root/callback-e2e-platform/deploy/middleware/compose.appolon-integration-api.yaml
+      sha256: 6e275c5a4cb46437401cde4bce3c2d6e6797fdd4589e95cb50b4e8fe72b39625
+  codestra-beyvra-email-api-1:
+    runtime_image_id: sha256:a226db03c6fce98f81c02e78bab96a2beb452a27dd79308c921e85bfa664aa52
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /root/beyvra-email-middleware/deploy/beyvra-email/compose.yaml
+      sha256: acadc3c230814e5af4de26185b4d160f55985a7d5c8cab4d8b3aa5ad8f11580b
+  codestra-caddy-upstream-gateway:
+    runtime_image_id: sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/caddy-upstream-gateway/compose.yaml
+      sha256: bdf81d02a58275d15ecffe74b8f627bf7cca0e6fd3518348d08250072bae4bf7
+  codestra-email-reseller-api-1:
+    runtime_image_id: sha256:8d7bb50e8787c110a7930fadb0c69a44ba075c70cb5e035118d9f334b1211e08
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /root/codestra-odoo-middleware-functional/deploy/email-reseller/compose.yaml
+      sha256: 8bb3b7559cb9787ad74d1c83e23bc8b8dccfe6a88c6058c7247885e5ebe22e8a
+    - path: /root/codestra-odoo-middleware-functional/deploy/email-reseller/compose.live-delivery-safety.yaml
+      sha256: 1c8c5d7a74646cfa1784e98749f5a44d41705406b300f5266b4d0cec0a0b1f93
+  codestra-identity-auth-gateway-1:
+    runtime_image_id: sha256:aa0bd8dd5ab0c78e4c91c92755ad573a5f92241f88138b4141b8ec803463b4fd
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/identity-platform/deploy/compose.identity.yaml
+      sha256: 1dfbc26319b8c2f55709c03cb4104d14cefec6748c1e75c1fd2a251ee38412be
+  codestra-identity-identity-db-1:
+    runtime_image_id: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/identity-platform/deploy/compose.identity.yaml
+      sha256: 1dfbc26319b8c2f55709c03cb4104d14cefec6748c1e75c1fd2a251ee38412be
+  codestra-identity-keycloak-1:
+    runtime_image_id: sha256:2eb3cd316835c990e69e26ade292ffa78f6fb0db7d5fc6377463c162e1979ac0
+    oci_revision: df15afa5a3a8a2b10021f879ffa93b30fb36c73a
+    deployment_configs:
+    - path: /opt/codestra/identity-platform/deploy/compose.identity.yaml
+      sha256: 1dfbc26319b8c2f55709c03cb4104d14cefec6748c1e75c1fd2a251ee38412be
+  codestra-integration-control-plane-api-1:
+    runtime_image_id: sha256:646b7f2a611b26986b81c143661b14e825ac977f9b3f84274fc8432f501e90f9
+    oci_revision: 44d2addf48ae31da6eeb3c3f9ab3fe34d999042c
+    deployment_configs:
+    - path: /opt/codestra/releases/control-plane/ba04954a28f567ca3efa70a96ae660109e0adbf6/deploy/control-plane/compose.yaml
+      sha256: bf9e094b412649a0b4fc016f598f56a3a728ae5edbc183fc2252d40d26ee9f34
+    - path: /opt/codestra/releases/control-plane/ba04954a28f567ca3efa70a96ae660109e0adbf6/deploy/control-plane/compose.live-delivery-safety.yaml
+      sha256: 744b9b3fb2f0ee260711bb9890606a7b76ef5e438ab46366f6da1edc6f7945f7
+  codestra-integration-control-plane-worker-1:
+    runtime_image_id: sha256:646b7f2a611b26986b81c143661b14e825ac977f9b3f84274fc8432f501e90f9
+    oci_revision: 44d2addf48ae31da6eeb3c3f9ab3fe34d999042c
+    deployment_configs:
+    - path: /opt/codestra/releases/control-plane/ba04954a28f567ca3efa70a96ae660109e0adbf6/deploy/control-plane/compose.yaml
+      sha256: bf9e094b412649a0b4fc016f598f56a3a728ae5edbc183fc2252d40d26ee9f34
+    - path: /opt/codestra/releases/control-plane/ba04954a28f567ca3efa70a96ae660109e0adbf6/deploy/control-plane/compose.live-delivery-safety.yaml
+      sha256: 744b9b3fb2f0ee260711bb9890606a7b76ef5e438ab46366f6da1edc6f7945f7
+  codestra-kong-kong-db-1:
+    runtime_image_id: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/kong/compose.yaml
+      sha256: 613fc4346b413b04143c2c75c14d4e18836fb79b766e84a68a45049a58d4b7dc
+  codestra-kong-kong-gateway-1:
+    runtime_image_id: sha256:9cb0429e4641d29189118b20ef0a195569b9d65ef0536bc57907797874071689
+    oci_revision: 6d5c260a6d40a07f40344bd51bb1d7d60df4a559
+    deployment_configs:
+    - path: /opt/codestra/kong/compose.yaml
+      sha256: 613fc4346b413b04143c2c75c14d4e18836fb79b766e84a68a45049a58d4b7dc
+    - path: /root/codestra-control-plane-gateway/deploy/kong/compose.gateway-secret.yaml
+      sha256: 358286de0feef17c37f51160a6be1e0ade25a9907c676a40f4c0f25f0fbbb019
+  codestra-kong-service-auth-adapter-1:
+    runtime_image_id: sha256:aa1d68841f4fdddac0c445d26a953fdbfe1e311a0540a3a1c588a8b98af1ec71
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/kong-service-auth-adapter/compose.yaml
+      sha256: a1607234ea6044e66a013761e3e6421974b46387d2902a5e0bf8833475c8a30d
+  codestra-mail-api-mail-api-1:
+    runtime_image_id: sha256:7495d5f0d79f027456ed61b7c3c2ea9331c228f3d2e10bceef3178eef5a62594
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /root/codestra-production-completion/deploy/mail-platform/compose.api.yaml
+      sha256: 8b17ade796c066957b53928187cda32dd1098333d487fdc67c236afab59845a9
+  codestra-mail-isolated-stalwart-1:
+    runtime_image_id: sha256:9ed1d343243b7aa72969e372a7240b7ddea07730781d4b68a0dc3d8d51c418bb
+    oci_revision: d08305df2e865ccf8b0676fd63ebd37d25aef787
+    deployment_configs:
+    - path: /root/codestra-production-completion/deploy/mail-platform/compose.isolated.yaml
+      sha256: 4d8d9d09ebca36b791d0aaea27441f99ad3e45e86b2a1e505f058b207ec09cec
+  codestra-middleware-1:
+    runtime_image_id: sha256:5dd751a9da60e2417c9ee553ddea68f54e76981dcc896eb3676b27617d121f38
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.scraper-ingress-disabled.yaml
+      sha256: 1825a3aa2df125e750add89f60c1b660112f9003b8dd803cb0282bac24bf0190
+    - path: /opt/codestra/compose/compose.health-contract-remediation.yaml
+      sha256: a254ee5df345dc0d3e15a3e4b229c7eeaeffb4ed08a6d26b164d1983d6658ed6
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-breero-odoo-worker-1:
+    runtime_image_id: sha256:961c0569a5033cdb494d211fd32cfe20d7efd42d3900f02c2d3f0ac7bfdcfa63
+    oci_revision: 51416422eaaa959c8c7223ad1434287597eb8007
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.schema2-recovery-20260812.yaml
+      sha256: d906b2c067125e1be42be0ab5f5254d64903bcd48be038318bade2d620e8b42f
+    - path: /opt/codestra/compose/compose.server-a-readiness-5bb5a048.yaml
+      sha256: e3e4b132d038a1022bd71ddbc77f192e7838fa229022e1f0e1ab09bb768424e0
+    - path: /opt/codestra/compose/compose.breero-worker-a9e890c.yaml
+      sha256: 398c94d8071b76395ead922241a5ac4afc820be308e0dafe08272769456c79c8
+    - path: /opt/codestra/compose/compose.live-delivery-breero.yaml
+      sha256: a24b2e1587de0c4061b589dcb0d76172abc80db4753679fdb1aac43c84c6abf8
+  codestra-middleware-event-gateway-1:
+    runtime_image_id: sha256:93cbb4a11765ad92e9bbf1a1bb9601f15a540164b4e7d6647cb0f16d588ab6e0
+    oci_revision: 4a3ac0b57a61baf63310c55048a7897556faa9a972083b86761e91391ae2317b
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.schema2-recovery-20260812.yaml
+      sha256: d906b2c067125e1be42be0ab5f5254d64903bcd48be038318bade2d620e8b42f
+    - path: /opt/codestra/compose/compose.server-a-readiness-5bb5a048.yaml
+      sha256: e3e4b132d038a1022bd71ddbc77f192e7838fa229022e1f0e1ab09bb768424e0
+    - path: /opt/codestra/releases/middleware-51416422/deploy/readiness/compose.private-vicidial-ingress.yaml
+      sha256: 34a7226229790555ec26f2257c7c064808f7b4a94b5bb884065bc08faf726024
+    - path: /opt/codestra/compose/compose.breero-worker-a9e890c.yaml
+      sha256: 398c94d8071b76395ead922241a5ac4afc820be308e0dafe08272769456c79c8
+    - path: /opt/codestra/compose/compose.scraper-ingress-disabled.yaml
+      sha256: 1825a3aa2df125e750add89f60c1b660112f9003b8dd803cb0282bac24bf0190
+    - path: /opt/codestra/compose/compose.scraper-monitoring-worker-disabled.yaml
+      sha256: c506bb3196bd7d012dd06c6f027fc384b705b46c92f5c3db0643a7f6c154c1bc
+    - path: /opt/codestra/compose/compose.external-webhook.yaml
+      sha256: fb95ee047f694bd9d2135f3843b7d874424a4198aad5115943424f5a2e1d4983
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-extension-allocator-1:
+    runtime_image_id: sha256:1a9e13a0c930d36076b5742e17f948dc85d9bc6ace90e58052756c8b1ad42700
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-external-webhook-worker-1:
+    runtime_image_id: sha256:93cbb4a11765ad92e9bbf1a1bb9601f15a540164b4e7d6647cb0f16d588ab6e0
+    oci_revision: 4a3ac0b57a61baf63310c55048a7897556faa9a972083b86761e91391ae2317b
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.schema2-recovery-20260812.yaml
+      sha256: d906b2c067125e1be42be0ab5f5254d64903bcd48be038318bade2d620e8b42f
+    - path: /opt/codestra/compose/compose.server-a-readiness-5bb5a048.yaml
+      sha256: e3e4b132d038a1022bd71ddbc77f192e7838fa229022e1f0e1ab09bb768424e0
+    - path: /opt/codestra/releases/middleware-51416422/deploy/readiness/compose.private-vicidial-ingress.yaml
+      sha256: 34a7226229790555ec26f2257c7c064808f7b4a94b5bb884065bc08faf726024
+    - path: /opt/codestra/compose/compose.breero-worker-a9e890c.yaml
+      sha256: 398c94d8071b76395ead922241a5ac4afc820be308e0dafe08272769456c79c8
+    - path: /opt/codestra/compose/compose.scraper-ingress-disabled.yaml
+      sha256: 1825a3aa2df125e750add89f60c1b660112f9003b8dd803cb0282bac24bf0190
+    - path: /opt/codestra/compose/compose.scraper-monitoring-worker-disabled.yaml
+      sha256: c506bb3196bd7d012dd06c6f027fc384b705b46c92f5c3db0643a7f6c154c1bc
+    - path: /opt/codestra/compose/compose.external-webhook.yaml
+      sha256: fb95ee047f694bd9d2135f3843b7d874424a4198aad5115943424f5a2e1d4983
+    - path: /opt/codestra/compose/compose.live-delivery-external-webhook.yaml
+      sha256: 3fcf5897311030d02a4b3943afc7b4192547dfffcb340ce537c0b63066488397
+  codestra-middleware-integration-api-1:
+    runtime_image_id: sha256:09d4bd0f7b2376e0a06d3efae27a6642429389fa7e3277791ec0b36584e87175
+    oci_revision: 35448ef85ae56db3651a72b61db8e242b7aacd2e
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.scraper-ingress-disabled.yaml
+      sha256: 1825a3aa2df125e750add89f60c1b660112f9003b8dd803cb0282bac24bf0190
+    - path: /opt/codestra/compose/compose.health-contract-remediation.yaml
+      sha256: a254ee5df345dc0d3e15a3e4b229c7eeaeffb4ed08a6d26b164d1983d6658ed6
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+    - path: /home/codestra-admin/releases/callback-production-20260822.override.yaml
+      sha256: 6e7b034067db6508676075d315a5140b415d054924969d5002a62c4fb6c3f96b
+    - path: /home/codestra-admin/releases/campaign-crm-middleware-d30babd.override.yaml
+      sha256: 7d327f26e94b0eab2824393031bed82c18d0a6d48cb05e70c8480f141633820b
+  codestra-middleware-n8n-runtime-worker-1:
+    runtime_image_id: sha256:1a9e13a0c930d36076b5742e17f948dc85d9bc6ace90e58052756c8b1ad42700
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-notification-worker-1:
+    runtime_image_id: sha256:73fe86858d7a9303bbb151c77097aa43c0739e71c4781636e7db81dd4eadbf98
+    oci_revision: 9118e5bc01f9ce4a52add8753c096d061cd84848
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.scraper-ingress-disabled.yaml
+      sha256: 1825a3aa2df125e750add89f60c1b660112f9003b8dd803cb0282bac24bf0190
+    - path: /opt/codestra/compose/compose.health-contract-remediation.yaml
+      sha256: a254ee5df345dc0d3e15a3e4b229c7eeaeffb4ed08a6d26b164d1983d6658ed6
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+    - path: /home/codestra-admin/releases/callback-production-20260822.override.yaml
+      sha256: 6e7b034067db6508676075d315a5140b415d054924969d5002a62c4fb6c3f96b
+  codestra-middleware-odoo-result-worker-1:
+    runtime_image_id: sha256:ab74b9eb56c9625597476ab6669b065b471314c912cb2d4677118de230e3d4e2
+    oci_revision: d30babd35b7b82aab312f16940f5b8d2f7797f1d
+    deployment_configs:
+    - path: /opt/codestra/middleware/deploy/compose.runtime.yaml
+      sha256: c261271481cecbf49f9b82ee3e29d801f499c26baf790588f5c86a351099ec6c
+    - path: /tmp/worker-recreate-safety.yaml
+      sha256: UNAVAILABLE
+    - path: /opt/codestra/middleware/deploy/compose.campaign-crm-d30babd.yaml
+      sha256: ee592179e48c568659f14e51982b6a84609413c15727be83a752d5a9756b8204
+  codestra-middleware-pjsip-adapter-1:
+    runtime_image_id: sha256:1a9e13a0c930d36076b5742e17f948dc85d9bc6ace90e58052756c8b1ad42700
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-policy-engine-1:
+    runtime_image_id: sha256:1a9e13a0c930d36076b5742e17f948dc85d9bc6ace90e58052756c8b1ad42700
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-postly-polling-worker-1:
+    runtime_image_id: sha256:d3ac2b34d216064bc579feedca9cc2d4079ebe44943a6417ab31437c79df8dd8
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.scraper-ingress-disabled.yaml
+      sha256: 1825a3aa2df125e750add89f60c1b660112f9003b8dd803cb0282bac24bf0190
+    - path: /opt/codestra/compose/compose.health-contract-remediation.yaml
+      sha256: a254ee5df345dc0d3e15a3e4b229c7eeaeffb4ed08a6d26b164d1983d6658ed6
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-reconciliation-worker-1:
+    runtime_image_id: sha256:1a9e13a0c930d36076b5742e17f948dc85d9bc6ace90e58052756c8b1ad42700
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-scheduler-1:
+    runtime_image_id: sha256:73fe86858d7a9303bbb151c77097aa43c0739e71c4781636e7db81dd4eadbf98
+    oci_revision: 9118e5bc01f9ce4a52add8753c096d061cd84848
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.scraper-ingress-disabled.yaml
+      sha256: 1825a3aa2df125e750add89f60c1b660112f9003b8dd803cb0282bac24bf0190
+    - path: /opt/codestra/compose/compose.health-contract-remediation.yaml
+      sha256: a254ee5df345dc0d3e15a3e4b229c7eeaeffb4ed08a6d26b164d1983d6658ed6
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+    - path: /home/codestra-admin/releases/callback-production-20260822.override.yaml
+      sha256: 6e7b034067db6508676075d315a5140b415d054924969d5002a62c4fb6c3f96b
+  codestra-middleware-scraper-odoo-delivery-worker-1:
+    runtime_image_id: sha256:55dfe9ddfa8bfa94a9202284cb5276311e009066784bbde5dc05d5e1c3776492
+    oci_revision: bab6f4332fec77611f6a364fd3c9c7f9cc022051
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.scraper-ingress-disabled.yaml
+      sha256: 1825a3aa2df125e750add89f60c1b660112f9003b8dd803cb0282bac24bf0190
+    - path: /opt/codestra/compose/compose.scraper-monitoring-worker-disabled.yaml
+      sha256: c506bb3196bd7d012dd06c6f027fc384b705b46c92f5c3db0643a7f6c154c1bc
+    - path: /opt/codestra/compose/compose.live-delivery-scraper.yaml
+      sha256: 8f59025c43d998115d6eac6c3db198c875b6dc40ed47fd64f74098b2bd2fe7df
+  codestra-middleware-social-n8n-delivery-worker-1:
+    runtime_image_id: sha256:1a9e13a0c930d36076b5742e17f948dc85d9bc6ace90e58052756c8b1ad42700
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-sync-worker-1:
+    runtime_image_id: sha256:1a9e13a0c930d36076b5742e17f948dc85d9bc6ace90e58052756c8b1ad42700
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-telephony-provisioning-1:
+    runtime_image_id: sha256:1a9e13a0c930d36076b5742e17f948dc85d9bc6ace90e58052756c8b1ad42700
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-vicidial-adapter-1:
+    runtime_image_id: sha256:1a9e13a0c930d36076b5742e17f948dc85d9bc6ace90e58052756c8b1ad42700
+    oci_revision: b3ca9aa458fef843e3065aeff3397c656349f138
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+  codestra-middleware-webphone-session-issuer-1:
+    runtime_image_id: sha256:48dbb4201b4cf8abee1600936a84da52a92969ab124fb44a0007059e75d57e85
+    oci_revision: 80954a1ecb4eae49a57a9de245f78fd9a2f825a1
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+    - path: /opt/codestra/compose/compose.webrtc-6101-controlled.yaml
+      sha256: dc81fbfaca3445ebaab336ae3fc6f0b802776ef5f4b9664f26a950741e9ca968
+    - path: /opt/codestra/compose/compose.m07-exact-digest.yaml
+      sha256: 14b7cd79c583413fc46b4352e4b49ea422eeeb8f5c6b5071d1ed0f7d044c625c
+  codestra-monitoring-alertmanager-1:
+    runtime_image_id: sha256:9e082985f56f4c8c9f724e18f2288c6708f472e56a5286b8863d080434ea065d
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/operations/monitoring/compose.monitoring.yaml
+      sha256: 61db9fad9a8155cd8da107a86e431b46e7b2787803850b4d5aa0460a2e6430de
+  codestra-monitoring-blackbox-1:
+    runtime_image_id: sha256:e753ff9f3fc458d02cca5eddab5a77e1c175eee484a8925ac7d524f04366c2fc
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/operations/monitoring/compose.monitoring.yaml
+      sha256: 61db9fad9a8155cd8da107a86e431b46e7b2787803850b4d5aa0460a2e6430de
+  codestra-monitoring-cadvisor-1:
+    runtime_image_id: sha256:3de2bd5203120b866d74a9b283b2ffb8ec382fbf9dc321814700c6ea6f44ec57
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/operations/monitoring/compose.monitoring.yaml
+      sha256: 61db9fad9a8155cd8da107a86e431b46e7b2787803850b4d5aa0460a2e6430de
+  codestra-monitoring-node-exporter-1:
+    runtime_image_id: sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/operations/monitoring/compose.monitoring.yaml
+      sha256: 61db9fad9a8155cd8da107a86e431b46e7b2787803850b4d5aa0460a2e6430de
+  codestra-monitoring-prometheus-1:
+    runtime_image_id: sha256:3c42b892cf723fa54d2f262c37a0e1f80aa8c8ddb1da7b9b0df9455a35a7f893
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/operations/monitoring/compose.monitoring.yaml
+      sha256: 61db9fad9a8155cd8da107a86e431b46e7b2787803850b4d5aa0460a2e6430de
+  codestra-monitoring-receiver-receiver-1:
+    runtime_image_id: sha256:260fef5b0c1d8eafa29b661612511bdc3b869851b8a36d41a6cdfb5498f23ab4
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/operations/monitoring-receiver/compose.yaml
+      sha256: 46f251dcb0b0d649725153c71f9d6f75e923f3df7b67bcad2481ad95fad56af4
+  codestra-monitoring-redis-exporter-1:
+    runtime_image_id: sha256:178f95efe97b733ab10e8721c54bee838c125e1e666734dc27a956886fff7a8a
+    oci_revision: 9edec39c3a9a88148eebafb835629d07e0a647b8
+    deployment_configs:
+    - path: /opt/codestra/operations/monitoring/compose.monitoring.yaml
+      sha256: 61db9fad9a8155cd8da107a86e431b46e7b2787803850b4d5aa0460a2e6430de
+  codestra-n8n-1:
+    runtime_image_id: sha256:11524034450080bd0032754892b23ff20be43d72cf320ce75640f7c5475fdca8
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.n8n-db-host-remediation.yaml
+      sha256: 8d782abefa6c695f4cd92105e7110dd36a1db60f718d2bdcd723dc62290bcc1b
+    - path: /opt/codestra/compose/compose.odoo-n8n-hardening.yaml
+      sha256: 86d31f0cdf5a984b4f517b3aa46b9540e775249506d919df139949aeb310fa20
+  codestra-n8n-internal-proxy:
+    runtime_image_id: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/middleware/deploy/internal-n8n-private/compose.internal-n8n.yaml
+      sha256: edbd6729d0da2917ced2e6116e1164e04d1feb8825cf9bb9fee6c03c85aac2ed
+  codestra-odoo-1:
+    runtime_image_id: sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.scraper-ingress-disabled.yaml
+      sha256: 1825a3aa2df125e750add89f60c1b660112f9003b8dd803cb0282bac24bf0190
+    - path: /opt/codestra/compose/compose.health-contract-remediation.yaml
+      sha256: a254ee5df345dc0d3e15a3e4b229c7eeaeffb4ed08a6d26b164d1983d6658ed6
+    - path: /opt/codestra/compose/compose.live-delivery-safety.yaml
+      sha256: 447995f20b3443eca8c10d0110031dfe4e05394140a8a7b8f093419fe3c57d9a
+    - path: /home/codestra-admin/releases/callback-production-ded863c289c4.override.yaml
+      sha256: b179fab8726c59f554aa4e3200003366d4f2f9e6ae887ec5daad9386ca8f52cb
+    - path: /home/codestra-admin/releases/campaign-crm-middleware-d30babd.override.yaml
+      sha256: 7d327f26e94b0eab2824393031bed82c18d0a6d48cb05e70c8480f141633820b
+    - path: /home/codestra-admin/releases/contact-center-91e22ef4.override.yaml
+      sha256: 976f53321a7802afb2ab4354aab79c2d5b41d7618d9d99a2185d17491f156d97
+  codestra-odoo-internal-proxy:
+    runtime_image_id: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml
+      sha256: f8a7ddc144fddef4d9da12be798c692c580356d88b74553893802565af5c00b2
+  codestra-operations-dashboard-grafana-grafana-1:
+    runtime_image_id: sha256:3fd54ae1214669f8355f065ec9f6445d5279a3d77095ab048ca045685272429b
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /home/codestra-admin/operations-dashboard-grafana/compose.yaml
+      sha256: 7e34e268354130bc4dac5ffe8c7c2753bbf930a30c664ba4f4c2022f79e8ba21
+  codestra-postgres-1:
+    runtime_image_id: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.shared-postgresql-pitr.yaml
+      sha256: 9b29f371297bc1ecdeb2f520177ed34f22ca9392649e08dbef2dc1784580d529
+  codestra-private-vicidial-ingress-1:
+    runtime_image_id: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+    - path: /opt/codestra/compose/compose.middleware-runtime.yaml
+      sha256: d6e2ba0372ecc8f7bc6e7a2bc0fb124bb71159664ab6110cc7478aa63a6a2906
+    - path: /opt/codestra/compose/compose.phase-n2-activation.yaml
+      sha256: b8923298d8cd8216a4129ac7b3ef9e9a9f6b32013bdc743bce531ab12411e390
+    - path: /opt/codestra/compose/compose.final-production-trust.yaml
+      sha256: 30d0ff29813d69d44ea185ca23d5222632058e253283fc1cfc2913f9ebd4e2db
+    - path: /opt/codestra/compose/compose.schema2-recovery-20260812.yaml
+      sha256: d906b2c067125e1be42be0ab5f5254d64903bcd48be038318bade2d620e8b42f
+    - path: /opt/codestra/compose/compose.server-a-readiness-5bb5a048.yaml
+      sha256: e3e4b132d038a1022bd71ddbc77f192e7838fa229022e1f0e1ab09bb768424e0
+    - path: /opt/codestra/releases/middleware-51416422/deploy/readiness/compose.private-vicidial-ingress.yaml
+      sha256: 34a7226229790555ec26f2257c7c064808f7b4a94b5bb884065bc08faf726024
+    - path: /opt/codestra/compose/compose.breero-worker-a9e890c.yaml
+      sha256: 398c94d8071b76395ead922241a5ac4afc820be308e0dafe08272769456c79c8
+  codestra-provisioning-jwks-relay:
+    runtime_image_id: sha256:2ce593371c26db217fa38be8cdbe08ef1798c2973b271e1639b57fb47636d5bf
+    oci_revision: 0e7d8893ec7fda96a9ff9b5f91151d3537c28ae7
+    deployment_configs:
+    - path: /root/codestra-provisioning-production-remediation/deploy/compose.identity-relay.yaml
+      sha256: 57aafc47caba227e392d7380b9107f7e03186ac5751abe168a90c0bb9df4b63e
+  codestra-provisioning-service-provisioning-service-1:
+    runtime_image_id: sha256:db7dfcf1d8547d9daa9f1e1b7f7f834b0138b95e15fce95345e4e2e1211ed578
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/provisioning-service/compose.yaml
+      sha256: ab3779fb15ebdffdf4ea1bd015731f437c3507b5f933a147473e94b09b858512
+  codestra-redis-1:
+    runtime_image_id: sha256:bb186d083732f669da90be8b0f975a37812b15e913465bb14d845db72a4e3e08
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/compose/compose.yaml
+      sha256: d6a7f2d3eeda3fa9e0709caa509f74510d1a552f21148754d8011928a7e3cd2d
+  codestra-reseller-portal-oidc-gateway-1:
+    runtime_image_id: sha256:aa0bd8dd5ab0c78e4c91c92755ad573a5f92241f88138b4141b8ec803463b4fd
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /root/codestra-odoo-middleware-functional/deploy/reseller-portal/compose.yaml
+      sha256: 2e0f26b6428bb16e310d8de84ff91bd8ac26e7e990a4341d38173fbe00db93c6
+    - path: /root/codestra-odoo-middleware-functional/deploy/reseller-portal/compose.live-delivery-safety.yaml
+      sha256: bb4bc4699e07ea030f58549280872f2deee599852e574941a4756129cc5b0c2d
+    - path: /root/codestra-odoo-middleware-functional/deploy/reseller-portal/compose.oidc-tenant-authority.yaml
+      sha256: 82f14478eca2a88f24f07624d53502369b86a4859f4a1eb9ba354e79e3448ddd
+  codestra-reseller-portal-portal-1:
+    runtime_image_id: sha256:7d7cf6318ac122f7e39ab679dec499dc1f6116129765903d44e42c74541ca12e
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /root/codestra-odoo-middleware-functional/deploy/reseller-portal/compose.yaml
+      sha256: 2e0f26b6428bb16e310d8de84ff91bd8ac26e7e990a4341d38173fbe00db93c6
+    - path: /root/codestra-odoo-middleware-functional/deploy/reseller-portal/compose.live-delivery-safety.yaml
+      sha256: bb4bc4699e07ea030f58549280872f2deee599852e574941a4756129cc5b0c2d
+    - path: /root/codestra-odoo-middleware-functional/deploy/reseller-portal/compose.oidc-tenant-authority.yaml
+      sha256: 82f14478eca2a88f24f07624d53502369b86a4859f4a1eb9ba354e79e3448ddd
+  codestra-reseller-portal-postgres-1:
+    runtime_image_id: sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /root/codestra-odoo-middleware-functional/deploy/reseller-portal/compose.yaml
+      sha256: 2e0f26b6428bb16e310d8de84ff91bd8ac26e7e990a4341d38173fbe00db93c6
+  codestra-reviewed-monitoring-postgres-exporter-1:
+    runtime_image_id: sha256:9fca39a4307092387b7de884bed4b62205cb88a6a5fdb423b9a70ea80b34efb3
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/worktrees/odoo-production-monitoring-readiness-20260804/deploy/monitoring/odoo-readiness/compose.yaml
+      sha256: 9ace4eb616e299d1c986ed423a5c4c9cbd96f2dfab97dc7c8f6d7ec48a6fe0e3
+    - path: /opt/codestra/operations/monitoring/compose.exporters.override.yaml
+      sha256: c7121f2c2048a0945e815027a0ba71df4ecdd6f4be7639b4bd6ff9c78344d59d
+  codestra-sms-api-api-1:
+    runtime_image_id: sha256:49790449a1871a585456fe41bcb52dd614fb56f432907b9f5e7271e54306d6d7
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/sms-api/compose.yaml
+      sha256: 743a083a7f2b89196392ac378ca393d93356d2e1b4636a2b86cf1fede1f5319f
+    - path: /opt/codestra/sms-api/compose.live-delivery-safety.yaml
+      sha256: 3c17416a62911c1d28fde104a0dcf4fd89cccb3fd3667e3ed836a1cf917cf405
+  codestra-sms-api-event-worker-1:
+    runtime_image_id: sha256:65222db1296663c33f1bdac9ef5c8c305d2d4388ddca26e3306776821d2dbee9
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/sms-api/compose.yaml
+      sha256: 743a083a7f2b89196392ac378ca393d93356d2e1b4636a2b86cf1fede1f5319f
+    - path: /opt/codestra/sms-api/compose.live-delivery-safety.yaml
+      sha256: 3c17416a62911c1d28fde104a0dcf4fd89cccb3fd3667e3ed836a1cf917cf405
+  codestra-sms-api-postgres-1:
+    runtime_image_id: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/sms-api/compose.yaml
+      sha256: 743a083a7f2b89196392ac378ca393d93356d2e1b4636a2b86cf1fede1f5319f
+    - path: /opt/codestra/sms-api/compose.live-delivery-safety.yaml
+      sha256: 3c17416a62911c1d28fde104a0dcf4fd89cccb3fd3667e3ed836a1cf917cf405
+  codestra-websocket-gateway-gateway-1:
+    runtime_image_id: sha256:1c8f28d3627955c0d07f8a3f2e4187edb0770f3a9fc7cbc7dc9d819fcd255ffd
+    oci_revision: 9118e5bc01f9ce4a52add8753c096d061cd84848
+    deployment_configs:
+    - path: /home/codestra-admin/releases/middleware-69723c25a27e2a64cf55539c7d6df362a33579a4/websocket_gateway/compose.yaml
+      sha256: 0f784096f4a10c480eb6e5458ec39185b746aab64017ce6d226da825678f0261
+  codestra-websocket-gateway-postgres-1:
+    runtime_image_id: sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /root/codestra-production-completion/websocket_gateway/compose.yaml
+      sha256: 79a23d0fc48381671c240ef6effd1682eacac1771752e409e2c9c318ed029fef
+  codestra-websocket-replica-postgres-1:
+    runtime_image_id: sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/codestra/websocket-streaming-replica/compose.yaml
+      sha256: 60557eac46d7b864ddcf4037d5e6134d2f93b34eb925f8633521585bfeefca12
+  codestra-websocket-standby-031447a-gateway-1:
+    runtime_image_id: sha256:1c8f28d3627955c0d07f8a3f2e4187edb0770f3a9fc7cbc7dc9d819fcd255ffd
+    oci_revision: 9118e5bc01f9ce4a52add8753c096d061cd84848
+    deployment_configs:
+    - path: /opt/codestra/websocket-standby-031447a/compose.yaml
+      sha256: 2bac0d07fa16a9f2f64bf7bf66ace1bd565f33edf6ee768005d220e77e82a57c
+  kong-production-standby-kong-standby-auth-1:
+    runtime_image_id: sha256:48b52b06eae0c92b1d4ae45bdee6f3974c684e650933de2391c7a3456602d01f
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /root/codestra-kong-production-standby/deploy/kong-production-standby/compose.standby.yaml
+      sha256: 36ac4dd5501910c08af54cdf138fd2fbcf8d2bcbca92d93d06d6a41aaa5954ab
+  private-integration-gateway-1:
+    runtime_image_id: sha256:a9a1562f6d7b3557f480c2ffb513bd8bb472a2e0f0f01e0f9aa8bcc6e7fab8a0
+    oci_revision: UNKNOWN
+    deployment_configs:
+    - path: /opt/middleware/integration-gateway/compose.yaml
+      sha256: 3a7754ecd7afb5009fe6dc3a9b1bb16ccb26f0fd4add4fafa5c03169aa686efb

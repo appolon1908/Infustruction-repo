@@ -1,0 +1,47 @@
+{
+  "version": "2026-08-30.stage9.v1",
+  "productionWritesAuthorized": false,
+  "capabilities": {
+    "LIVE_ADVERTISING_ENABLED": false,
+    "META_READ_SYNC_ENABLED": false,
+    "EXTERNAL_MODEL_CALLS_ENABLED": false,
+    "EXTERNAL_DELIVERY_ENABLED": false,
+    "SOCIAL_READ_SYNC_ENABLED": false,
+    "SOCIAL_PUBLISHING_ENABLED": false,
+    "KEYCLOAK_LIVE_APPLY": false,
+    "KONG_LIVE_APPLY": false
+  },
+  "repositories": [
+    {"repo":"Codestra-Marketing-","branch":"feat/marketing-core-foundation-20260830","pr":2,"role":"paid acquisition and attribution"},
+    {"repo":"Codestra-AI","branch":"feat/ai-gateway-foundation-20260830","pr":2,"role":"governed AI gateway"},
+    {"repo":"Codestra-Communication-CC","branch":"feat/communications-core-foundation-20260830","pr":2,"role":"customer communications"},
+    {"repo":"Codesrea-Social-","branch":"feat/social-control-plane-foundation-20260830","pr":2,"role":"social control plane"},
+    {"repo":"Middleware-","branch":"feat/marketing-integration-foundation-20260830","pr":60,"role":"durable integration boundary"},
+    {"repo":"Odoo","branch":"feat/marketing-crm-foundation-20260830","pr":51,"role":"CRM and conversion system of record"},
+    {"repo":"SDK-repository","branch":"feat/marketing-sdk-foundation-20260830","pr":42,"role":"unified client surface"},
+    {"repo":"N8N","branch":"feat/marketing-workflows-foundation-20260830","pr":21,"role":"workflow orchestration"},
+    {"repo":"Kong","branch":"feat/marketing-edge-foundation-20260830","pr":26,"role":"API edge"},
+    {"repo":"Keycloak","branch":"feat/marketing-identity-foundation-20260830","pr":40,"role":"identity and scopes"},
+    {"repo":"social.codestra.co","branch":"feat/codestra-social-adapter-foundation-20260830","pr":26,"role":"social publishing runtime adapter"}
+  ],
+  "syntheticFlow": [
+    "provider.test_lead",
+    "kong.authenticated_ingress",
+    "middleware.inbox.accepted",
+    "marketing.attribution.recorded",
+    "odoo.crm.lead_upserted",
+    "n8n.workflow.received",
+    "communication.dry_run_created",
+    "odoo.outcome.recorded",
+    "marketing.conversion_feedback_recorded"
+  ],
+  "stage9ExitRequiresExternalEvidence": [
+    "disposable or staging Odoo 19 clean install and upgrade",
+    "staging Kong declarative apply and read-back",
+    "staging Keycloak CHECK/APPLY and read-back",
+    "real n8n import against target version with workflows inactive",
+    "Meta test-account read-only credential and reconciliation",
+    "social runtime staging read synchronization",
+    "end-to-end staging trace using real deployed services"
+  ]
+}

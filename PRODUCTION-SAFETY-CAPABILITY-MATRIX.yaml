@@ -1,0 +1,752 @@
+schema: codestra.production-safety-capability-matrix.v1
+captured_at: '2026-09-01T17:56:34Z'
+target_host: 65.109.65.169
+coverage: 64/64
+production_changed: false
+business_writes_enabled: false
+semantics: true_means_source_or_configuration_can_exercise_the_capability_not_that_it_is_enabled
+unknown_policy: UNKNOWN_must_be_resolved_before_production_replacement
+services:
+  codestra-appolon-middleware-integration-api-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-beyvra-email-api-1:
+    evidence_basis: reviewed protected source and deployment authority
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-caddy-upstream-gateway:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-email-reseller-api-1:
+    evidence_basis: reviewed protected source and deployment authority
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-identity-auth-gateway-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-identity-identity-db-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-identity-keycloak-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-integration-control-plane-api-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: true
+      external_delivery: true
+      social_publish: true
+      external_model_call: true
+      sms_delivery: true
+      email_delivery: true
+      pstn_dialing: true
+      n8n_provider_write: true
+  codestra-integration-control-plane-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: true
+      external_delivery: true
+      social_publish: true
+      external_model_call: true
+      sms_delivery: true
+      email_delivery: true
+      pstn_dialing: true
+      n8n_provider_write: true
+  codestra-kong-kong-db-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-kong-kong-gateway-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-kong-service-auth-adapter-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-mail-api-mail-api-1:
+    evidence_basis: reviewed protected source and deployment authority
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-mail-isolated-stalwart-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: true
+      external_delivery: true
+      social_publish: true
+      external_model_call: true
+      sms_delivery: true
+      email_delivery: true
+      pstn_dialing: true
+      n8n_provider_write: true
+  codestra-middleware-breero-odoo-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-event-gateway-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-extension-allocator-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-external-webhook-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-integration-api-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-n8n-runtime-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: true
+  codestra-middleware-notification-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: true
+      email_delivery: true
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-odoo-result-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-pjsip-adapter-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: true
+      n8n_provider_write: false
+  codestra-middleware-policy-engine-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-postly-polling-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: true
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-reconciliation-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-scheduler-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-scraper-odoo-delivery-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-social-n8n-delivery-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: true
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: true
+  codestra-middleware-sync-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-middleware-telephony-provisioning-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: true
+      n8n_provider_write: false
+  codestra-middleware-vicidial-adapter-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: true
+      n8n_provider_write: false
+  codestra-middleware-webphone-session-issuer-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-monitoring-alertmanager-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-monitoring-blackbox-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-monitoring-cadvisor-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-monitoring-node-exporter-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-monitoring-prometheus-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-monitoring-receiver-receiver-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-monitoring-redis-exporter-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-n8n-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: true
+      external_delivery: true
+      social_publish: true
+      external_model_call: true
+      sms_delivery: true
+      email_delivery: true
+      pstn_dialing: true
+      n8n_provider_write: true
+  codestra-n8n-internal-proxy:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-odoo-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-odoo-internal-proxy:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-operations-dashboard-grafana-grafana-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-postgres-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-private-vicidial-ingress-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-provisioning-jwks-relay:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-provisioning-service-provisioning-service-1:
+    evidence_basis: reviewed protected source and deployment authority
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-redis-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-reseller-portal-oidc-gateway-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-reseller-portal-portal-1:
+    evidence_basis: reviewed protected source and deployment authority
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-reseller-portal-postgres-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-reviewed-monitoring-postgres-exporter-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-sms-api-api-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: true
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-sms-api-event-worker-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: true
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-sms-api-postgres-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-websocket-gateway-gateway-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-websocket-gateway-postgres-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-websocket-replica-postgres-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  private-integration-gateway-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: true
+      social_publish: false
+      external_model_call: false
+      sms_delivery: true
+      email_delivery: true
+      pstn_dialing: true
+      n8n_provider_write: false
+  kong-production-standby-kong-standby-auth-1:
+    evidence_basis: reviewed runtime image and deployment configuration provide infrastructure-only
+      function
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+  codestra-websocket-standby-031447a-gateway-1:
+    evidence_basis: reviewed application source and deployment configuration
+    capabilities:
+      advertising_write: false
+      external_delivery: false
+      social_publish: false
+      external_model_call: false
+      sms_delivery: false
+      email_delivery: false
+      pstn_dialing: false
+      n8n_provider_write: false
+capability_unknown_fields: 0
+production_write_safety: PASS
+effective_runtime_state:
+  LIVE_ADVERTISING_ENABLED: false
+  EXTERNAL_DELIVERY_ENABLED: false
+  SOCIAL_PUBLISHING_ENABLED: false
+  EXTERNAL_MODEL_CALLS_ENABLED: false
+  LIVE_SMS_DELIVERY: false
+  LIVE_EMAIL_DELIVERY: false
+  LIVE_PSTN_DIALING: false
+  N8N_EXTERNAL_PROVIDER_WRITES: false
+  PRODUCTION_DIALING: DISABLED

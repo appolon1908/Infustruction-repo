@@ -1,0 +1,407 @@
+schema: codestra.production-source-authority.v1
+captured_at: '2026-09-01T17:56:34Z'
+target_host: 65.109.65.169
+production_changed: false
+business_writes_enabled: false
+acceptance_rule: runtime_to_compose_to_build_context_to_dockerfile_to_protected_git_exact_sha
+disposition_policy:
+  PROVEN: eligible_for_immutable_rebuild_planning
+  SOURCE_AUTHORITY_ABSENT: create_protected_git_deployment_authority_first
+  VENDOR_ONLY: retain_upstream_software_and_create_codestra_config_deployment_authority
+  DIVERGENT: reconcile_git_runtime_history_before_replacement
+  INVALID_REVISION_METADATA: fix_oci_build_metadata_and_recover_exact_git_sha
+  AMBIGUOUS: owner_decision_required_no_rebuild
+defaults:
+  build_context: UNKNOWN
+  dockerfile: UNKNOWN
+  protected_branch: UNKNOWN
+  source_sha: UNKNOWN
+  confidence: low
+restricted_operators:
+  klyrow-stack:
+    source_repository: appolon1908-hue/Infustruction-repo
+    protected_branch: main
+    source_path: operators/klyrow-stack
+    installer_path: operators/install-klyrow-stack
+    sudoers_path: operators/klyrow-stack.sudoers
+    installed_path: /usr/local/sbin/klyrow-stack
+    installed_owner: root
+    installed_group: root
+    installed_mode: '0755'
+    allowed_subcommands: [status, rollback-plan, preflight, plan, stage, deploy, rollback]
+    approval_marker_schema: 1
+    known_good_override_sha256: 345093a338012f9d32f6d7569f20b8c62503058731e0d4c5a7765dbe667dcc6e
+    rollback_policy: fail_closed_automatic_on_health_or_safety_failure
+    runtime_installation: pending_reviewed_merge
+workloads:
+  codestra-middleware-1:
+    runtime_image: codestra/middleware:health-contract-b3ca9aa
+    runtime_image_id: sha256:5dd751a9da60e2417c9ee553ddea68f54e76981dcc896eb3676b27617d121f38
+    compose_project: codestra
+    compose_service: middleware
+    compose_file: /opt/codestra/compose/compose.health-contract-remediation.yaml
+    build_context: .
+    dockerfile: Dockerfile
+    repository: Codestra-SRL/codestra-middleware
+    protected_branch: main
+    source_sha: b3ca9aa458fef843e3065aeff3397c656349f138
+    evidence: OCI revision and source labels; revision is an ancestor of protected
+      main.
+    confidence: high
+    status: PROVEN
+    remediation_type: A
+  codestra-middleware-breero-odoo-worker-1:
+    runtime_image: codestra/middleware:breero-51416422
+    runtime_image_id: sha256:961c0569a5033cdb494d211fd32cfe20d7efd42d3900f02c2d3f0ac7bfdcfa63
+    compose_project: codestra
+    compose_service: middleware-breero-odoo-worker
+    compose_file: /opt/codestra/compose/compose.live-delivery-breero.yaml
+    build_context: .
+    dockerfile: Dockerfile
+    repository: Codestra-SRL/codestra-middleware
+    protected_branch: main
+    source_sha: 51416422eaaa959c8c7223ad1434287597eb8007
+    evidence: OCI revision and source labels; revision is an ancestor of protected
+      main.
+    confidence: high
+    status: PROVEN
+    remediation_type: A
+  codestra-beyvra-email-api-1:
+    build_context: .
+    dockerfile: deploy/beyvra-email/Dockerfile
+    protected_branch: main
+    source_sha: e703e8c84b6c6b9986ec30411adef7e92c141a47
+    confidence: high
+    runtime_image: codestra/beyvra-email:canonical-co-20260820
+    runtime_image_id: sha256:a226db03c6fce98f81c02e78bab96a2beb452a27dd79308c921e85bfa664aa52
+    compose_project: codestra-beyvra-email
+    compose_service: api
+    compose_file: /root/beyvra-email-middleware/deploy/beyvra-email/compose.yaml
+    repository: Codestra-SRL/codestra-middleware
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-caddy-upstream-gateway:
+    build_context: vendor/caddy-upstream-gateway
+    dockerfile: NOT_APPLICABLE_VENDOR_DIGEST_PIN
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: caddy:2.11.4-alpine
+    runtime_image_id: sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    compose_project: codestra-caddy-upstream-gateway
+    compose_service: upstream-gateway
+    compose_file: /opt/codestra/caddy-upstream-gateway/compose.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-email-reseller-api-1:
+    build_context: .
+    dockerfile: deploy/email-reseller/Dockerfile
+    protected_branch: release/production-activation
+    source_sha: 46463acbbf3e4df95926ac2e0ea8baae9a4abfa5
+    confidence: high
+    runtime_image: codestra-email-reseller-api
+    runtime_image_id: sha256:8d7bb50e8787c110a7930fadb0c69a44ba075c70cb5e035118d9f334b1211e08
+    compose_project: codestra-email-reseller
+    compose_service: api
+    compose_file: /root/codestra-odoo-middleware-functional/deploy/email-reseller/compose.yaml
+    repository: appolon1908-hue/codestra-production-platform
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-integration-control-plane-api-1:
+    build_context: .
+    dockerfile: deploy/control-plane/Dockerfile
+    protected_branch: authority/runtime-control-plane-44d2
+    source_sha: 44d2addf48ae31da6eeb3c3f9ab3fe34d999042c
+    confidence: high
+    runtime_image: codestra-integration-control-plane-api
+    runtime_image_id: sha256:646b7f2a611b26986b81c143661b14e825ac977f9b3f84274fc8432f501e90f9
+    compose_project: codestra-integration-control-plane
+    compose_service: api
+    compose_file: /opt/codestra/releases/control-plane/ba04954a28f567ca3efa70a96ae660109e0adbf6/deploy/control-plane/compose.yaml
+    repository: appolon1908-hue/codestra-production-platform
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-integration-control-plane-worker-1:
+    build_context: .
+    dockerfile: deploy/control-plane/Dockerfile
+    protected_branch: authority/runtime-control-plane-44d2
+    source_sha: 44d2addf48ae31da6eeb3c3f9ab3fe34d999042c
+    confidence: high
+    runtime_image: codestra-integration-control-plane-api
+    runtime_image_id: sha256:646b7f2a611b26986b81c143661b14e825ac977f9b3f84274fc8432f501e90f9
+    compose_project: codestra-integration-control-plane
+    compose_service: worker
+    compose_file: /opt/codestra/releases/control-plane/ba04954a28f567ca3efa70a96ae660109e0adbf6/deploy/control-plane/compose.yaml
+    repository: appolon1908-hue/codestra-production-platform
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-kong-kong-gateway-1:
+    build_context: vendor/kong-gateway
+    dockerfile: NOT_APPLICABLE_VENDOR_DIGEST_PIN
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: kong/kong-gateway:3.14.0.1-ubuntu
+    runtime_image_id: sha256:9cb0429e4641d29189118b20ef0a195569b9d65ef0536bc57907797874071689
+    compose_project: codestra-kong
+    compose_service: kong-gateway
+    compose_file: /opt/codestra/kong/compose.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-kong-service-auth-adapter-1:
+    build_context: components/kong-service-auth-adapter
+    dockerfile: components/kong-service-auth-adapter/Dockerfile
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: codestra/kong-service-auth-adapter:20260820
+    runtime_image_id: sha256:aa1d68841f4fdddac0c445d26a953fdbfe1e311a0540a3a1c588a8b98af1ec71
+    compose_project: codestra-kong-service-auth-adapter
+    compose_service: adapter
+    compose_file: /opt/codestra/kong-service-auth-adapter/compose.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-mail-api-mail-api-1:
+    build_context: .
+    dockerfile: deploy/mail-platform/Dockerfile.api
+    protected_branch: release/production-activation
+    source_sha: a0593cb881654999f78e2c40d6f9784a5507d987
+    confidence: high
+    runtime_image: codestra/mail-api:20260822
+    runtime_image_id: sha256:7495d5f0d79f027456ed61b7c3c2ea9331c228f3d2e10bceef3178eef5a62594
+    compose_project: codestra-mail-api
+    compose_service: mail-api
+    compose_file: /root/codestra-production-completion/deploy/mail-platform/compose.api.yaml
+    repository: appolon1908-hue/codestra-production-platform
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-mail-isolated-stalwart-1:
+    build_context: vendor/stalwart
+    dockerfile: NOT_APPLICABLE_VENDOR_DIGEST_PIN
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: stalwartlabs/stalwart:v0.16
+    runtime_image_id: sha256:9ed1d343243b7aa72969e372a7240b7ddea07730781d4b68a0dc3d8d51c418bb
+    compose_project: codestra-mail-isolated
+    compose_service: stalwart
+    compose_file: /root/codestra-production-completion/deploy/mail-platform/compose.isolated.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-middleware-event-gateway-1:
+    build_context: .
+    dockerfile: Dockerfile
+    protected_branch: main
+    source_sha: e98edd18753d42f6951b14aa0f577fdcfc9bd52c
+    confidence: high
+    runtime_image: codestra/middleware:webhook-cert-pg-20260816
+    runtime_image_id: sha256:93cbb4a11765ad92e9bbf1a1bb9601f15a540164b4e7d6647cb0f16d588ab6e0
+    compose_project: codestra
+    compose_service: middleware-event-gateway
+    compose_file: /opt/codestra/compose/compose.external-webhook.yaml
+    repository: Codestra-SRL/codestra-middleware
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-middleware-external-webhook-worker-1:
+    build_context: .
+    dockerfile: Dockerfile
+    protected_branch: main
+    source_sha: e98edd18753d42f6951b14aa0f577fdcfc9bd52c
+    confidence: high
+    runtime_image: codestra/middleware:webhook-cert-pg-20260816
+    runtime_image_id: sha256:93cbb4a11765ad92e9bbf1a1bb9601f15a540164b4e7d6647cb0f16d588ab6e0
+    compose_project: codestra
+    compose_service: middleware-external-webhook-worker
+    compose_file: /opt/codestra/compose/compose.external-webhook.yaml
+    repository: Codestra-SRL/codestra-middleware
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-monitoring-receiver-receiver-1:
+    build_context: components/monitoring-receiver
+    dockerfile: components/monitoring-receiver/Dockerfile
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: codestra-monitoring-receiver-receiver
+    runtime_image_id: sha256:260fef5b0c1d8eafa29b661612511bdc3b869851b8a36d41a6cdfb5498f23ab4
+    compose_project: codestra-monitoring-receiver
+    compose_service: receiver
+    compose_file: /opt/codestra/operations/monitoring-receiver/compose.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-n8n-internal-proxy:
+    build_context: vendor/n8n-internal-proxy
+    dockerfile: NOT_APPLICABLE_VENDOR_DIGEST_PIN
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: codestra/caddy:2.11.4-hardened-20260723
+    runtime_image_id: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    compose_project: codestra-n8n-internal-proxy
+    compose_service: proxy
+    compose_file: /opt/codestra/middleware/deploy/internal-n8n-private/compose.internal-n8n.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-odoo-internal-proxy:
+    build_context: vendor/odoo-internal-proxy
+    dockerfile: NOT_APPLICABLE_VENDOR_DIGEST_PIN
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: codestra/caddy:2.11.4-hardened-20260723
+    runtime_image_id: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    compose_project: codestra-odoo-internal-proxy
+    compose_service: proxy
+    compose_file: /opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-private-vicidial-ingress-1:
+    build_context: vendor/private-vicidial-ingress
+    dockerfile: NOT_APPLICABLE_VENDOR_DIGEST_PIN
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: codestra/caddy:2.11.4-hardened-20260723
+    runtime_image_id: sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5
+    compose_project: codestra
+    compose_service: private-vicidial-ingress
+    compose_file: /opt/codestra/releases/middleware-51416422/deploy/readiness/compose.private-vicidial-ingress.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-provisioning-service-provisioning-service-1:
+    build_context: .
+    dockerfile: Dockerfile
+    protected_branch: main
+    source_sha: 2c18e395e9f86f7510f142188336e9114aa213a4
+    confidence: high
+    runtime_image: codestra/provisioning-service:identity-integration-20260726-v15
+    runtime_image_id: sha256:db7dfcf1d8547d9daa9f1e1b7f7f834b0138b95e15fce95345e4e2e1211ed578
+    compose_project: codestra-provisioning-service
+    compose_service: provisioning-service
+    compose_file: /opt/codestra/provisioning-service/compose.yaml
+    repository: appolon1908-hue/codestra-provisioning-service
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-reseller-portal-portal-1:
+    build_context: .
+    dockerfile: deploy/reseller-portal/Dockerfile
+    protected_branch: release/production-activation
+    source_sha: 9d2805ca397b7fdafab0e913cd442126fe1391d2
+    confidence: high
+    runtime_image: codestra-reseller-portal:oidc-tenant-authority-20260816
+    runtime_image_id: sha256:7d7cf6318ac122f7e39ab679dec499dc1f6116129765903d44e42c74541ca12e
+    compose_project: codestra-reseller-portal
+    compose_service: portal
+    compose_file: /root/codestra-odoo-middleware-functional/deploy/reseller-portal/compose.yaml
+    repository: appolon1908-hue/codestra-production-platform
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-reseller-portal-postgres-1:
+    build_context: vendor/reseller-portal-postgres
+    dockerfile: NOT_APPLICABLE_VENDOR_DIGEST_PIN
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: postgres:17-alpine
+    runtime_image_id: sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193
+    compose_project: codestra-reseller-portal
+    compose_service: postgres
+    compose_file: /root/codestra-odoo-middleware-functional/deploy/reseller-portal/compose.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-sms-api-api-1:
+    build_context: components/sms-api
+    dockerfile: components/sms-api/Dockerfile
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: codestra-sms-api-api
+    runtime_image_id: sha256:49790449a1871a585456fe41bcb52dd614fb56f432907b9f5e7271e54306d6d7
+    compose_project: codestra-sms-api
+    compose_service: api
+    compose_file: /opt/codestra/sms-api/compose.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  codestra-sms-api-event-worker-1:
+    build_context: components/sms-api
+    dockerfile: components/sms-api/Dockerfile
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: codestra-sms-api-event-worker
+    runtime_image_id: sha256:65222db1296663c33f1bdac9ef5c8c305d2d4388ddca26e3306776821d2dbee9
+    compose_project: codestra-sms-api
+    compose_service: event-worker
+    compose_file: /opt/codestra/sms-api/compose.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+  private-integration-gateway-1:
+    build_context: components/private-integration-gateway
+    dockerfile: components/private-integration-gateway/Dockerfile
+    protected_branch: main
+    source_sha: bd99e533e46b36f018a990f0c742643534e08f88
+    confidence: high
+    runtime_image: private-integration-gateway
+    runtime_image_id: sha256:a9a1562f6d7b3557f480c2ffb513bd8bb472a2e0f0f01e0f9aa8bcc6e7fab8a0
+    compose_project: private-integration-gateway
+    compose_service: gateway
+    compose_file: /opt/middleware/integration-gateway/compose.yaml
+    repository: appolon1908-hue/codestra-production-runtime-authority
+    evidence: Reviewed protected merge establishes exact source or digest-pinned vendor
+      deployment authority.
+    status: PROVEN
+    remediation_type: A
+source_ownership_proven: 23/23
+source_ownership_ambiguous: 0
+source_authority_ready: true

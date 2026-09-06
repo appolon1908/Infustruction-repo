@@ -1,0 +1,346 @@
+{
+  "schema": "codestra.release-control.v1",
+  "candidate_id": "REPLACE_WITH_CANONICAL_CANDIDATE_ID",
+  "candidate_source_lock_sha": "0000000000000000000000000000000000000000",
+  "environment": "staging-readonly",
+  "compose": {
+    "project_name": "codestra-staging-readonly",
+    "files": [
+      "/srv/codestra/REPLACE_WITH_REVIEWED_STAGING_COMPOSE.yml"
+    ],
+    "working_directory": "/srv/codestra/REPLACE_WITH_REVIEWED_CHECKOUT"
+  },
+  "workloads": [
+    {
+      "name": "REPLACE_WITH_WORKLOAD",
+      "service": "replace_with_service",
+      "repository": "appolon1908-hue/REPLACE_WITH_REPOSITORY",
+      "source_sha": "0000000000000000000000000000000000000000",
+      "image": "ghcr.io/appolon1908-hue/replace-with-image@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "version_endpoint": "https://REPLACE_WITH_STAGING_HOST/version",
+      "readiness_endpoint": "https://REPLACE_WITH_STAGING_HOST/readyz",
+      "capabilities_endpoint": "https://REPLACE_WITH_STAGING_HOST/api/v1/platform/capabilities",
+      "metrics_endpoint": "https://REPLACE_WITH_STAGING_HOST/metrics",
+      "migration_endpoint": "https://REPLACE_WITH_STAGING_HOST/api/v1/system/migrations",
+      "expected_migration": "REPLACE_WITH_EXACT_MIGRATION_HEAD"
+    }
+  ],
+  "safety": {
+    "LIVE_WRITE": false,
+    "ODOO_WRITE": false,
+    "ENABLE_EXTERNAL_DELIVERY": false,
+    "N8N_DELIVERY_ENABLED": false,
+    "LIVE_EMAIL_DELIVERY": false,
+    "LIVE_SMS_DELIVERY": false,
+    "LIVE_PSTN_DIALING": false,
+    "PRODUCTION_DIALING": "DISABLED",
+    "CAMPAIGN_ACTIVATION": false,
+    "PROVIDER_DELIVERY": false
+  },
+  "keycloak": {
+    "discovery_endpoint": "https://REPLACE_WITH_STAGING_AUTH_HOST/realms/codestra/.well-known/openid-configuration",
+    "expected_issuer": "https://REPLACE_WITH_STAGING_AUTH_HOST/realms/codestra"
+  },
+  "kong": {
+    "expected_route_count": 29,
+    "smoke_routes": [
+      {
+        "name": "replace-route-01",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-01",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-02",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-02",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-03",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-03",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-04",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-04",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-05",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-05",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-06",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-06",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-07",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-07",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-08",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-08",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-09",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-09",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-10",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-10",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-11",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-11",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-12",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-12",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-13",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-13",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-14",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-14",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-15",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-15",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-16",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-16",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-17",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-17",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-18",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-18",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-19",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-19",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-20",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-20",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-21",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-21",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-22",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-22",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-23",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-23",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-24",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-24",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-25",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-25",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-26",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-26",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-27",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-27",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-28",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-28",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      },
+      {
+        "name": "replace-route-29",
+        "url": "https://REPLACE_WITH_STAGING_API_HOST/replace-route-29",
+        "expected_statuses": [
+          200,
+          401,
+          403
+        ]
+      }
+    ]
+  },
+  "backups": {
+    "directory": "/var/backups/codestra/staging-readonly",
+    "postgres": {
+      "service": "replace_with_postgres_service",
+      "database": "replace_with_database",
+      "username": "replace_with_username"
+    },
+    "odoo_filestore": "/srv/codestra/REPLACE_WITH_ODOO_FILESTORE",
+    "configuration": [
+      "/srv/codestra/REPLACE_WITH_CONFIGURATION_ROOT"
+    ],
+    "off_host": {
+      "required": true,
+      "restic_repository_environment": "RESTIC_REPOSITORY"
+    }
+  },
+  "rollback": {
+    "previous_source_lock_sha": "0000000000000000000000000000000000000000",
+    "workloads": [
+      {
+        "service": "replace_with_service",
+        "source_sha": "0000000000000000000000000000000000000000",
+        "image": "ghcr.io/appolon1908-hue/replace-with-previous-image@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "expected_migration": "REPLACE_WITH_PREVIOUS_MIGRATION_HEAD"
+      }
+    ]
+  },
+  "canary": {
+    "maximum_percent": 1,
+    "methods": [
+      "GET",
+      "HEAD"
+    ],
+    "controller": "/srv/codestra/bin/REPLACE_WITH_REVIEWED_CANARY_CONTROLLER",
+    "controller_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}

@@ -1,0 +1,131 @@
+schema_version: '2.0'
+environment: STAGING
+status: HELD_SCOPED_PREFLIGHT_FAILED_NOT_EXECUTED
+production_authorized: false
+external_writes_enabled: false
+runtime_preflight:
+  source_lock: PASS
+  stage6_preflight: FAIL_SCOPED_RUNTIME_READBACK
+  stage6_path_business_writes: NOT_PROVEN_DISABLED
+  in_scope_host: 65.109.65.169
+  in_scope_workloads: 22
+  out_of_scope_active_production: OUT_OF_SCOPE_ACTIVE_PRODUCTION_DO_NOT_TOUCH
+  scoped_runtime_readback: FAIL
+  workloads_present: 22
+  workload_digests_matching: 22
+  safety_complete_workloads: 0
+  unhealthy_workloads: 6
+source_lock:
+  path: STAGE6-SOURCE-LOCK.yaml
+  merge_sha: 65018df89571042c1e7550adf3180d47bb495187
+backup:
+  identifier: 20260830T233931Z-65018df
+  operation_merge_sha: 6ab3b3641d45343b11ab3cae48881d2aa56a823e
+  verifier_merge_sha: b71f922a8d878a47c5a41f6b1cf9e8b47f9fba68
+  checksums: PASS
+  postgres_17_archives_readable: 24
+  volume_archives_readable: true
+  restore_model: ISOLATED_EMPTY_STAGING_TARGET_ONLY
+global_safety:
+  LIVE_ADVERTISING_ENABLED: false
+  EXTERNAL_DELIVERY_ENABLED: false
+  SOCIAL_PUBLISHING_ENABLED: false
+  EXTERNAL_MODEL_CALLS_ENABLED: false
+  LIVE_SMS_DELIVERY: false
+  LIVE_EMAIL_DELIVERY: false
+  LIVE_PSTN_DIALING: false
+  PRODUCTION_DIALING: DISABLED
+  n8n_workflow_activation: false
+  unknown_and_legacy_workloads: DO_NOT_TOUCH
+execution_rules:
+  - This plan PR does not authorize execution.
+  - Do not execute any mutation batch until runtime_preflight.stage6_preflight is PASS.
+  - Do not touch Klyrow/Postal or treat its out-of-scope activity as Stage 6 evidence.
+  - Require independent approval against the exact plan head before staging mutation.
+  - Re-read source lock, backup checksums, runtime digest, safety state, and rollback digest immediately before each batch.
+  - Stop on drift, failed health/read-back, missing rollback target, or any enabled external-write control.
+  - Run one batch at a time; require health, safety, and rollback evidence before continuing.
+  - Never restart, replace, or infer ownership for an UNVERIFIED or legacy-frozen workload.
+  - Never mutate production.
+batches:
+  - id: 0
+    name: immutable_preflight
+    mutation: false
+    actions:
+      - Verify all 22 runtime dispositions still match STAGE6-SOURCE-LOCK.yaml.
+      - Re-run backup verification and explicit safety read-back.
+      - Confirm all rollback digests remain locally available.
+    pass_condition: SOURCE_LOCK=PASS AND STAGE6_PREFLIGHT=PASS AND PRODUCTION_BUSINESS_WRITES=DISABLED; currently not met
+  - id: 1
+    name: retained_stateful_infrastructure
+    mutation: false
+    workloads:
+      - codestra-middleware-staging-postgres-1
+      - codestra-middleware-staging-redis-1
+      - codestra-n8n-staging-postgres-1
+      - codestra-n8n-staging-redis-1
+      - codestra-odoo19-staging-postgres-1
+    action: RETAIN_PINNED_INFRASTRUCTURE
+    pass_condition: running digest and health remain unchanged
+  - id: 2
+    name: middleware
+    mutation: true
+    changes_image: true
+    workloads: [codestra-middleware-staging-middleware-staging-1]
+    expected_repository: appolon1908-hue/Middleware-
+    expected_sha: c720e529ea89f1f0d5d035d4ac12a1d5aa30ab62
+    expected_digest: sha256:92954f809e811487f8ac15bde3ba636f3bdb1c37547838e9579bb1fd9567f8da
+    rollback_digest: sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f
+    migration_model: dedicated one-shot Alembic service; never migrate during API startup
+    pass_condition: one-shot migration succeeds; API health and safety read-back pass; no external business write observed
+    rollback: restore recorded digest and configuration; database recovery requires a separately reviewed decision
+  - id: 3
+    name: n8n_runtime_configuration
+    mutation: true
+    changes_image: false
+    workloads:
+      - codestra-n8n-staging-n8n-1
+      - codestra-n8n-staging-webhook-1
+      - codestra-n8n-staging-worker-1
+      - codestra-n8n-staging-worker-2-1
+    expected_image_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
+    rollback_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
+    workflow_sha: 4d35472772f60c5af616ffac1f902d626643d02d
+    action: reconcile only reviewed endpoint, credential-owner, editor-protection, node-exclusion, network-egress, and safety configuration
+    pass_condition: all workflows inactive; Middleware-only egress; verified HTTPS endpoint; dangerous nodes excluded on every process; health passes
+    rollback: restore backed-up configuration with the same pinned image digest
+  - id: 4
+    name: odoo_startup_and_addons
+    mutation: true
+    changes_image: false
+    workloads:
+      - codestra-odoo19-staging-odoo19-master-staging-1
+      - codestra-odoo19-staging-odoo19-staging-1
+    expected_image_digest: sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5
+    rollback_digest: sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5
+    addons_sha: 3eeb17f8b7efcd9bd90487e5e8e9888717f51138
+    migration_model: dedicated one-shot module install/upgrade operation; no --init or --update in long-running startup
+    pass_condition: one-shot operation and schema/ACL read-back pass; long-running commands have no install/upgrade flags; health and safety pass
+    rollback: restore backed-up configuration/addons and recorded digest; database recovery requires a separately reviewed decision
+frozen_workloads:
+  - codestra-agent-desktop-sipjs-staging
+  - codestra-middleware-staging-callback-staging-1
+  - codestra-middleware-staging-notification-worker-staging-1
+  - codestra-middleware-staging-odoo-result-worker-staging-1
+  - codestra-middleware-staging-scheduler-staging-1
+  - codestra-middleware-staging-scraper-odoo-delivery-worker-1
+  - codestra-middleware-staging-social-dead-letter-worker-staging-1
+  - codestra-middleware-staging-social-delivery-worker-staging-1
+  - codestra-middleware-staging-social-reconciliation-worker-staging-1
+  - codestra-odoo19-staging-odoo19-scraper-canary-1
+unknown_workload:
+  name: private-integration-gateway-1
+  disposition: UNVERIFIED_DO_NOT_TOUCH
+completion_gate:
+  - every mutated workload matches its locked digest and reviewed configuration
+  - every retained and frozen workload remains unchanged
+  - one-shot migration evidence is recorded
+  - health, negative egress, authentication, and safety read-backs pass
+  - rollback targets remain available
+  - no external business write occurred
+  - production was not touched

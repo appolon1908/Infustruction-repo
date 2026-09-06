@@ -1,0 +1,34 @@
+name: Validate Stage 6 staging reconciliation plan
+
+on:
+  pull_request:
+    paths:
+      - "STAGE6-BACKUP-EVIDENCE.md"
+      - "STAGE6-SOURCE-LOCK.yaml"
+      - "releases/STAGE6-STAGING-DEPLOYMENT-PLAN-2026-08-30.yaml"
+      - "scripts/validate_stage6_staging_plan.py"
+      - ".github/workflows/validate-stage6-staging-plan.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - run: python -m pip install --disable-pip-version-check --no-input pyyaml==6.0.2
+      - run: python scripts/validate_stage6_source_lock.py
+      - run: python scripts/validate_stage6_staging_plan.py
+      - name: Validate no execution or production authorization
+        run: |
+          set -Eeuo pipefail
+          grep -q 'status: HELD_SCOPED_PREFLIGHT_FAILED_NOT_EXECUTED' releases/STAGE6-STAGING-DEPLOYMENT-PLAN-2026-08-30.yaml
+          grep -q 'stage6_preflight: FAIL_SCOPED_RUNTIME_READBACK' releases/STAGE6-STAGING-DEPLOYMENT-PLAN-2026-08-30.yaml
+          grep -q 'stage6_path_business_writes: NOT_PROVEN_DISABLED' releases/STAGE6-STAGING-DEPLOYMENT-PLAN-2026-08-30.yaml
+          grep -q 'out_of_scope_active_production: OUT_OF_SCOPE_ACTIVE_PRODUCTION_DO_NOT_TOUCH' releases/STAGE6-STAGING-DEPLOYMENT-PLAN-2026-08-30.yaml
+          grep -q 'production_authorized: false' releases/STAGE6-STAGING-DEPLOYMENT-PLAN-2026-08-30.yaml
+          grep -q 'external_writes_enabled: false' releases/STAGE6-STAGING-DEPLOYMENT-PLAN-2026-08-30.yaml

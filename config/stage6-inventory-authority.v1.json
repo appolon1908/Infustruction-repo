@@ -1,0 +1,65 @@
+{
+  "schema_version": "codestra.stage6-inventory-authority.v1",
+  "environment": "staging",
+  "production": false,
+  "managed_by": "opentofu",
+  "resources": {
+    "runtime_server": {
+      "name": "codestra-stage6-staging-01",
+      "role": "stage6-runtime",
+      "location": "hel1",
+      "server_type": "cx43",
+      "operating_system": "ubuntu-24.04",
+      "private_ip": "10.250.6.10"
+    },
+    "egress_server": {
+      "name": "codestra-stage6-egress-01",
+      "role": "stage6-egress-gateway",
+      "location": "hel1",
+      "server_type": "cx23",
+      "operating_system": "ubuntu-24.04",
+      "private_ip": "10.250.6.2"
+    },
+    "network": {
+      "name": "codestra-stage6-staging-net",
+      "cidr": "10.250.0.0/16",
+      "subnet_cidr": "10.250.6.0/24"
+    },
+    "runtime_firewall": {
+      "name": "codestra-stage6-staging-01-deny-default"
+    },
+    "egress_firewall": {
+      "name": "codestra-stage6-egress-01-boundary"
+    }
+  },
+  "approved_ssh_key_ids": [118172836],
+  "approved_ssh_source_cidrs": ["179.53.46.159/32"],
+  "approved_egress_fqdns": [
+    "api.github.com",
+    "archive.ubuntu.com",
+    "github.com",
+    "ghcr.io",
+    "objects.githubusercontent.com",
+    "pkg-containers.githubusercontent.com",
+    "release-assets.githubusercontent.com",
+    "security.ubuntu.com"
+  ],
+  "approved_egress_ports": [80, 443],
+  "approved_ntp_fqdns": ["ntp.ubuntu.com"],
+  "known_internal_production_deny_cidrs": [
+    "10.40.0.0/24",
+    "37.27.128.39/32",
+    "65.109.65.169/32"
+  ],
+  "evidence_policy": {
+    "cloud_api_methods": ["GET"],
+    "git_authority_fields": [
+      "approved_egress_fqdns",
+      "approved_ntp_fqdns",
+      "known_internal_production_deny_cidrs"
+    ],
+    "require_running_servers": true,
+    "require_exact_resource_match": true,
+    "allow_unresolved_fields": false
+  }
+}

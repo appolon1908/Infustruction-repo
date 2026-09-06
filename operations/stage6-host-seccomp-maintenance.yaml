@@ -1,0 +1,68 @@
+schema_version: "1.0"
+change_id: STAGE6-SECCOMP-KERNEL-20260831
+status: WITHDRAWN_NOT_EXECUTED
+superseded_by: operations/stage6-container-runtime-rollback-experiment.yaml
+environment: STAGING_HOST_WITH_SHARED_WORKLOADS
+host:
+  hostname: middleware
+  primary_ip: 65.109.65.169
+  current_kernel: 5.15.0-187-generic
+  target_kernel: 5.15.0-190-generic
+  rollback_kernel: 5.15.0-187-generic
+  docker_version: 29.7.2
+  runc_version: 1.4.3
+  libseccomp2_version: 2.5.3-2ubuntu3~22.04.1
+preflight:
+  target_kernel_installed: true
+  target_kernel_image: /boot/vmlinuz-5.15.0-190-generic
+  target_initrd: /boot/initrd.img-5.15.0-190-generic
+  rollback_kernel_image: /boot/vmlinuz-5.15.0-187-generic
+  rollback_initrd: /boot/initrd.img-5.15.0-187-generic
+  running_containers_observed: 101
+  frozen_workloads_present: 10
+impact:
+  host_reboot_required: true
+  all_running_containers_may_restart: true
+  frozen_workloads_will_restart: true
+  production_business_writes_authorized: false
+  klyrow_in_scope: false
+authorization:
+  source_pr_merge_authorizes_execution: false
+  exact_plan_fingerprint_approval_required: true
+  maintenance_window_required: true
+  console_access_required: true
+  execution_authorized: false
+security_invariants:
+  seccomp_disabled: false
+  privileged_allowed: false
+  capability_relaxation_allowed: false
+  no_new_privileges_relaxation_allowed: false
+  readonly_root_relaxation_allowed: false
+execution:
+  mode: ONE_REBOOT_THEN_VERIFY
+  boot_target: Advanced options for Ubuntu>Ubuntu, with Linux 5.15.0-190-generic
+  automatic_staging_reconciliation: false
+  automatic_migration: false
+  automatic_production_deployment: false
+rollback:
+  trigger:
+    - host does not return within the approved window
+    - running kernel is not 5.15.0-190-generic
+    - Docker daemon is unavailable
+    - scoped or frozen workload is absent after boot
+    - minimal docker exec still fails with seccomp errno 524
+  boot_target: Advanced options for Ubuntu>Ubuntu, with Linux 5.15.0-187-generic
+  action: select rollback kernel through console and reboot once
+post_change_gates:
+  - uname reports 5.15.0-190-generic
+  - Docker 29.7.2 and runc 1.4.3 remain unchanged
+  - all 22 locked workloads are present and running
+  - all 10 frozen workloads are present without recreation
+  - docker exec succeeds on an in-scope and outside-scope container
+  - seccomp remains enabled and no security option is relaxed
+  - Prometheus and Alertmanager are running
+  - health and restart-count alerts are loaded and a synthetic alert routes
+  - Stage 6 scoped preflight passes before reconciliation
+runtime_mutation_permitted_before_approval: false
+staging_apply_authorized: false
+production_deployment_authorized: false

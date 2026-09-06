@@ -1,0 +1,59 @@
+name: Validate Superset bounded release contract
+
+on:
+  pull_request:
+    paths:
+      - operations/superset-bounded-release/**
+      - scripts/validate_superset_bounded_release_contract.py
+      - tests/test_superset_bounded_release_contract.py
+      - .github/workflows/validate-superset-bounded-release.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact pull-request head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Prove exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Validate contract and negative invariants
+        run: |
+          set -Eeuo pipefail
+          python3 -m py_compile scripts/validate_superset_bounded_release_contract.py tests/test_superset_bounded_release_contract.py
+          python3 scripts/validate_superset_bounded_release_contract.py
+          python3 -m unittest tests.test_superset_bounded_release_contract -v
+
+  validate-merge-result:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact synthetic merge result
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Prove and validate merge result
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          python3 -m py_compile scripts/validate_superset_bounded_release_contract.py tests/test_superset_bounded_release_contract.py
+          python3 scripts/validate_superset_bounded_release_contract.py
+          python3 -m unittest tests.test_superset_bounded_release_contract -v
