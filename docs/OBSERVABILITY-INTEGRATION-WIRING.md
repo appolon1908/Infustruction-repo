@@ -10,7 +10,7 @@ Hosts / Containers / Applications
   +---------------------> Node Exporter
 
 Redis ------------------> Redis Exporter
-PostgreSQL -------------> PostgreSQL Exporter (repo authority pending)
+PostgreSQL -------------> PostgreSQL Exporter (deployment approval pending)
 Approved endpoints ------> Blackbox Exporter
 
 Alloy / OpenTelemetry Collector
@@ -38,7 +38,7 @@ OpenBao ---> observability stack only for non-secret health/metrics
 Reads from Prometheus, Loki and Tempo. May read approved health/analytics sources using least-privilege credentials. It does not write to provider/application systems and must not store unrestricted infrastructure credentials.
 
 ### Prometheus (`prom.codestra.media`)
-Scrapes Node Exporter, cAdvisor, Redis Exporter, future PostgreSQL Exporter, Blackbox Exporter, approved application `/metrics` endpoints, and selected Collector/Alloy metrics endpoints. Sends firing/resolved alerts to Alertmanager.
+Scrapes Node Exporter, cAdvisor, Redis Exporter, PostgreSQL Exporter, Blackbox Exporter, and approved application `/metrics` endpoints. Sends firing/resolved alerts to Alertmanager.
 
 ### Alertmanager (`aler.codestra.media`)
 Receives alerts from Prometheus. Routes/group/inhibits to approved notification receivers. It is not a metrics store and does not own Prometheus rules.
@@ -53,7 +53,7 @@ Receives traces from OpenTelemetry Collector and/or approved Alloy trace pipelin
 Receives OTLP/approved telemetry from applications and infrastructure. Applies batching, sampling, redaction and routing. Exports traces to Tempo, logs to Loki-approved paths, and metrics to the approved Prometheus-compatible destination.
 
 ### Alloy (`allo.codestra.media`)
-Agent/collector for hosts and services where appropriate. Discovers and collects logs/metrics/traces, applies relabeling/redaction, then forwards to the approved Prometheus/Loki/Tempo/OTel destinations. Avoid duplicate collection with OpenTelemetry Collector; every signal/source must have one documented primary collection path.
+Agent/collector for hosts and services where appropriate. Discovers and collects logs/metrics/traces, applies relabeling/redaction, then forwards to approved Loki, Tempo, and OpenTelemetry Collector destinations. Avoid duplicate collection with OpenTelemetry Collector; every signal/source must have one documented primary collection path.
 
 ### Superset (`supe.codestra.media`)
 Reads curated analytics/read models only. It must not directly query operational provider administration databases when a curated read model is available. Credentials are read-only and least privilege.
@@ -65,7 +65,7 @@ Exports host metrics to Prometheus only.
 Exports container/runtime metrics to Prometheus only.
 
 ### PostgreSQL Exporter (`pgex.codestra.media`)
-Reserved to export PostgreSQL metrics to Prometheus using monitoring-only credentials. Deployment is blocked until its principal GitHub repository authority is resolved/created.
+Exports PostgreSQL metrics to Prometheus using monitoring-only credentials. Its repository exists and declares no host-published native port, but deployment remains blocked until an immutable image, credentials, private networks, and scrape evidence pass review.
 
 ### Redis Exporter (`rdex.codestra.media`)
 Exports Redis metrics to Prometheus using monitoring-only credentials.

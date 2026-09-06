@@ -10,7 +10,7 @@ Do not install or expose services on the server until repository authority, host
 1. Node Exporter
 2. cAdvisor
 3. Redis Exporter
-4. PostgreSQL Exporter only after its GitHub repository authority exists
+4. PostgreSQL Exporter only after its disabled runtime contract is promoted to an accepted immutable deployment
 5. Blackbox Exporter
 6. Prometheus
 7. Alertmanager

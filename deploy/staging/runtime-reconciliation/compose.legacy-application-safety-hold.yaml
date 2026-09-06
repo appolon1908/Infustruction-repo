@@ -1,0 +1,57 @@
+name: codestra-stage6-legacy-application-hold
+
+x-safety: &safety
+  LIVE_ADVERTISING_ENABLED: "false"
+  EXTERNAL_DELIVERY_ENABLED: "false"
+  SOCIAL_PUBLISHING_ENABLED: "false"
+  EXTERNAL_MODEL_CALLS_ENABLED: "false"
+  LIVE_SMS_DELIVERY: "false"
+  LIVE_EMAIL_DELIVERY: "false"
+  LIVE_PSTN_DIALING: "false"
+  PRODUCTION_DIALING: DISABLED
+
+# This file records the required source state for currently unverified staging
+# application processes. The hold profile prevents accidental activation. It is
+# not a deployment authorization and must not be applied until each service's
+# compatibility and backup gates pass.
+services:
+  callback-staging:
+    image: codestra/middleware@sha256:57a4a3a22278aa61bc443910927a308d594db287b8e2cd500ee12293e8a93f4d
+    profiles: [reconciliation-hold]
+    environment: *safety
+  notification-worker-staging:
+    image: codestra/middleware@sha256:ed7accf6d1f9ad7d84f43deba8caa0d58f8c40709c7b54d622d70df56b1f2386
+    profiles: [reconciliation-hold]
+    environment: *safety
+  odoo-result-worker-staging:
+    image: codestra/middleware@sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f
+    profiles: [reconciliation-hold]
+    environment: *safety
+  scheduler-staging:
+    image: codestra/middleware@sha256:ed7accf6d1f9ad7d84f43deba8caa0d58f8c40709c7b54d622d70df56b1f2386
+    profiles: [reconciliation-hold]
+    environment: *safety
+  scraper-odoo-delivery-worker:
+    image: codestra/middleware@sha256:dc97c48f3a29690635bf28de9f3d2562fac2dadb74b8744ea6e99c1bd4ffcda1
+    profiles: [reconciliation-hold]
+    environment: *safety
+  social-dead-letter-worker-staging:
+    image: codestra/middleware@sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6
+    profiles: [reconciliation-hold]
+    environment: *safety
+  social-delivery-worker-staging:
+    image: codestra/middleware@sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6
+    profiles: [reconciliation-hold]
+    environment: *safety
+  social-reconciliation-worker-staging:
+    image: codestra/middleware@sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6
+    profiles: [reconciliation-hold]
+    environment: *safety
+  agent-desktop-sipjs-staging:
+    image: ghcr.io/codestra-srl/codestra-agent-desktop@sha256:c13d32c0780b4d56934888d32193b4d5f052c7671eba01f1ff6a257f6440a0d7
+    profiles: [reconciliation-hold]
+    environment: *safety
+  odoo19-scraper-canary:
+    image: odoo@sha256:94a4f480b8039dc9ca2bca9e77e59f97d3311f66e2aad663cf2670be9c66d4ea
+    profiles: [reconciliation-hold]
+    environment: *safety

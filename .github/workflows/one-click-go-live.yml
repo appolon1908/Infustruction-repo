@@ -1,0 +1,166 @@
+name: ONE CLICK — Go live read-only
+run-name: ONE CLICK Infrastructure read-only • ${{ inputs.orchestration_id || github.run_id }}
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/one-click-go-live.yml"
+      - "tests/test_one_click_go_live_workflow.py"
+      - "docs/ONE-CLICK-GO-LIVE.md"
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Start the exact-digest staging, rollback, and maximum 1% GET/HEAD-only production canary chain
+        required: true
+        type: choice
+        options:
+          - GO_LIVE_READONLY
+        default: GO_LIVE_READONLY
+      canary_percent:
+        description: Production read-only canary percentage; must be greater than zero and no more than one
+        required: true
+        type: string
+        default: "1"
+      orchestration_id:
+        description: Optional correlation identifier supplied by the platform orchestrator
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codestra-one-click-infrastructure-go-live
+  cancel-in-progress: false
+
+jobs:
+  policy:
+    name: Validate one-click infrastructure policy
+    if: github.repository == 'appolon1908-hue/Infustruction-repo'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact workflow source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run one-click safety contract
+        run: |
+          set -Eeuo pipefail
+          python3 tests/test_one_click_go_live_workflow.py
+          git diff --check
+
+  launch:
+    name: Start and verify the protected infrastructure release chain
+    needs: policy
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'appolon1908-hue/Infustruction-repo' && github.ref == 'refs/heads/main'
+    permissions:
+      actions: write
+      contents: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      CONFIRMATION: ${{ inputs.confirmation }}
+      CANARY_PERCENT: ${{ inputs.canary_percent }}
+      CHILD_WORKFLOW: full-readonly-release-chain.yml
+    steps:
+      - name: Check out exact protected main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate one-click request and protected source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          test "$CONFIRMATION" = GO_LIVE_READONLY
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          test "$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq .object.sha)" = "$GITHUB_SHA"
+          python3 - "$CANARY_PERCENT" <<'PY'
+          import sys
+          value = float(sys.argv[1])
+          if not (0 < value <= 1):
+              raise SystemExit("canary_percent must be greater than zero and no more than one")
+          PY
+          test -f ".github/workflows/${CHILD_WORKFLOW}"
+          grep -Fq 'environment: staging-readonly' ".github/workflows/${CHILD_WORKFLOW}"
+          grep -Fq 'environment: production-readonly-canary' ".github/workflows/${CHILD_WORKFLOW}"
+          grep -Fq 'needs: [staging, rollback-rehearsal]' ".github/workflows/${CHILD_WORKFLOW}"
+
+      - name: Dispatch the immutable staging, recovery, and canary chain
+        id: dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/${CHILD_WORKFLOW}/dispatches" \
+            -f ref=main \
+            -f "inputs[canary_percent]=${CANARY_PERCENT}"
+          echo "started_at=${started_at}" >> "$GITHUB_OUTPUT"
+
+      - name: Locate the exact child workflow run
+        id: child
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STARTED_AT: ${{ steps.dispatch.outputs.started_at }}
+        run: |
+          set -Eeuo pipefail
+          run_id=""
+          for _ in $(seq 1 90); do
+            payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${CHILD_WORKFLOW}/runs?event=workflow_dispatch&branch=main&per_page=20")"
+            run_id="$(
+              jq -r --arg started "$STARTED_AT" --arg sha "$GITHUB_SHA" '
+                [.workflow_runs[]
+                 | select(.event == "workflow_dispatch")
+                 | select(.head_branch == "main")
+                 | select(.head_sha == $sha)
+                 | select(.created_at >= $started)]
+                | sort_by(.created_at)
+                | last
+                | .id // empty
+              ' <<<"$payload"
+            )"
+            if [[ "$run_id" =~ ^[1-9][0-9]*$ ]]; then
+              break
+            fi
+            sleep 5
+          done
+          [[ "$run_id" =~ ^[1-9][0-9]*$ ]] || {
+            echo "Unable to locate the dispatched full release-chain run" >&2
+            exit 1
+          }
+          echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for certified completion
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ steps.child.outputs.run_id }}
+        run: |
+          set -Eeuo pipefail
+          gh run watch "$RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --interval 20 \
+            --exit-status
+
+      - name: Publish operator link
+        env:
+          RUN_ID: ${{ steps.child.outputs.run_id }}
+        run: |
+          {
+            echo "## Infrastructure release chain completed"
+            echo
+            echo "- Child run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}"
+            echo "- Canary percentage: ${CANARY_PERCENT}%"
+            echo "- Allowed production traffic: GET/HEAD only"
+            echo "- Live writes, messages, calls, payments, withdrawals, and provider execution remain disabled."
+          } >> "$GITHUB_STEP_SUMMARY"

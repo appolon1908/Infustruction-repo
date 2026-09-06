@@ -1,0 +1,70 @@
+name: production-capability-matrix
+
+on:
+  pull_request:
+    paths:
+      - PRODUCTION-SAFETY-CAPABILITY-MATRIX.yaml
+      - PRODUCTION-WORKLOAD-INVENTORY-20260901.txt
+      - scripts/validate_production_capability_matrix.py
+      - .github/workflows/production-capability-matrix.yml
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Prove exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - run: python -m pip install --disable-pip-version-check pyyaml
+      - run: python3 scripts/validate_production_capability_matrix.py
+      - name: Install and run secret scan
+        env:
+          GITLEAKS_VERSION: "8.30.1"
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+        run: |
+          archive="${RUNNER_TEMP}/gitleaks.tar.gz"
+          curl --fail --silent --show-error --location "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" --output "${archive}"
+          echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum --check -
+          tar -xzf "${archive}" -C "${RUNNER_TEMP}" gitleaks
+          mkdir -p "${RUNNER_TEMP}/tracked-source"
+          git archive HEAD | tar -x -C "${RUNNER_TEMP}/tracked-source"
+          (cd "${RUNNER_TEMP}/tracked-source" && "${RUNNER_TEMP}/gitleaks" dir --no-banner --redact --exit-code 1 .)
+
+  validate-merge-result:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Prove merge-result identity
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - run: python -m pip install --disable-pip-version-check pyyaml
+      - run: python3 scripts/validate_production_capability_matrix.py
+      - name: Install checksum-verified Gitleaks
+        env:
+          GITLEAKS_VERSION: "8.30.1"
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+        run: |
+          archive="${RUNNER_TEMP}/gitleaks.tar.gz"
+          curl --fail --silent --show-error --location \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            --output "${archive}"
+          echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum --check -
+          tar -xzf "${archive}" -C "${RUNNER_TEMP}" gitleaks
+          install -m 0755 "${RUNNER_TEMP}/gitleaks" "${RUNNER_TEMP}/authority-gitleaks"
+
+      - name: Scan complete source tree for secrets
+        run: |
+          scan_root="${RUNNER_TEMP}/tracked-source"
+          mkdir -p "${scan_root}"
+          git archive HEAD | tar -x -C "${scan_root}"
+          (cd "${scan_root}" && "${RUNNER_TEMP}/authority-gitleaks" dir --no-banner --redact --exit-code 1 .)

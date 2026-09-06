@@ -15,7 +15,7 @@ All 14 DNS records resolve to `37.27.128.39` with TTL `600` and were externally 
 | `supe.codestra.media` | Apache Superset | `appolon1908-hue/Superset` | authenticated browser HTTPS only |
 | `node.codestra.media` | Node Exporter | `appolon1908-hue/Codestra-Node-Exporter` | private/internal |
 | `cadv.codestra.media` | cAdvisor | `appolon1908-hue/Codestra-cAdvisor` | private/internal |
-| `pgex.codestra.media` | PostgreSQL Exporter | **repository unresolved/not present under the supplied name** | private/internal; do not deploy until repo authority exists |
+| `pgex.codestra.media` | PostgreSQL Exporter | `appolon1908-hue/Codestra-Postgres-Exporter` | private/internal; deployment remains disabled pending review |
 | `rdex.codestra.media` | Redis Exporter | `appolon1908-hue/Codestra-Redis-Exporter` | private/internal |
 | `blac.codestra.media` | Blackbox Exporter | `appolon1908-hue/Codestra-Blackbox-Exporter` | private/internal |
 | `allo.codestra.media` | Grafana Alloy | `appolon1908-hue/Codestra-Alloy` | private/internal |

@@ -1,0 +1,79 @@
+#cloud-config
+hostname: codestra-stage6-egress-01
+manage_etc_hosts: true
+ssh_pwauth: false
+disable_root: true
+bootcmd:
+%{ for cidr in production_deny_cidrs ~}
+  - [iptables, -I, OUTPUT, -d, "${cidr}", -j, DROP]
+%{ endfor ~}
+package_update: true
+packages: [squid, unbound, chrony, nftables, ca-certificates]
+write_files:
+  - path: /etc/ssh/sshd_config.d/60-codestra-stage6-egress.conf
+    owner: root:root
+    permissions: "0644"
+    content: |
+      PasswordAuthentication no
+      PermitRootLogin no
+      PubkeyAuthentication yes
+  - path: /etc/squid/squid.conf
+    owner: root:root
+    permissions: "0640"
+    content: |
+      http_port 0.0.0.0:3128
+      acl stage6_runtime src ${runtime_private_ip}/32
+      acl safe_ports port 80 443
+      acl ssl_ports port 443
+      acl connect method CONNECT
+%{ for fqdn in approved_fqdns ~}
+      acl approved_domains dstdomain .${fqdn}
+%{ endfor ~}
+      http_access deny !safe_ports
+      http_access deny connect !ssl_ports
+      http_access allow stage6_runtime approved_domains
+      http_access deny all
+      forwarded_for delete
+      request_header_access Proxy-Authorization deny all
+      access_log stdio:/var/log/squid/access.log
+      cache deny all
+  - path: /etc/unbound/unbound.conf.d/stage6.conf
+    owner: root:root
+    permissions: "0644"
+    content: |
+      server:
+        interface: 0.0.0.0
+        access-control: ${staging_subnet_cidr} allow
+        hide-identity: yes
+        hide-version: yes
+        auto-trust-anchor-file: "/var/lib/unbound/root.key"
+  - path: /etc/chrony/chrony.conf
+    owner: root:root
+    permissions: "0644"
+    content: |
+%{ for fqdn in approved_ntp_fqdns ~}
+      server ${fqdn} iburst
+%{ endfor ~}
+      allow ${staging_subnet_cidr}
+      makestep 1.0 3
+      rtcsync
+  - path: /etc/nftables.conf
+    owner: root:root
+    permissions: "0644"
+    content: |
+      flush ruleset
+      table inet stage6_egress {
+        chain output {
+          type filter hook output priority -10; policy accept;
+%{ for cidr in production_deny_cidrs ~}
+          ip daddr ${cidr} counter drop comment "deny reviewed production authority"
+%{ endfor ~}
+        }
+      }
+runcmd:
+  - [systemctl, enable, --now, nftables]
+  - [systemctl, restart, unbound]
+  - [systemctl, restart, chrony]
+  - [squid, -k, parse]
+  - [systemctl, enable, --now, squid]
+final_message: "Stage 6 controlled egress gateway ready; arbitrary destinations remain denied."

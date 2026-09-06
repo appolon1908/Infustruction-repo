@@ -1,0 +1,99 @@
+{
+  "phase": "CODESTRA_SHARED_RECORD_TO_VERIFIED_RELEASE",
+  "recorded_at_utc": "2026-09-05T12:07:50Z",
+  "coordination_seed": "964003e6daab320901e74b297b4780a0035477a5",
+  "record_head_before_update": "70f3ada996a12e64ade750c8319ff52e60a146ba",
+  "pull_request_ownership": {
+    "infrastructure_85": "MERGED_IMPLEMENTATION_OWNER_99972268792554e70f756134b544c5e49eee5398",
+    "infrastructure_95": "CLOSED_REGRESSIONS_INCORPORATED_IN_85",
+    "vicidial_21": "CLOSED_DUPLICATE",
+    "vicidial_22": "OPEN_IMPLEMENTATION_OWNER_e421f052f3847d47819cad527618b793ea9be572",
+    "vicidial_23": "CLOSED_REGRESSION_INCORPORATED_IN_22",
+    "provisioning_28": "OPEN_IMPLEMENTATION_OWNER_013a26016d461582fe12696b3656acc8db893c33",
+    "provisioning_29": "OPEN_COORDINATED_REGRESSION_OWNER_d364d7d1e684a08b6aa89666a10014bb07786eaa",
+    "infrastructure_96": "MERGED_SHARED_EVIDENCE_OWNER_70f3ada996a12e64ade750c8319ff52e60a146ba",
+    "post_merge_continuation": "PENDING_REVIEW_FROM_SAME_EVIDENCE_BRANCH"
+  },
+  "review_findings": {
+    "infrastructure": {
+      "classification": "OBSERVED_FIXED_MERGED_EXACT_HEAD_CI_PASS",
+      "fixing_commit": "99972268792554e70f756134b544c5e49eee5398",
+      "tests": [
+        "tests/test_reusable_deploy_readiness_container_contract.py",
+        "tests/test_deploy_readiness_build_context.py"
+      ]
+    },
+    "vicidial": {
+      "classification": "OBSERVED_FIXED_EXACT_HEAD_CI_PASS_REVIEW_PENDING",
+      "head": "e421f052f3847d47819cad527618b793ea9be572",
+      "fixing_commits": ["2d1903c", "7c5ec89", "98401a0", "620f69a", "e421f05"],
+      "exact_head_ci": {
+        "source_ci": "PASS",
+        "secret_scan": "PASS",
+        "validation": "PASS",
+        "completeness": "PASS",
+        "container_build_test_evidence": "PASS"
+      },
+      "review": "BLOCKED_FRESH_EXACT_HEAD_APPROVAL_REQUIRED"
+    },
+    "provisioning": {
+      "classification": "OBSERVED_FIXED_EXACT_HEAD_CI_PASS_COORDINATED_SEQUENCE_BLOCKED",
+      "implementation_head": "013a26016d461582fe12696b3656acc8db893c33",
+      "regression_head": "d364d7d1e684a08b6aa89666a10014bb07786eaa",
+      "fixing_commits": ["c9b3132", "abea7fe", "013a260"],
+      "exact_head_ci": "PASS",
+      "review": "BLOCKED_FRESH_EXACT_HEAD_APPROVAL_REQUIRED_FOR_29_THEN_28"
+    }
+  },
+  "server_b_running_source": {
+    "classification": "BLOCKED_NOT_VERIFIED",
+    "known_on_disk_marker": "a6bc9de3b010e3b2978425d3f787ce7f61826c67",
+    "known_interpreter_path_reference": "b7ffe4d60a364f00411852aa327e2c424fb2f56a",
+    "live_version": "0.1.0_ONLY",
+    "ssh_attempt": "BLOCKED_PUBLICKEY",
+    "missing_observations": [
+      "systemctl show active unit FragmentPath ExecStart MainPID ActiveEnterTimestamp",
+      "main-process /proc executable cwd and sanitized command line",
+      "application module import/source location",
+      "installed manifest and source checksums resolved from the active process root",
+      "fresh live version health readiness and writes-disabled output"
+    ]
+  },
+  "server_b_deployment_type": {
+    "classification": "OBSERVED_SOURCE_ARCHIVE_CHECKSUM_NOT_OCI_DIGEST",
+    "archive_sha256": "23c6a743244f3e06f239bfcc35a15312a8a4952bfae0b95bba66810774d11fee",
+    "oci_image_digest": null,
+    "deployment_type_verified": false,
+    "source_evidence": "status.json#/SERVER_B_RELEASE_OR_IMAGE_DIGEST",
+    "limitations": "Only the source archive checksum was observed. The release manifest and build info were not found; the on-disk marker does not establish installation or running process/source equivalence. The failed SSH attempt provides no new installation observation."
+  },
+  "server_a_runtime": {
+    "classification": "BLOCKED_NOT_FRESHLY_VERIFIED",
+    "reason": "NO_ESTABLISHED_AUTHORIZED_ADMINISTRATIVE_PATH"
+  },
+  "restore": {
+    "classification": "REPORTED_PASS",
+    "backup": "20260905T103726Z",
+    "restore_log": "/var/log/codestra-vicidial-operator/20260905T103912Z-restore-test-20249.log",
+    "restore_log_sha256": "7ca2d5af0970d62382b83d4397d2cd7d7e3ae0d1114f15ec6c1fc30e67b9bcfa",
+    "missing_observation": "AUTHORIZED_SANITIZED_READ_OF_RESTORE_LOG_CONTENTS"
+  },
+  "paired_rollback": {
+    "classification": "BLOCKED_NOT_VERIFIED",
+    "reason": "SERVER_A_NOT_FRESHLY_OBSERVED_AND_SERVER_B_RUNNING_SOURCE_NOT_RECONCILED"
+  },
+  "protected_release": {
+    "classification": "NOT_RUN",
+    "source_sha": null,
+    "artifact_reference": null,
+    "reason": "REQUIRED_REVIEWED_MERGES_NOT_COMPLETE"
+  },
+  "sentinelx": {
+    "classification": "BLOCKED_SEPARATE",
+    "review": "https://github.com/appolon1908-hue/codestra-production-platform/pull/269",
+    "concern": "CORE_0_11_14_SCRIPT_AND_UPLOAD_HANDLERS_LACK_EFFECTIVE_DISABLE_POLICY_SWITCHES",
+    "skip_sudo_resolves_concern": false,
+    "installed_or_enrolled": false
+  },
+  "production_changes_this_session": "NONE"
+}

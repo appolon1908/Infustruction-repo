@@ -1,0 +1,57 @@
+name: codestra-odoo19-stage6-candidate
+
+x-safety: &safety
+  LIVE_ADVERTISING_ENABLED: "false"
+  EXTERNAL_DELIVERY_ENABLED: "false"
+  SOCIAL_PUBLISHING_ENABLED: "false"
+  EXTERNAL_MODEL_CALLS_ENABLED: "false"
+  LIVE_SMS_DELIVERY: "false"
+  LIVE_EMAIL_DELIVERY: "false"
+  LIVE_PSTN_DIALING: "false"
+  PRODUCTION_DIALING: DISABLED
+
+x-odoo: &odoo
+  image: odoo@sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5
+  env_file:
+    - /etc/codestra/secrets/odoo19-staging/odoo.env
+  environment: *safety
+  networks: [backend]
+
+services:
+  odoo19-staging:
+    <<: *odoo
+    restart: unless-stopped
+    # Long-running process: no --init, --update, install, or upgrade operation.
+    command: ["odoo", "--database=odoo19_staging", "--without-demo=true", "--workers=0", "--max-cron-threads=0", "--http-interface=0.0.0.0"]
+
+  odoo19-master-staging:
+    <<: *odoo
+    restart: unless-stopped
+    command: ["odoo", "--database=codestra_master_v2_staging", "--without-demo=true", "--workers=0", "--max-cron-threads=0", "--http-interface=0.0.0.0"]
+
+  odoo19-module-migration:
+    <<: *odoo
+    profiles: [one-shot-migration]
+    restart: "no"
+    command:
+      - odoo
+      - --database=odoo19_staging
+      - --update=codestra_base,call_center_core,call_center_campaign,codestra_vicidial_crm,codestra_integration_hub,codestra_vicidial_connector
+      - --stop-after-init
+      - --no-http
+
+  odoo19-master-module-migration:
+    <<: *odoo
+    profiles: [one-shot-migration]
+    restart: "no"
+    command:
+      - odoo
+      - --database=codestra_master_v2_staging
+      - --update=codestra_base,codestra_vicidial_crm,codestra_integration_hub,codestra_vicidial_connector,call_center_core,call_center_campaign,call_center_compliance,call_center_lead_validation,call_center_orchestration,codestra,codestra_appointments,codestra_ivr_control,codestra_ai_core,codestra_ai_qualification,codestra_ai_call_audit,codestra_ai_realtime_assistant,codestra_ai_review,codestra_transcription,codestra_analytics_reporting,codestra_daily_reporting
+      - --stop-after-init
+      - --no-http
+
+networks:
+  backend:
+    external: true
+    name: codestra-odoo19-staging_backend

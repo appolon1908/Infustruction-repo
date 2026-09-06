@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codestra.co/schemas/staging-endpoints.v2.json",
+  "title": "Codestra protected environment target and zero-effect manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidate_id",
+    "environment",
+    "bearer_token_environment",
+    "metrics_token_environment",
+    "workloads",
+    "keycloak",
+    "kong",
+    "counters",
+    "probe"
+  ],
+  "properties": {
+    "schema": {
+      "const": "codestra.staging-endpoints.v1"
+    },
+    "candidate_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+    },
+    "environment": {
+      "enum": [
+        "staging-readonly",
+        "production-readonly-canary"
+      ]
+    },
+    "bearer_token_environment": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+    },
+    "metrics_token_environment": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+    },
+    "workloads": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/workload"
+      }
+    },
+    "keycloak": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "discovery_endpoint",
+        "expected_issuer"
+      ],
+      "properties": {
+        "discovery_endpoint": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "expected_issuer": {
+          "$ref": "#/$defs/endpoint"
+        }
+      }
+    },
+    "kong": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "smoke_routes"
+      ],
+      "properties": {
+        "smoke_routes": {
+          "type": "array",
+          "minItems": 29,
+          "maxItems": 29,
+          "items": {
+            "$ref": "#/$defs/route"
+          }
+        }
+      }
+    },
+    "counters": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/counter"
+      }
+    },
+    "probe": {
+      "$ref": "#/$defs/probe"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "staging-readonly"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "bearer_token_environment": {
+            "const": "STAGING_READONLY_BEARER_TOKEN"
+          },
+          "metrics_token_environment": {
+            "const": "STAGING_METRICS_BEARER_TOKEN"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "production-readonly-canary"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "bearer_token_environment": {
+            "const": "PRODUCTION_READONLY_BEARER_TOKEN"
+          },
+          "metrics_token_environment": {
+            "const": "PRODUCTION_METRICS_BEARER_TOKEN"
+          },
+          "probe": {
+            "required": [
+              "baseline_url",
+              "canary_url"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "endpoint": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^?#]+$"
+    },
+    "workload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version_endpoint",
+        "readiness_endpoint",
+        "capabilities_endpoint"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$"
+        },
+        "version_endpoint": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "readiness_endpoint": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "capabilities_endpoint": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "metrics_endpoint": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "migration_endpoint": {
+          "$ref": "#/$defs/endpoint"
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "url",
+        "expected_statuses"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$"
+        },
+        "url": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "expected_statuses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "enum": [
+              200,
+              201,
+              202,
+              204,
+              301,
+              302,
+              307,
+              308,
+              400,
+              401,
+              403,
+              405,
+              409,
+              410,
+              415,
+              422,
+              429
+            ]
+          }
+        }
+      }
+    },
+    "counter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "url",
+        "json_pointer",
+        "expected"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$"
+        },
+        "url": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "json_pointer": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "expected": {
+          "const": 0
+        }
+      }
+    },
+    "probe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requests",
+        "maximum_error_rate",
+        "maximum_p95_ms",
+        "maximum_regression_percent"
+      ],
+      "properties": {
+        "requests": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "maximum_error_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "maximum_p95_ms": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maximum_regression_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "baseline_url": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "canary_url": {
+          "$ref": "#/$defs/endpoint"
+        }
+      }
+    }
+  }
+}

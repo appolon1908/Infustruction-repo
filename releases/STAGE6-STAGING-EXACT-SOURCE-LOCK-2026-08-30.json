@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "authority": "HISTORICAL_NON_AUTHORITATIVE",
+  "environment": "staging",
+  "status": "SUPERSEDED_DO_NOT_DEPLOY",
+  "superseded_by": "STAGE6-SOURCE-LOCK.yaml",
+  "superseded_reason": "Newer reviewed protected-main revisions and immutable runtime provenance were resolved after this snapshot.",
+  "locked_at": "2026-08-30",
+  "repositories": {
+    "marketing": {"repo": "appolon1908-hue/Codestra-Marketing-", "ref": "main", "sha": "460ff98f64ef9f0724fe4d2afc51a1a6c5b053dd"},
+    "ai": {"repo": "appolon1908-hue/Codestra-AI", "ref": "main", "sha": "94d990e269b3a8cdc8176088be65dd02fdac37ea"},
+    "communication": {"repo": "appolon1908-hue/Codestra-Communication-CC", "ref": "main", "sha": "0ee0dcbd3d4a9405ffc7d14019bf4a1105f91113"},
+    "social_control": {"repo": "appolon1908-hue/Codesrea-Social-", "ref": "main", "sha": "7bc0dd9ee8a13abbd1463ca106629ad63d957145"},
+    "middleware": {"repo": "appolon1908-hue/Middleware-", "ref": "main", "sha": "0227e9d0380bf4808540d61c6f168fee584d138c"},
+    "odoo": {"repo": "appolon1908-hue/Odoo", "ref": "main", "sha": "16356fa57fbda080fe78831507eccd63d9a00fc4"},
+    "n8n": {"repo": "appolon1908-hue/N8N", "ref": "main", "sha": "1ef1f2f5dbc794c23159ca89a0422af0aa3df4af"},
+    "kong": {"repo": "appolon1908-hue/Kong", "ref": "main", "sha": "344684872fd9737efe7841a773288a703a1dcb3a"},
+    "keycloak": {"repo": "appolon1908-hue/Keycloak", "ref": "main", "sha": "d455afc9ae1265fac4044ec66a9934b683babae7"},
+    "social_runtime": {"repo": "appolon1908-hue/social.codestra.co", "ref": "feat/codestra-social-adapter-foundation-20260830", "sha": "26dd3d91e867ab72765d9596be537a4e6b7a4191", "promotion_blocker": "classic required status contexts are expected even though Backend CI and Codestra Social Adapter Stage 5 are successful"}
+  },
+  "safety": {
+    "live_advertising": false,
+    "external_delivery": false,
+    "social_publishing": false,
+    "external_ai_calls": false,
+    "production_cutover": false
+  },
+  "rule": "This snapshot is historical and MUST NOT be used for deployment. STAGE6-SOURCE-LOCK.yaml is the sole current authority."
+}

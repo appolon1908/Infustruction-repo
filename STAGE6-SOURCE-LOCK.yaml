@@ -1,0 +1,307 @@
+schema: codestra.stage6.source-lock.v2
+locked_at: '2026-08-31T01:38:54+02:00'
+environment: staging
+production_write_activation: false
+runtime_mutation_authorized: false
+status: SOURCE_LOCKED_SCOPED_RUNTIME_READBACK_FAILED
+runtime_revalidated_at: '2026-08-31T01:38:54+02:00'
+supersedes:
+  - releases/STAGE6-STAGING-EXACT-SOURCE-LOCK-2026-08-30.json
+conflict_resolution:
+  rule: protected-main SHA observed after the reviewed merge is authoritative
+  kong_required_merge: 186630b40c19d72aa9bdf9ef1f64e8a17bd0e33e
+  kong_locked_sha: 3594fe25b8fe36633c1de95a8e485c72f32a60f8
+  kong_ancestry: required merge is an ancestor of locked SHA by one commit
+  social_runtime_required_merge: 4f7817f6c6d1bb38fa7d85bb1656eb41865283d5
+  social_runtime_locked_sha: 4f7817f6c6d1bb38fa7d85bb1656eb41865283d5
+  keycloak_previous_locked_sha: 80fc33c7159440e357219903f62ea7fb84914d59
+  keycloak_locked_sha: 303e2edef2219c5eb3ac167c309a9717a766d079
+  keycloak_ancestry: previous lock is an ancestor of reviewed protected-main merge 56
+
+source_refresh:
+  checked_at: '2026-08-31T01:38:54+02:00'
+  branch_authority: main
+  result: PASS_AFTER_KEYCLOAK_REFRESH
+  n8n_checked_separately: true
+  infrastructure_evidence_base_sha: c451ff0b39d6087f2c60e98fa45a7aaadb1d0b3d
+
+safety:
+  authority: DESIRED_DECLARATIONS_NOT_RUNTIME_ENFORCEMENT_EVIDENCE
+  LIVE_ADVERTISING_ENABLED: false
+  EXTERNAL_DELIVERY_ENABLED: false
+  SOCIAL_PUBLISHING_ENABLED: false
+  EXTERNAL_MODEL_CALLS_ENABLED: false
+  LIVE_SMS_DELIVERY: false
+  LIVE_EMAIL_DELIVERY: false
+  LIVE_PSTN_DIALING: false
+  PRODUCTION_DIALING: DISABLED
+
+safety_enforcement:
+  gate_model: EFFECTIVE_DENIAL_NETWORK_GATEWAY_AND_NEGATIVE_READBACK
+  status: DESIGN_PASS_APPLICATION_NOT_AUTHORIZED
+  enforceable_without_recreation: 7
+  requires_unfreeze_decision: 0
+  controls:
+    LIVE_ADVERTISING_ENABLED: [internal_only_network, host_egress_deny, gateway_capability_deny, negative_probe]
+    SOCIAL_PUBLISHING_ENABLED: [internal_only_network, host_egress_deny, gateway_capability_deny, negative_probe]
+    EXTERNAL_MODEL_CALLS_ENABLED: [internal_only_network, host_egress_deny, gateway_capability_deny, negative_probe]
+    LIVE_SMS_DELIVERY: [internal_only_network, host_egress_deny, gateway_capability_deny, negative_probe]
+    LIVE_EMAIL_DELIVERY: [internal_only_network, smtp_and_provider_egress_deny, gateway_capability_deny, negative_probe]
+    LIVE_PSTN_DIALING: [internal_only_network, sip_rtp_provider_egress_deny, gateway_capability_deny, negative_probe]
+    PRODUCTION_DIALING: [internal_only_network, telephony_provider_egress_deny, identity_and_gateway_deny, negative_probe]
+  derived_assertion:
+    EXTERNAL_DELIVERY_ENABLED: all applicable delivery controls are effectively denied
+  frozen_workload_rule: network membership may change only in a separately approved operation; recreation remains prohibited
+
+safety_scope:
+  decision: APPROVED
+  authority_issue: https://github.com/appolon1908-hue/Infustruction-repo/issues/16
+  authority_comment: https://github.com/appolon1908-hue/Infustruction-repo/issues/16#issuecomment-5472362736
+  in_scope_host: 65.109.65.169
+  in_scope_workloads: 22
+  definition: writes originating from or enabled by the locked Stage 6 workloads and execution path
+  out_of_scope_active_production:
+    product: Klyrow/Postal
+    host: 37.27.128.39
+    disposition: OUT_OF_SCOPE_ACTIVE_PRODUCTION_DO_NOT_TOUCH
+    public_smtp_listener: '37.27.128.39:25'
+    observed_containers:
+      - klyrow-gateway-1
+      - klyrow-smtp-relay-1
+      - klyrow-worker-1
+  invariants:
+    - out-of-scope activity does not prove or authorize Stage 6 external writes
+    - no Stage 6 route credential queue webhook or request may reach Klyrow/Postal
+    - production deployment and mutation remain unauthorized
+
+current_runtime_safety:
+  status: FAIL_SCOPED_RUNTIME_READBACK
+  stage6_path_business_writes: NOT_PROVEN_DISABLED
+  inspected_host: 65.109.65.169
+  required_workloads: 22
+  workloads_present: 22
+  workloads_running: 22
+  workload_digests_matching: 22
+  safety_applicable_workloads: 17
+  safety_complete_workloads: 0
+  unsafe_true_values_observed: 0
+  unhealthy_workloads: 6
+  missing_safety_key_counts:
+    LIVE_ADVERTISING_ENABLED: 17
+    EXTERNAL_DELIVERY_ENABLED: 12
+    SOCIAL_PUBLISHING_ENABLED: 17
+    EXTERNAL_MODEL_CALLS_ENABLED: 17
+    LIVE_SMS_DELIVERY: 17
+    LIVE_EMAIL_DELIVERY: 17
+    LIVE_PSTN_DIALING: 17
+    PRODUCTION_DIALING: 17
+  out_of_scope_active_production: OUT_OF_SCOPE_ACTIVE_PRODUCTION_DO_NOT_TOUCH
+  prior_global_blocking_signal:
+    LIVE_EMAIL_DELIVERY: true
+    affected_containers:
+      - klyrow-gateway-1
+      - klyrow-smtp-relay-1
+      - klyrow-worker-1
+    public_smtp_listener: '37.27.128.39:25'
+  scoped_runtime_readback: FAIL
+
+repositories:
+  marketing: {repository: appolon1908-hue/Codestra-Marketing-, revision: 460ff98f64ef9f0724fe4d2afc51a1a6c5b053dd, rollback_git_sha: da5929b80a1abe22ed4fd39a647a619036e200bf, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, artifact: source_only}
+  ai: {repository: appolon1908-hue/Codestra-AI, revision: 94d990e269b3a8cdc8176088be65dd02fdac37ea, rollback_git_sha: d6b529155639cd2cf761dfc2cfde292c15c4d930, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, artifact: source_only}
+  communication: {repository: appolon1908-hue/Codestra-Communication-CC, revision: 0ee0dcbd3d4a9405ffc7d14019bf4a1105f91113, rollback_git_sha: af1d390200a225f45cbd4bd7c999cffee93e0a86, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, artifact: source_only}
+  social_control: {repository: appolon1908-hue/Codesrea-Social-, revision: 7bc0dd9ee8a13abbd1463ca106629ad63d957145, rollback_git_sha: fa99598cc6eb881b3b2264a4ba82129ef4b22204, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, artifact: source_only}
+  social_runtime: {repository: appolon1908-hue/social.codestra.co, revision: 4f7817f6c6d1bb38fa7d85bb1656eb41865283d5, rollback_git_sha: 3c62c136d2e14238ee124726d681a164f6f24fd6, image_digest: UNRESOLVED_NO_REVIEWED_PUBLISHED_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_PUBLISHED_IMAGE}
+  middleware: {repository: appolon1908-hue/Middleware-, revision: c720e529ea89f1f0d5d035d4ac12a1d5aa30ab62, rollback_git_sha: d9735422796cb2aa18a39339aad3cc87bdf67ba9, image_digest: 'sha256:92954f809e811487f8ac15bde3ba636f3bdb1c37547838e9579bb1fd9567f8da', rollback_digest: 'sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f'}
+  odoo: {repository: appolon1908-hue/Odoo, revision: 3eeb17f8b7efcd9bd90487e5e8e9888717f51138, rollback_git_sha: 16356fa57fbda080fe78831507eccd63d9a00fc4, image_digest: 'sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5', rollback_digest: 'sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5'}
+  n8n: {repository: appolon1908-hue/N8N, revision: 4d35472772f60c5af616ffac1f902d626643d02d, rollback_git_sha: b63f9bedccf4f9b5c55ee673cd7c88caa88f2a74, image_digest: 'sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478', rollback_digest: 'sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478'}
+  kong: {repository: appolon1908-hue/Kong, revision: 3594fe25b8fe36633c1de95a8e485c72f32a60f8, rollback_git_sha: 186630b40c19d72aa9bdf9ef1f64e8a17bd0e33e, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, required_merge: 186630b40c19d72aa9bdf9ef1f64e8a17bd0e33e}
+  keycloak: {repository: appolon1908-hue/Keycloak, revision: 303e2edef2219c5eb3ac167c309a9717a766d079, rollback_git_sha: 80fc33c7159440e357219903f62ea7fb84914d59, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  sdk: {repository: appolon1908-hue/SDK-repository, revision: ee8cec5d19cc5c3e03a12f5714031b86b58b4efb, rollback_git_sha: 1c82989d64bfd458d915d684c6a4f2c8bcaf38b3, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  prometheus: {repository: appolon1908-hue/Codestra-Prometheus, revision: eec6ea7d7a63d7debef16de92ef5b6d34395d013, rollback_git_sha: 7b7a4b8880bb2d3c6bbb2d33bd23b23bd5c63284, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  grafana: {repository: appolon1908-hue/Codestra-Grafana-, revision: 30b736f98e7bbf16f54280251c6d51a877ff2d8a, rollback_git_sha: 9a2fbac0d7d5359537bea5a6ed758c6518108325, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  loki: {repository: appolon1908-hue/Codestra-Loki, revision: 75a5deb555547b557466c418af18c99f3cef5556, rollback_git_sha: c17b93282086a433439c695ed77a1ebdb0a944c0, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  tempo: {repository: appolon1908-hue/Codestra-Tempo, revision: 4d91ab83d702c5892a8521804abfe32a57a6825f, rollback_git_sha: c34a86e325cf5dc34533f721b03a8d0422e2086e, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  telemetry: {repository: appolon1908-hue/Codestra-Telemetry, revision: d42d866072ce86175ca03209bd866b3452d606fe, rollback_git_sha: cb1e628913378886859b463844ba82c5222a833a, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  alloy: {repository: appolon1908-hue/Codestra-Alloy, revision: 104966b2cac822d2cc61f058e53a9dff4a10e03e, rollback_git_sha: eb5e7a4ef6653b8a6b680c7e44e4a1f081a83003, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  node_exporter: {repository: appolon1908-hue/Codestra-Node-Exporter, revision: c18166741f36fc05193187dfd614fbde7f8f9253, rollback_git_sha: 3de3b5444276037980ed374009ca55d5ccb6480c, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  cadvisor: {repository: appolon1908-hue/Codestra-cAdvisor, revision: add839da944d1f213e978b862f22e856008cf52d, rollback_git_sha: d3004eb2a8af6b8e8f00639417f2b0c31abf56bb, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  redis_exporter: {repository: appolon1908-hue/Codestra-Redis-Exporter, revision: 784e03d8151136195b3b23c58fe50b68b12cf94f, rollback_git_sha: fd9b708b5842b6e2980933be2a8fbcc9ca3ebf16, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  blackbox_exporter: {repository: appolon1908-hue/Codestra-Blackbox-Exporter, revision: acfe1e83dd05a7d8a45cd70f7661fe414fae39b1, rollback_git_sha: b3fba705c08db1ec737c338b3ce3b856ec5e5f7f, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  superset: {repository: appolon1908-hue/Superset, revision: 9e9b5a347e1a52cf43f8c6ec2a967379e723d31a, rollback_git_sha: f12bc1cdf4d1c7bb0636fa27c69dd6f99c6acf0e, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+  openbao: {repository: appolon1908-hue/Codestra-OpenBao, revision: 5f5e3583585081e450f945440a1fab503bfa8399, rollback_git_sha: 854aebf0bdf71c3a2cb75c093a5773190e11765e, image_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE, rollback_digest: UNRESOLVED_NO_REVIEWED_RUNTIME_IMAGE}
+
+runtime_workloads:
+  codestra-agent-desktop-sipjs-staging:
+    repository: UNVERIFIED_RUNTIME_LABEL_POINTS_TO_CODEStra-SRL
+    git_sha: 9118e5bc01f9ce4a52add8753c096d061cd84848
+    image_digest: 'sha256:c13d32c0780b4d56934888d32193b4d5f052c7671eba01f1ff6a257f6440a0d7'
+    environment: STAGING
+    service_authority: UNVERIFIED_NO_COMPOSE_LABEL
+    secret_authority: none_observed
+    rollback_digest: 'sha256:c13d32c0780b4d56934888d32193b4d5f052c7671eba01f1ff6a257f6440a0d7'
+    disposition: UNVERIFIED_FREEZE
+
+  codestra-middleware-staging-callback-staging-1:
+    repository: UNVERIFIED_HOST_BUILD
+    git_sha: UNVERIFIED
+    image_digest: 'sha256:57a4a3a22278aa61bc443910927a308d594db287b8e2cd500ee12293e8a93f4d'
+    environment: STAGING
+    service_authority: /opt/codestra/middleware-staging/compose.yaml#callback-staging
+    secret_authority: /etc/codestra/secrets/staging-callback
+    rollback_digest: 'sha256:57a4a3a22278aa61bc443910927a308d594db287b8e2cd500ee12293e8a93f4d'
+    disposition: UNVERIFIED_FREEZE
+
+  codestra-middleware-staging-middleware-staging-1:
+    repository: Codestra-SRL/codestra-middleware
+    git_sha: b29db772ed82c0d2f1adfdb8e6da58d4baa77524
+    image_digest: 'sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f'
+    expected_repository: appolon1908-hue/Middleware-
+    expected_sha: c720e529ea89f1f0d5d035d4ac12a1d5aa30ab62
+    expected_digest: 'sha256:92954f809e811487f8ac15bde3ba636f3bdb1c37547838e9579bb1fd9567f8da'
+    environment: STAGING
+    service_authority: /opt/codestra/middleware-staging/compose.yaml#middleware-staging
+    secret_authority: /etc/codestra/secrets/middleware-staging
+    rollback_digest: 'sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f'
+    disposition: REPLACE_AFTER_BACKUP_AND_COMPATIBILITY_TEST
+
+  codestra-middleware-staging-notification-worker-staging-1: &unverified_middleware_worker
+    repository: UNVERIFIED
+    git_sha: UNVERIFIED
+    image_digest: 'sha256:ed7accf6d1f9ad7d84f43deba8caa0d58f8c40709c7b54d622d70df56b1f2386'
+    environment: STAGING
+    service_authority: /opt/codestra/middleware-staging/compose.yaml
+    compose_service: notification-worker-staging
+    secret_authority: /etc/codestra/secrets/middleware-staging
+    rollback_digest: 'sha256:ed7accf6d1f9ad7d84f43deba8caa0d58f8c40709c7b54d622d70df56b1f2386'
+    disposition: UNVERIFIED_FREEZE
+  codestra-middleware-staging-odoo-result-worker-staging-1:
+    repository: Codestra-SRL/codestra-middleware
+    git_sha: b29db772ed82c0d2f1adfdb8e6da58d4baa77524
+    image_digest: 'sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f'
+    environment: STAGING
+    service_authority: /opt/codestra/middleware-staging/compose.yaml#odoo-result-worker-staging
+    secret_authority: /etc/codestra/secrets/middleware-staging
+    rollback_digest: 'sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f'
+    disposition: LEGACY_PROVENANCE_VERIFIED_REPLACEMENT_UNVERIFIED
+  codestra-middleware-staging-postgres-1: &postgres_runtime
+    repository: docker.io/library/postgres
+    git_sha: NOT_APPLICABLE_VENDOR_IMAGE
+    image_digest: 'sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+    environment: STAGING
+    service_authority: /opt/codestra/middleware-staging/compose.yaml#postgres
+    secret_authority: /etc/codestra/secrets/middleware-staging/postgres.env
+    rollback_digest: 'sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+    disposition: RETAIN_PINNED_INFRASTRUCTURE
+  codestra-middleware-staging-redis-1: &redis_runtime
+    repository: docker.io/library/redis
+    git_sha: NOT_APPLICABLE_VENDOR_IMAGE
+    image_digest: 'sha256:bb186d083732f669da90be8b0f975a37812b15e913465bb14d845db72a4e3e08'
+    environment: STAGING
+    service_authority: /opt/codestra/middleware-staging/compose.yaml#redis
+    secret_authority: /etc/codestra/secrets/middleware-staging/redis-auth
+    rollback_digest: 'sha256:bb186d083732f669da90be8b0f975a37812b15e913465bb14d845db72a4e3e08'
+    disposition: RETAIN_PINNED_INFRASTRUCTURE
+  codestra-middleware-staging-scheduler-staging-1:
+    <<: *unverified_middleware_worker
+    compose_service: scheduler-staging
+  codestra-middleware-staging-scraper-odoo-delivery-worker-1:
+    repository: Codestra-SRL/codestra-middleware
+    git_sha: 4780bd72d1c574af4aed62d374ec50b208e8ea4c
+    image_digest: 'sha256:dc97c48f3a29690635bf28de9f3d2562fac2dadb74b8744ea6e99c1bd4ffcda1'
+    environment: STAGING
+    service_authority: /opt/codestra/middleware-staging/compose.scraper-canary.yaml#scraper-odoo-delivery-worker
+    secret_authority: /etc/codestra/secrets/middleware-staging
+    rollback_digest: 'sha256:dc97c48f3a29690635bf28de9f3d2562fac2dadb74b8744ea6e99c1bd4ffcda1'
+    disposition: LEGACY_EXACT_SHA_CI_VERIFIED_FREEZE
+  codestra-middleware-staging-social-dead-letter-worker-staging-1: &social_worker
+    repository: Codestra-SRL/codestra-middleware
+    git_sha: 12cd5fc0fcd7594f01809873f882c50f7dcd98bd
+    image_digest: 'sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6'
+    environment: STAGING
+    service_authority: /opt/codestra/middleware-staging/compose.yaml
+    compose_service: social-dead-letter-worker-staging
+    secret_authority: /etc/codestra/secrets/middleware-staging
+    rollback_digest: 'sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6'
+    disposition: LEGACY_PROVENANCE_VERIFIED_CI_UNVERIFIED_FREEZE
+  codestra-middleware-staging-social-delivery-worker-staging-1:
+    <<: *social_worker
+    compose_service: social-delivery-worker-staging
+  codestra-middleware-staging-social-reconciliation-worker-staging-1:
+    <<: *social_worker
+    compose_service: social-reconciliation-worker-staging
+
+  codestra-n8n-staging-n8n-1: &n8n_runtime
+    repository: docker.io/n8nio/n8n
+    git_sha: NOT_APPLICABLE_VENDOR_IMAGE
+    workflow_repository: appolon1908-hue/N8N
+    workflow_sha: 4d35472772f60c5af616ffac1f902d626643d02d
+    image_digest: 'sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478'
+    environment: STAGING_RUNTIME_MISREPORTS_NODE_ENV_PRODUCTION
+    service_authority: /opt/codestra/n8n-staging/compose.yaml,/opt/codestra/n8n-staging/compose.queue.override.yaml
+    compose_service: n8n
+    secret_authority: /etc/codestra/secrets/n8n-staging
+    rollback_digest: 'sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478'
+    disposition: RETAIN_IMAGE_RECONCILE_CONFIG_AFTER_BACKUP
+  codestra-n8n-staging-postgres-1:
+    <<: *postgres_runtime
+    service_authority: /opt/codestra/n8n-staging/compose.yaml#postgres
+    secret_authority: /etc/codestra/secrets/n8n-staging
+  codestra-n8n-staging-redis-1:
+    <<: *redis_runtime
+    service_authority: /opt/codestra/n8n-staging/compose.queue.override.yaml#redis
+    secret_authority: /etc/codestra/secrets/n8n-staging/redis-auth
+  codestra-n8n-staging-webhook-1:
+    <<: *n8n_runtime
+    compose_service: webhook
+  codestra-n8n-staging-worker-1:
+    <<: *n8n_runtime
+    compose_service: worker
+  codestra-n8n-staging-worker-2-1:
+    <<: *n8n_runtime
+    compose_service: worker-2
+
+  codestra-odoo19-staging-odoo19-master-staging-1: &odoo_runtime
+    repository: docker.io/library/odoo
+    git_sha: NOT_APPLICABLE_VENDOR_IMAGE
+    addons_repository: appolon1908-hue/Odoo
+    addons_sha: 3eeb17f8b7efcd9bd90487e5e8e9888717f51138
+    image_digest: 'sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5'
+    environment: STAGING
+    service_authority: /opt/codestra/odoo19-staging/compose.yaml,/opt/codestra/odoo19-staging/compose.master.override.yaml
+    compose_service: odoo19-master-staging
+    secret_authority: /etc/codestra/secrets/odoo19-staging
+    rollback_digest: 'sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5'
+    disposition: RETAIN_IMAGE_RECONCILE_ADDONS_AND_STARTUP_AFTER_BACKUP
+  codestra-odoo19-staging-odoo19-scraper-canary-1:
+    <<: *odoo_runtime
+    image_digest: 'sha256:94a4f480b8039dc9ca2bca9e77e59f97d3311f66e2aad663cf2670be9c66d4ea'
+    rollback_digest: 'sha256:94a4f480b8039dc9ca2bca9e77e59f97d3311f66e2aad663cf2670be9c66d4ea'
+    compose_service: odoo19-scraper-canary
+    disposition: UNVERIFIED_CUSTOM_ODOO_IMAGE_FREEZE
+  codestra-odoo19-staging-odoo19-staging-1:
+    <<: *odoo_runtime
+    compose_service: odoo19-staging
+  codestra-odoo19-staging-postgres-1:
+    <<: *postgres_runtime
+    service_authority: /opt/codestra/odoo19-staging/compose.yaml#postgres
+    secret_authority: /etc/codestra/secrets/odoo19-staging
+
+gates:
+  workload_count: 22
+  dispositions_resolved: true
+  all_runtime_git_provenance_verified: false
+  all_planned_replacement_images_reviewed_and_digest_pinned: true
+  unverified_workloads_frozen_from_automatic_replacement: true
+  unresolved_nonruntime_component_artifacts: [social_runtime]
+  source_migration_model_remediated: true
+  source_safety_model_remediated: true
+  safety_gate_definition: EFFECTIVE_DENIAL_NOT_ENVIRONMENT_PRESENCE
+  rollback_digests_recorded_for_all_workloads: true
+  repository_rollback_git_shas_resolved: 23
+  repository_workload_sections_reconciled: true
+  source_lock: PASS
+  stage6_preflight: FAIL_SCOPED_RUNTIME_READBACK
+  backup_preparation_allowed: false
+  runtime_reconciliation_allowed: false
+  stage6_path_business_writes: NOT_PROVEN_DISABLED
+  out_of_scope_production_writes: ACTIVE_DO_NOT_TOUCH

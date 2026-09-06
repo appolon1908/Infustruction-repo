@@ -1,0 +1,54 @@
+schema: codestra.production.read-only-canary.v1
+authorized_mode: read_only
+write_activation_authorized: false
+
+required_environment:
+  LIVE_ADVERTISING_ENABLED: "false"
+  EXTERNAL_MODEL_CALLS_ENABLED: "false"
+  EXTERNAL_DELIVERY_ENABLED: "false"
+  SOCIAL_PUBLISHING_ENABLED: "false"
+  PUBLISHING_KILL_SWITCH: "true"
+
+allowed_canary_actions:
+  - health_checks
+  - readiness_checks
+  - tls_validation
+  - oidc_authentication_validation
+  - authorization_negative_tests
+  - configuration_readback
+  - metrics_scrape_validation
+  - log_ingestion_validation
+  - trace_ingestion_validation
+  - database_connectivity_read_check
+  - internal_dry_run
+  - approved_read_only_provider_sync
+
+forbidden_canary_actions:
+  - advertising_campaign_create
+  - advertising_campaign_activate
+  - advertising_budget_change
+  - external_customer_email_send
+  - external_customer_sms_send
+  - external_whatsapp_send
+  - social_publish
+  - external_ai_generation_call
+  - destructive_database_operation
+
+required_evidence:
+  - staging_end_to_end_pass
+  - observability_pass
+  - backup_restore_validation
+  - rollback_validation
+  - immutable_artifact_digests
+  - keycloak_runtime_readback
+  - kong_runtime_readback
+  - zero_external_writes
+
+rollback_trigger:
+  - failed_health_or_readiness
+  - auth_or_scope_drift
+  - unexpected_write_attempt
+  - telemetry_gap
+  - database_error
+  - error_rate_threshold_breach
+  - latency_threshold_breach

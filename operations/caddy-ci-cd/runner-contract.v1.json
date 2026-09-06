@@ -1,0 +1,95 @@
+{
+  "bootstrap": {
+    "admin_secret": "CODESTRA_REPOSITORY_ADMIN_TOKEN",
+    "admin_token_repository_permissions": {
+      "Actions": "read",
+      "Administration": "read-and-write",
+      "Environments": "read-and-write"
+    },
+    "control_script": "scripts/configure_caddy_ci_cd_runner.sh",
+    "governance_effect": "verify-canonical-ruleset-readback-no-mutation",
+    "governance_source": "config/github/protected-branches-ruleset.json@production",
+    "host_script": "scripts/install_caddy_actions_runner.sh",
+    "job_binding": "exact-current-production-bounded-runtime-run-and-queued-job",
+    "known_hosts_secret": "CADDY_RUNNER_KNOWN_HOSTS",
+    "registration": "repository-scoped-ephemeral-one-job",
+    "ssh_secret": "CADDY_RUNNER_SSH_PRIVATE_KEY",
+    "token_transport": "stdin-over-strict-host-key-checked-ssh",
+    "workflow": ".github/workflows/caddy-ci-cd-runner-bootstrap.yml"
+  },
+  "repository": "appolon1908-hue/Caddy",
+  "runner_application": {
+    "architecture": "x64",
+    "download_url": "https://github.com/actions/runner/releases/download/v2.337.0/actions-runner-linux-x64-2.337.0.tar.gz",
+    "filename": "actions-runner-linux-x64-2.337.0.tar.gz",
+    "os": "linux",
+    "sha256": "70920811a4f8ad4328818682bca5c6469c1c942fab52448868071d0063816613",
+    "update_mode": "disabled-until-reviewed-repin",
+    "version": "2.337.0"
+  },
+  "schema": "codestra.caddy-ci-cd-runner-contract.v1",
+  "security_invariants": {
+    "canonical_ruleset_mutated_by_bootstrap": false,
+    "docker_authorization_created_by_bootstrap": false,
+    "docker_authorization_must_preexist": true,
+    "live_runtime_mutation_allowed": false,
+    "production_candidate_start_allowed": false,
+    "production_job_depends_on_staging_evidence": true,
+    "production_methods": [
+      "GET",
+      "HEAD"
+    ],
+    "queued_job_identity_verified_before_registration": true,
+    "registration_token_logged": false,
+    "registration_token_persisted": false,
+    "runner_accepts_one_job": true,
+    "runner_ephemeral": true,
+    "runner_registered_speculatively": false,
+    "runner_repository_scoped": true,
+    "runner_update_automatic": false,
+    "ssh_password_authentication": false,
+    "strict_ssh_host_key_checking": true,
+    "unrelated_rulesets_changed_by_bootstrap": false
+  },
+  "targets": {
+    "production-readonly-canary": {
+      "bootstrap_environment": "caddy-production-canary-runner-bootstrap",
+      "custom_label": "codestra-production-canary",
+      "environment": "production-readonly-canary",
+      "github_environment_variables": [
+        "CADDY_PRODUCTION_MTLS_CLIENT_CERT",
+        "CADDY_PRODUCTION_MTLS_CLIENT_KEY",
+        "CADDY_PRODUCTION_MTLS_CA_CERT"
+      ],
+      "install_root": "/opt/codestra/actions-runner/caddy-production-canary",
+      "required_labels": [
+        "self-hosted",
+        "codestra-production-canary"
+      ],
+      "runner_name": "codestra-caddy-production-canary-01",
+      "runner_user": "codestra-caddy-production-canary-runner",
+      "work_folder": "_work"
+    },
+    "staging": {
+      "bootstrap_environment": "caddy-staging-runner-bootstrap",
+      "custom_label": "codestra-staging",
+      "environment": "staging-readonly",
+      "github_environment_variables": [
+        "CADDY_STAGING_ENV_FILE",
+        "CADDY_STAGING_DATA_SOURCE",
+        "CADDY_STAGING_MTLS_CLIENT_CERT",
+        "CADDY_STAGING_MTLS_CLIENT_KEY",
+        "CADDY_STAGING_MTLS_CA_CERT"
+      ],
+      "install_root": "/opt/codestra/actions-runner/caddy-staging",
+      "required_labels": [
+        "self-hosted",
+        "codestra-staging"
+      ],
+      "runner_name": "codestra-caddy-staging-01",
+      "runner_user": "codestra-caddy-staging-runner",
+      "work_folder": "_work"
+    }
+  },
+  "workflow": ".github/workflows/bounded-runtime-certification.yml"
+}

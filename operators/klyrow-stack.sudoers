@@ -1,0 +1,2 @@
+Cmnd_Alias KLYROW_STATUS = /usr/local/sbin/klyrow-stack status, /usr/local/sbin/klyrow-stack rollback-plan, /usr/local/sbin/klyrow-stack preflight, /usr/local/sbin/klyrow-stack plan, /usr/local/sbin/klyrow-stack stage, /usr/local/sbin/klyrow-stack deploy, /usr/local/sbin/klyrow-stack rollback
+%klyrow-stack-operators ALL=(root) NOPASSWD: KLYROW_STATUS

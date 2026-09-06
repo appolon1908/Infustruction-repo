@@ -1,0 +1,47 @@
+schema_version: '1.0'
+environment: staging
+status: READY_NOT_EXECUTED
+scenario: synthetic_marketing_lead_dry_run
+input:
+  synthetic: true
+  contains_real_customer_data: false
+flow:
+  - kong
+  - middleware_inbox
+  - marketing_attribution
+  - odoo_crm_upsert
+  - n8n_orchestration
+  - communication_dry_run
+  - odoo_conversion_outcome
+  - middleware_outbox
+  - marketing_conversion_feedback
+assertions:
+  tenant_continuity: required
+  correlation_continuity: required
+  idempotency_replay_protection: required
+  inbox_outbox_durability: required
+  retry_and_dead_letter_evidence: required
+  odoo_attribution_identity: required
+  n8n_effects_via_middleware_only: required
+  external_delivery_count: 0
+  advertising_provider_write_count: 0
+  social_publish_count: 0
+  external_ai_provider_call_count: 0
+observability:
+  metrics_present: required
+  structured_logs_present: required
+  distributed_trace_present: required
+  blackbox_health_checks_present: required
+  dashboards_render: required
+  no_sensitive_labels_or_payloads: required
+failure_tests:
+  - duplicate synthetic lead replay
+  - downstream Odoo temporary failure
+  - n8n retry without duplicate effect
+  - communication dry-run failure path
+  - provider read-only timeout
+  - correlation lookup across Kong, Middleware, Marketing, Odoo and n8n
+exit:
+  stage6_certified_only_if_all_assertions_pass: true
+  production_read_only_canary_authorized_after_stage6: true
+  production_writes_authorized: false

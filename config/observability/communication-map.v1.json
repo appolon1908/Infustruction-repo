@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "defaultEastWestPolicy": "deny",
+  "referencePortsPendingPrincipalConfirmation": true,
+  "liveInstallationAuthorized": false,
+  "flows": [
+    {"source": "caddy", "destination": "grafana", "protocol": "tcp", "referencePort": 3000, "purpose": "authenticated browser proxy"},
+    {"source": "caddy", "destination": "superset", "protocol": "tcp", "referencePort": 8088, "purpose": "authenticated browser proxy"},
+    {"source": "caddy", "destination": "openbao", "protocol": "tcp", "referencePort": 8200, "purpose": "allowlisted protected browser/API proxy"},
+    {"source": "grafana", "destination": "prometheus", "protocol": "tcp", "referencePort": 9090, "purpose": "metrics queries"},
+    {"source": "grafana", "destination": "loki", "protocol": "tcp", "referencePort": 3100, "purpose": "log queries"},
+    {"source": "grafana", "destination": "tempo", "protocol": "tcp", "referencePort": 3200, "purpose": "trace queries"},
+    {"source": "prometheus", "destination": "alertmanager", "protocol": "tcp", "referencePort": 9093, "purpose": "alert delivery"},
+    {"source": "prometheus", "destination": "node-exporter", "protocol": "tcp", "referencePort": 9100, "purpose": "host metrics scrape"},
+    {"source": "prometheus", "destination": "cadvisor", "protocol": "tcp", "referencePort": 8080, "purpose": "container metrics scrape"},
+    {"source": "prometheus", "destination": "postgres-exporter", "protocol": "tcp", "referencePort": 9187, "purpose": "database metrics scrape"},
+    {"source": "prometheus", "destination": "redis-exporter", "protocol": "tcp", "referencePort": 9121, "purpose": "cache metrics scrape"},
+    {"source": "prometheus", "destination": "blackbox-exporter", "protocol": "tcp", "referencePort": 9115, "purpose": "allowlisted synthetic probe results"},
+    {"source": "alloy", "destination": "loki", "protocol": "tcp", "referencePort": 3100, "purpose": "sanitized log ingestion"},
+    {"source": "alloy", "destination": "tempo", "protocol": "tcp", "referencePort": 4317, "purpose": "OTLP trace ingestion"},
+    {"source": "alloy", "destination": "otel-collector", "protocol": "tcp", "referencePort": 4317, "purpose": "approved OTLP forwarding"},
+    {"source": "otel-collector", "destination": "tempo", "protocol": "tcp", "referencePort": 4317, "purpose": "OTLP trace export"},
+    {"source": "otel-collector", "destination": "prometheus", "protocol": "tcp", "referencePort": 9090, "purpose": "approved Prometheus-compatible metrics path"},
+    {"source": "otel-collector", "destination": "loki", "protocol": "tcp", "referencePort": 3100, "purpose": "approved sanitized log export"},
+    {"source": "superset", "destination": "curated-analytics-read-model", "protocol": "tcp", "referencePort": 5432, "purpose": "read-only curated analytics queries"},
+    {"source": "authorized-application", "destination": "openbao", "protocol": "tcp", "referencePort": 8200, "purpose": "private authenticated secrets/lease request"}
+  ]
+}
