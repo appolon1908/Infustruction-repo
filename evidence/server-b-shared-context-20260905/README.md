@@ -115,6 +115,24 @@ cleanup. Current-head review and protected release proof remain outstanding.
 Server B was rechecked at 11:59:28 UTC: ready, writes false, live version 0.1.0;
 running source/digest remain unverified. No production changes occurred.
 
+## Verified-release continuation (12:07:50 UTC snapshot)
+
+The [verified-release continuation](verified-release-continuation.json) records the
+one-owner branch topology, finding closure evidence, exact-head CI, and remaining
+review gates as of its recorded timestamp; it does not supersede later snapshots.
+It also records a failed key-only SSH authorization attempt without promoting any
+prior runtime value: Server B running source remains blocked, Server A remains
+historical/unverified, restore proof remains `REPORTED_PASS`, the paired rollback
+tuple remains uncertified, and the protected release is `NOT_RUN` in this snapshot.
+The Server B observation is an archive checksum only, not proof of installation,
+running-source equivalence, or an OCI image digest.
+
+VICIdial PR #23 was closed after its restrictive-umask regression was incorporated
+into canonical PR #22. SentinelX remains separately blocked by the installation-policy
+finding recorded in production-platform PR #269; `SENTINELX_SKIP_SUDO=1` does not
+disable the script/upload handlers. No deployment, restart, enrollment, grant,
+account, activation, call, live-call-control, or external-delivery action occurred.
+
 ## Latest release verification refresh
 
 The [release verification refresh](release-verification-refresh.json) records

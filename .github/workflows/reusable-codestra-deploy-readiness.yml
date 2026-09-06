@@ -668,17 +668,122 @@ jobs:
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
               "$subject" > evidence/signature-verification.json
             "$RUNNER_TEMP/cosign" attest --yes --type spdxjson --predicate evidence/sbom.spdx.json "$subject"
-            "$RUNNER_TEMP/cosign" attest --yes --type slsaprovenance --predicate evidence/provenance.json "$subject"
+            "$RUNNER_TEMP/cosign" attest --yes --type https://slsa.dev/provenance/v1 --predicate evidence/provenance.json "$subject"
             "$RUNNER_TEMP/cosign" verify-attestation \
               --type spdxjson \
               --certificate-identity-regexp "^(${caller_identity}|${called_identity_pattern#^})" \
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
               "$subject" > evidence/sbom-attestation-verification.json
             "$RUNNER_TEMP/cosign" verify-attestation \
-              --type slsaprovenance \
+              --type https://slsa.dev/provenance/v1 \
               --certificate-identity-regexp "^(${caller_identity}|${called_identity_pattern#^})" \
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
               "$subject" > evidence/provenance-attestation-verification.json
+
+          python - "$image_repo" "$digest" <<'PROVENANCE_PY'
+          # BEGIN CODESTRA_PROVENANCE_VALIDATOR
+          # Semantic validation is additional to (never a replacement for) Cosign verification.
+          # Embedded here because a reusable workflow checks out its caller's repository.
+          import base64
+          import binascii
+          import json
+          import os
+          import pathlib
+          import re
+          import sys
+
+
+          def unique_object(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError("duplicate_json_key")
+                  result[key] = value
+              return result
+
+
+          def reject_constant(value):
+              raise ValueError("nonfinite_json_number")
+
+
+          DECODER = json.JSONDecoder(object_pairs_hook=unique_object, parse_constant=reject_constant)
+
+
+          def strict_json(value):
+              return json.loads(value, object_pairs_hook=unique_object, parse_constant=reject_constant)
+
+
+          def validate_provenance(verified, expected, image_repo, digest, env):
+              """Accept only the full generated predicate for this exact verified image/run."""
+              if len(verified.encode("utf-8")) > 8 * 1024 * 1024:
+                  raise ValueError("oversized_verification")
+              if not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
+                  raise ValueError("invalid_digest")
+              repository, source = env["GITHUB_REPOSITORY"], env["GITHUB_SHA"]
+              run, attempt = env["GITHUB_RUN_ID"], env["GITHUB_RUN_ATTEMPT"]
+              if not re.fullmatch(r"[0-9a-f]{40}", source) or not all(
+                  re.fullmatch(r"[1-9][0-9]*", value) for value in (run, attempt)
+              ):
+                  raise ValueError("invalid_source_or_run")
+              definition, details = expected["buildDefinition"], expected["runDetails"]
+              if (
+                  definition["buildType"] != "https://codestra.co/deploy-readiness/v2"
+                  or definition["externalParameters"] != {
+                      "repository": repository, "source_sha": source,
+                      "repository_class": env["REPOSITORY_CLASS"],
+                      "artifact_strategy": env["ARTIFACT_STRATEGY"],
+                  }
+                  or definition["resolvedDependencies"] != [{
+                      "uri": f"git+https://github.com/{repository}@{source}",
+                      "digest": {"gitCommit": source},
+                  }]
+                  or details["builder"] != {
+                      "id": f"https://github.com/{repository}/actions/runs/{run}/attempts/{attempt}"
+                  }
+                  or details["metadata"] != {"invocationId": f"{run}:{attempt}"}
+              ):
+                  raise ValueError("generated_predicate_not_bound_to_run")
+              envelopes, remaining = [], verified.strip()
+              while remaining:
+                  value, end = DECODER.raw_decode(remaining)
+                  envelopes.extend(value if isinstance(value, list) else [value])
+                  if len(envelopes) > 64:
+                      raise ValueError("too_many_attestations")
+                  remaining = remaining[end:].lstrip()
+              matched = False
+              for envelope in envelopes:
+                  if not isinstance(envelope, dict) or envelope.get("payloadType") != "application/vnd.in-toto+json":
+                      raise ValueError("invalid_dsse_envelope")
+                  payload = envelope.get("payload")
+                  if not isinstance(payload, str):
+                      raise ValueError("invalid_dsse_payload")
+                  statement = strict_json(base64.b64decode(payload, validate=True).decode("utf-8"))
+                  if not isinstance(statement, dict):
+                      raise ValueError("invalid_statement")
+                  # Cosign v3.1.2 emits a v0.1 statement envelope even for a SLSA v1 predicate.
+                  if (
+                      statement.get("_type") == "https://in-toto.io/Statement/v0.1"
+                      and statement.get("predicateType") == "https://slsa.dev/provenance/v1"
+                      and statement.get("subject") == [{"name": image_repo, "digest": {"sha256": digest[7:]}}]
+                      and statement.get("predicate") == expected
+                  ):
+                      matched = True
+              if not matched:
+                  raise ValueError("no_exact_provenance_match")
+
+
+          if __name__ == "__main__":
+              try:
+                  validate_provenance(
+                      pathlib.Path("evidence/provenance-attestation-verification.json").read_text(encoding="utf-8"),
+                      strict_json(pathlib.Path("evidence/provenance.json").read_text(encoding="utf-8")),
+                      sys.argv[1], sys.argv[2], os.environ,
+                  )
+              except (OSError, ValueError, TypeError, KeyError, IndexError, RecursionError, binascii.Error):
+                  raise SystemExit("RELEASE_ERROR=invalid_provenance_evidence") from None
+              print("PROVENANCE_SEMANTICS=PASS")
+          # END CODESTRA_PROVENANCE_VALIDATOR
+          PROVENANCE_PY
 
             artifact_kind=oci-image
             artifact_reference="$subject"
