@@ -34,6 +34,8 @@ FILES = (
     "scripts/validate_stage6_staging_plan.py",
     "scripts/verify_stage6_middleware_artifact.py",
     "tests/test_stage6_source_regressions.py",
+    "tests/test_stage6_authority_heads.py",
+    "docs/STAGE6-AUTHORITY-HEAD-VALIDATION.md",
 )
 
 
