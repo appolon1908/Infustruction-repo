@@ -45,9 +45,12 @@ jobs:
           python3 -m py_compile operators/codestra-deploy operators/codestra-deploy-odoo
           bash -n operators/install-codestra-deploy-package operators/install-klyrow-odoo-smtp-export-policy
       - name: Build deterministic non-authorizing package
+        env:
+          VERIFIED_SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           mkdir -p dist
-          python3 scripts/build_codestra_deploy_package.py --source-sha "$GITHUB_SHA" --output dist/codestra-deploy-controller.tar.gz
+          test "$(git rev-parse HEAD)" = "$VERIFIED_SOURCE_SHA"
+          python3 scripts/build_codestra_deploy_package.py --source-sha "$VERIFIED_SOURCE_SHA" --output dist/codestra-deploy-controller.tar.gz
       - name: Install checksum-pinned Cosign
         run: |
           curl --fail --location --proto '=https' --tlsv1.2 -o "$RUNNER_TEMP/cosign" https://github.com/sigstore/cosign/releases/download/v3.1.2/cosign-linux-amd64
@@ -57,7 +60,7 @@ jobs:
         run: "$RUNNER_TEMP/cosign sign-blob --yes --bundle dist/codestra-deploy-controller.manifest.sigstore.json dist/codestra-deploy-controller.tar.gz.manifest.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: codestra-deploy-controller-${{ github.sha }}
+          name: codestra-deploy-controller-${{ inputs.source_sha }}
           path: dist/
           if-no-files-found: error
           retention-days: 90

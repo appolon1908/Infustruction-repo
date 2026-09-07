@@ -31,11 +31,18 @@ evidence, requires an immutable rollback target, and serializes execution.
 
 The controller delegates only to the root-owned
 `/usr/local/libexec/codestra-deploy-odoo`. Its source implementation consumes
-only the preserved digest-bound Odoo release URL, rejects unsafe archive
-members, verifies all five Odoo recovery evidence blobs, preserves no-send
-configuration, switches the immutable release pointer, reads back the actual
-read-only addon mount and importer digest, and restores the previous pointer on
-failure. Its released package digest and Sigstore bundle remain pending until
+only the preserved digest-bound Odoo release URL, rejects bounded-download or
+bounded-expansion violations, and verifies all five recovery records against
+the candidate, rollback target, host, and recovery-set identity. Before any
+deployment mutation it validates the effective digest-qualified image,
+no-send environment, read-only addon mount, internal-only networks, and durable
+evidence destination. After a possibly database-changing upgrade begins, a
+failure enters `NEEDS_RECOVERY` and never restarts old code against a database
+that has not been restored. Certification checks every approved health endpoint
+with bounded, non-redirecting requests and compares the importer visible inside
+Odoo with the verified artifact bytes. Production promotion remains rejected
+until a real traffic canary exists; staging's service replacement is not used
+as a production canary. Its released package digest and Sigstore bundle remain pending until
 this source is protected and the release environment is approved. Bootstrap is
 a separately reviewed action. The workflow invokes the controller through
 non-interactive sudo; no ordinary pull-request job invokes it.
@@ -56,6 +63,7 @@ protected authorization process and supply, without placeholders:
 - configuration backup evidence digest;
 - isolated restoration evidence digest covering all three;
 - rollback-rehearsal evidence digest;
+- exact recovery-set identity shared by every recovery record;
 - previous source SHA and artifact digest;
 - approval identity, time, expiry, and signed evidence digest;
 - released Odoo adapter artifact digest and installation target.

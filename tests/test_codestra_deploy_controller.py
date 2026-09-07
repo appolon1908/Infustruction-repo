@@ -55,6 +55,7 @@ def approved(module, arguments, now):
             "starts_at": (now - dt.timedelta(minutes=5)).isoformat(),
             "ends_at": (now + dt.timedelta(minutes=5)).isoformat(),
         },
+        "recovery_set_id": "recovery-set-20260907-001",
         "recovery": {
             name: {"status": "PASS", "evidence_sha256": evidence}
             for name in ("database", "filestore", "configuration", "isolated_restore", "rollback_rehearsal")
