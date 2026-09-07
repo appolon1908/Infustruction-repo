@@ -1,0 +1,30 @@
+{
+  "activation_allowed": false,
+  "backup_root": "/var/backups/codestra/<component>/",
+  "components": [
+    "Alertmanager",
+    "Alloy",
+    "Blackbox Exporter",
+    "Grafana",
+    "Loki",
+    "Node Exporter",
+    "OpenBao",
+    "OpenTelemetry Collector",
+    "PostgreSQL Exporter",
+    "Prometheus",
+    "Redis Exporter",
+    "Superset",
+    "Tempo",
+    "cAdvisor"
+  ],
+  "current_link": "/opt/codestra/current/observability/<component>",
+  "generated_at": "2026-09-02T17:02:17Z",
+  "historical_observed_at": "2026-09-02T17:02:17Z",
+  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_14_AUTHORITY_REVIEW",
+  "release_root": "/opt/codestra/releases/observability/<component>/<production-sha>/",
+  "rollback_root": "/opt/codestra/rollback/observability/<component>/",
+  "runtime_revalidated": false,
+  "scope_corrected_at": "2026-09-06",
+  "server": "37.27.128.39",
+  "state_root": "/var/lib/codestra/<component>/"
+}

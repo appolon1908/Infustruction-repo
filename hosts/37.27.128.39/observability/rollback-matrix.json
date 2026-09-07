@@ -1,0 +1,166 @@
+{
+  "components": [
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": "c17b93282086a433439c695ed77a1ebdb0a944c0",
+      "component": "Loki",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": "sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996",
+      "before_source_sha": "7b7a4b8880bb2d3c6bbb2d33bd23b23bd5c63284",
+      "component": "Prometheus",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": "sha256:9b58461280b4d2992d4399823c9427d0fcf5f0fd7f376c93f2dea876158b867b",
+      "before_source_sha": "e88307dbfdaaebc4a3b09b90eed1494579755e6a",
+      "component": "Grafana",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": "c34a86e325cf5dc34533f721b03a8d0422e2086e",
+      "component": "Tempo",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": "cb1e628913378886859b463844ba82c5222a833a",
+      "component": "OpenTelemetry Collector",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": "6e74e00ed24b927255766938f16416bfefb24223",
+      "component": "Alloy",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": "sha256:d00a542e409ee618a4edc67da14dd48c5da66726bbd5537ab2af9c1dfc442c8a",
+      "before_source_sha": "c1b84bc9f455c269dece1e58d67812d61a9856e9",
+      "component": "Node Exporter",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": "69d6119176f408601b6bf3384bae6257890747b0",
+      "component": "cAdvisor",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": "c6e4dbc0243e5c3736df7ba34d8c0db8a3228332",
+      "component": "Redis Exporter",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": "ab3ff59b92a90c405d9eee43b4e97b3394ef347c",
+      "component": "Blackbox Exporter",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": "f12bc1cdf4d1c7bb0636fa27c69dd6f99c6acf0e",
+      "component": "Superset",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": "sha256:5b2486ab0fb90bbc788cc345b0a08616dfb375873ee8be5df3a2fd4d378a67e0",
+      "before_source_sha": "38ff3f3d7a2dcd9f03455415c26b2562a50adb34",
+      "component": "OpenBao",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": null,
+      "component": "Alertmanager",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    },
+    {
+      "after_image_digest": null,
+      "after_source_sha": null,
+      "before_image_digest": null,
+      "before_source_sha": null,
+      "component": "PostgreSQL Exporter",
+      "rollback_command": null,
+      "rollback_duration_seconds": null,
+      "rollback_health": "FAIL",
+      "state_snapshot": "MISSING"
+    }
+  ],
+  "generated_at": "2026-09-02T17:02:17Z",
+  "historical_observed_at": "2026-09-02T17:02:17Z",
+  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_14_AUTHORITY_REVIEW",
+  "production_changed": false,
+  "rollback_gate": "FAIL",
+  "runtime_revalidated": false,
+  "scope_corrected_at": "2026-09-06",
+  "server": "37.27.128.39"
+}

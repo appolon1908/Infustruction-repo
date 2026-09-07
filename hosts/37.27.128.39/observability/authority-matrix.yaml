@@ -1,0 +1,19 @@
+schema_version: 1
+generated_at: 2026-09-02T17:02:17Z
+server: 37.27.128.39
+activation_allowed: false
+gates:
+  repository_branches: FAIL
+  exact_head_ci: FAIL
+  reviews: FAIL
+  api_contracts: FAIL
+  tls: FAIL
+  mtls: FAIL
+  immutable_images: FAIL
+  supply_chain: FAIL
+  backup: FAIL
+  restore: FAIL
+  rollback: FAIL
+  critical_alerts: FAIL
+  source_runtime_alignment: FAIL
+overall_verdict: NOT_PRODUCTION_CERTIFIED

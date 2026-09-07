@@ -1,0 +1,151 @@
+{
+  "components": [
+    {
+      "activation_allowed": false,
+      "component": "Loki",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Prometheus",
+      "provenance": "FAIL",
+      "runtime_image_digest": "sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996",
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Grafana",
+      "provenance": "FAIL",
+      "runtime_image_digest": "sha256:9b58461280b4d2992d4399823c9427d0fcf5f0fd7f376c93f2dea876158b867b",
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Tempo",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "OpenTelemetry Collector",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Alloy",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Node Exporter",
+      "provenance": "FAIL",
+      "runtime_image_digest": "sha256:d00a542e409ee618a4edc67da14dd48c5da66726bbd5537ab2af9c1dfc442c8a",
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "cAdvisor",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Redis Exporter",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Blackbox Exporter",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Superset",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "OpenBao",
+      "provenance": "FAIL",
+      "runtime_image_digest": "sha256:5b2486ab0fb90bbc788cc345b0a08616dfb375873ee8be5df3a2fd4d378a67e0",
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "Alertmanager",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    },
+    {
+      "activation_allowed": false,
+      "component": "PostgreSQL Exporter",
+      "provenance": "FAIL",
+      "runtime_image_digest": null,
+      "sbom": "FAIL",
+      "signature": "FAIL",
+      "source_aligned": false,
+      "vulnerability_gate": "FAIL"
+    }
+  ],
+  "generated_at": "2026-09-02T17:02:17Z",
+  "historical_observed_at": "2026-09-02T17:02:17Z",
+  "lock_status": "FAIL",
+  "phase": "SERVER_B_CODESTRA_OBSERVABILITY_14_AUTHORITY_REVIEW",
+  "runtime_revalidated": false,
+  "scope_corrected_at": "2026-09-06",
+  "server": "37.27.128.39"
+}
