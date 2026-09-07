@@ -25,6 +25,8 @@ on:
       - "scripts/validate_stage6_staging_plan.py"
       - "scripts/verify_stage6_middleware_artifact.py"
       - "tests/test_stage6_source_regressions.py"
+      - "tests/test_stage6_authority_heads.py"
+      - "docs/STAGE6-AUTHORITY-HEAD-VALIDATION.md"
       - ".github/workflows/stage6-source-regressions.yml"
       - ".github/workflows/validate-stage6-source-lock.yml"
   push:
@@ -48,6 +50,8 @@ on:
       - "scripts/validate_stage6_staging_plan.py"
       - "scripts/verify_stage6_middleware_artifact.py"
       - "tests/test_stage6_source_regressions.py"
+      - "tests/test_stage6_authority_heads.py"
+      - "docs/STAGE6-AUTHORITY-HEAD-VALIDATION.md"
       - ".github/workflows/stage6-source-regressions.yml"
       - ".github/workflows/validate-stage6-source-lock.yml"
 
@@ -76,6 +80,10 @@ jobs:
           python -O scripts/validate_stage6_remediation.py
       - name: Offline regression tests
         run: python -m unittest discover -s tests -p test_stage6_source_regressions.py -v
+      - name: Offline authority regression tests
+        run: |
+          python -m unittest discover -s tests -p test_stage6_authority_heads.py -v
+          python -O -m unittest discover -s tests -p test_stage6_authority_heads.py -v
       - run: python scripts/build_stage6_reconciliation_matrix.py
       - run: git diff --exit-code -- reports/runtime-reconciliation/STAGE6-RECONCILIATION-MATRIX.csv
       - name: Verify deterministic evidence checksums
@@ -88,5 +96,18 @@ jobs:
       - run: python scripts/validate_stage6_resolved_source_lock.py
       # Never expose a cross-repository credential to PR-controlled code or turn
       # external-head drift into a passing source-lock result.
-      - run: python scripts/validate_stage6_authority_heads.py
+      - name: Validate live authority heads
+        id: authority_heads
+        run: python scripts/validate_stage6_authority_heads.py --json-report "$RUNNER_TEMP/stage6-authority-heads.json"
+      - name: Preserve authority diagnostics in job summary
+        if: ${{ !cancelled() && steps.authority_heads.outcome != 'skipped' }}
+        shell: bash
+        run: |
+          if [ -f "$RUNNER_TEMP/stage6-authority-heads.json" ]; then
+            {
+              printf '### Stage 6 authority diagnostics\n\n```json\n'
+              cat "$RUNNER_TEMP/stage6-authority-heads.json"
+              printf '\n```\n'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
       - run: python scripts/verify_stage6_middleware_artifact.py

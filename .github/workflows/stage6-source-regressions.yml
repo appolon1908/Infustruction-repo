@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/*stage6*'
       - 'tests/test_stage6_source_regressions.py'
+      - 'tests/test_stage6_authority_heads.py'
       - 'STAGE6-SOURCE-LOCK*.yaml'
       - 'deploy/staging/**'
       - '.github/workflows/stage6-source-regressions.yml'
@@ -40,3 +41,7 @@ jobs:
         run: |
           python3 -m unittest discover -s tests -p test_stage6_source_regressions.py -v
           python3 -O -m unittest discover -s tests -p test_stage6_source_regressions.py -v
+      - name: Test authority validation offline
+        run: |
+          python3 -m unittest discover -s tests -p test_stage6_authority_heads.py -v
+          python3 -O -m unittest discover -s tests -p test_stage6_authority_heads.py -v
