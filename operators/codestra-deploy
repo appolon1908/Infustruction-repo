@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+"""Fail-closed dispatcher for protected Codestra deployment runners."""
+
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import fcntl
+import hashlib
+import json
+import os
+import re
+import socket
+import stat
+import subprocess
+import sys
+from pathlib import Path
+
+
+SCHEMA = "codestra.runtime-deployment-authorization.v1"
+SHA = re.compile(r"^[0-9a-f]{40}$")
+DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
+ROOTS = (Path("/etc/codestra/deploy-authorizations"),)
+LOCK = Path("/run/lock/codestra-deploy.lock")
+ADAPTER = Path("/usr/local/libexec/codestra-deploy-odoo")
+ODOO_REPOSITORY = "appolon1908-hue/Odoo"
+ALLOWED_ACTIONS = {
+    "deploy-staging-readonly": "staging-readonly",
+    "certify-staging-readonly": "staging-readonly",
+    "promote-production-readonly": "production-readonly-canary",
+}
+
+
+class Blocked(RuntimeError):
+    pass
+
+
+def load_regular_root_file(path: Path) -> tuple[dict, bytes]:
+    try:
+        info = path.lstat()
+    except OSError as exc:
+        raise Blocked(f"authorization unavailable: {exc}") from exc
+    if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_gid != 0:
+        raise Blocked("authorization must be a root-owned regular file")
+    if info.st_mode & 0o022:
+        raise Blocked("authorization must not be group/world writable")
+    resolved = path.resolve(strict=True)
+    if not any(resolved == root or root in resolved.parents for root in ROOTS):
+        raise Blocked("authorization is outside the approved root")
+    raw = path.read_bytes()
+    try:
+        value = json.loads(raw)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise Blocked("authorization is malformed") from exc
+    if not isinstance(value, dict):
+        raise Blocked("authorization must be an object")
+    return value, raw
+
+
+def parse_time(value: object, field: str) -> dt.datetime:
+    if not isinstance(value, str):
+        raise Blocked(f"{field} must be an RFC3339 timestamp")
+    try:
+        parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise Blocked(f"{field} must be an RFC3339 timestamp") from exc
+    if parsed.tzinfo is None:
+        raise Blocked(f"{field} must include a timezone")
+    return parsed.astimezone(dt.timezone.utc)
+
+
+def own_sha256() -> str:
+    return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+
+
+def validate_authorization(auth: dict, args: argparse.Namespace, now: dt.datetime) -> None:
+    required = {
+        "schema", "status", "repository", "source_sha", "artifact_kind",
+        "artifact_reference", "artifact_digest", "environment", "action",
+        "controller_sha256", "execution_host", "target_host", "window",
+        "recovery", "rollback_target", "approval",
+    }
+    if set(auth) != required:
+        raise Blocked("authorization fields are incomplete or unknown")
+    expected_environment = ALLOWED_ACTIONS.get(args.action)
+    if expected_environment is None:
+        raise Blocked("operation is not allowlisted")
+    expected = {
+        "schema": SCHEMA,
+        "status": "APPROVED",
+        "repository": args.repository,
+        "source_sha": args.source_sha,
+        "artifact_kind": args.artifact_kind,
+        "artifact_reference": args.artifact_reference,
+        "artifact_digest": args.artifact_digest,
+        "environment": args.environment,
+        "action": args.action,
+        "controller_sha256": own_sha256(),
+        "execution_host": socket.getfqdn(),
+    }
+    for field, value in expected.items():
+        if auth.get(field) != value:
+            raise Blocked(f"authorization {field} mismatch")
+    if args.repository != ODOO_REPOSITORY or args.environment != expected_environment:
+        raise Blocked("repository, action, and environment tuple is not approved")
+    if not SHA.fullmatch(args.source_sha) or not DIGEST.fullmatch(args.artifact_digest):
+        raise Blocked("source or artifact digest is invalid")
+    if auth.get("target_host") != "middleware":
+        raise Blocked("authorization target_host mismatch")
+    window = auth.get("window")
+    if not isinstance(window, dict) or set(window) != {"starts_at", "ends_at"}:
+        raise Blocked("authorization window is incomplete")
+    if not parse_time(window["starts_at"], "window.starts_at") <= now <= parse_time(window["ends_at"], "window.ends_at"):
+        raise Blocked("authorization is outside its execution window")
+    approval = auth.get("approval")
+    if not isinstance(approval, dict) or set(approval) != {"status", "approved_by", "approved_at", "expires_at", "evidence_sha256"}:
+        raise Blocked("approval evidence is incomplete")
+    if approval["status"] != "APPROVED" or not approval["approved_by"]:
+        raise Blocked("deployment is not approved")
+    if now > parse_time(approval["expires_at"], "approval.expires_at"):
+        raise Blocked("deployment approval expired")
+    if not DIGEST.fullmatch(str(approval["evidence_sha256"])):
+        raise Blocked("approval evidence digest is invalid")
+    recovery = auth.get("recovery")
+    required_recovery = {"database", "filestore", "configuration", "isolated_restore", "rollback_rehearsal"}
+    if not isinstance(recovery, dict) or set(recovery) != required_recovery:
+        raise Blocked("recovery evidence is incomplete")
+    for name in required_recovery:
+        item = recovery[name]
+        if not isinstance(item, dict) or item.get("status") != "PASS" or not DIGEST.fullmatch(str(item.get("evidence_sha256", ""))):
+            raise Blocked(f"recovery evidence is incomplete: {name}")
+    rollback = auth.get("rollback_target")
+    if not isinstance(rollback, dict) or set(rollback) != {"source_sha", "artifact_digest"}:
+        raise Blocked("rollback target is incomplete")
+    if not SHA.fullmatch(str(rollback["source_sha"])) or not DIGEST.fullmatch(str(rollback["artifact_digest"])):
+        raise Blocked("rollback target is invalid")
+
+
+def parser() -> argparse.ArgumentParser:
+    value = argparse.ArgumentParser()
+    value.add_argument("action")
+    for name in ("repository", "source-sha", "artifact-kind", "artifact-reference", "artifact-digest", "environment", "health-paths", "evidence-output"):
+        value.add_argument(f"--{name}", required=True)
+    value.add_argument("--authorization")
+    value.add_argument("--read-only", action="store_true")
+    value.add_argument("--deny-external-effects", action="store_true")
+    value.add_argument("--require-staging-certification", action="store_true")
+    value.add_argument("--require-backup", action="store_true")
+    value.add_argument("--require-isolated-restore", action="store_true")
+    value.add_argument("--require-rollback-rehearsal", action="store_true")
+    value.add_argument("--canary-percent")
+    value.add_argument("--allowed-methods")
+    return value
+
+
+def main(argv: list[str] | None = None) -> int:
+    forwarded = list(sys.argv[1:] if argv is None else argv)
+    args = parser().parse_args(forwarded)
+    try:
+        if os.geteuid() != 0:
+            raise Blocked("controller must run as root on the approved runner")
+        if not args.read_only or not args.deny_external_effects:
+            raise Blocked("read-only and deny-external-effects are mandatory")
+        auth_path = Path(args.authorization) if args.authorization else ROOTS[0] / args.environment / f"{args.source_sha}.json"
+        auth, _ = load_regular_root_file(auth_path)
+        validate_authorization(auth, args, dt.datetime.now(dt.timezone.utc))
+        LOCK.parent.mkdir(mode=0o755, parents=True, exist_ok=True)
+        with LOCK.open("w", encoding="utf-8") as lock:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as exc:
+                raise Blocked("another deployment is already running") from exc
+            adapter_info = ADAPTER.lstat()
+            if not stat.S_ISREG(adapter_info.st_mode) or adapter_info.st_uid != 0 or adapter_info.st_gid != 0 or adapter_info.st_mode & 0o022:
+                raise Blocked("Odoo deployment adapter is missing or unsafe")
+            completed = subprocess.run([str(ADAPTER), *forwarded], check=False)
+            if completed.returncode:
+                raise Blocked("Odoo deployment adapter failed")
+        return 0
+    except (Blocked, OSError) as exc:
+        print(f"DEPLOYMENT_BLOCKED={exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

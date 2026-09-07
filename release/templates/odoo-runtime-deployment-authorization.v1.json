@@ -1,0 +1,24 @@
+{
+  "schema": "codestra.runtime-deployment-authorization.v1",
+  "status": "PENDING_OWNER_APPROVAL",
+  "repository": "appolon1908-hue/Odoo",
+  "source_sha": "a7a9364925c7182098cbda234f3fddc13c594c71",
+  "artifact_kind": "source-bundle",
+  "artifact_reference": "PENDING_IMMUTABLE_ARTIFACT_REFERENCE",
+  "artifact_digest": "sha256:5584e92342cd70371eed6ad3bdc8bb24325405f43b3e3f446b9e4905d5de7882",
+  "environment": "PENDING_EXACT_ENVIRONMENT",
+  "action": "PENDING_EXACT_ACTION",
+  "controller_sha256": "PENDING_CONTROLLER_RELEASE_SHA256",
+  "execution_host": "PENDING_RUNNER_FQDN",
+  "target_host": "middleware",
+  "window": {"starts_at": null, "ends_at": null},
+  "recovery": {
+    "database": {"status": "PENDING", "evidence_sha256": null},
+    "filestore": {"status": "PENDING", "evidence_sha256": null},
+    "configuration": {"status": "PENDING", "evidence_sha256": null},
+    "isolated_restore": {"status": "PENDING", "evidence_sha256": null},
+    "rollback_rehearsal": {"status": "PENDING", "evidence_sha256": null}
+  },
+  "rollback_target": {"source_sha": null, "artifact_digest": null},
+  "approval": {"status": "PENDING", "approved_by": null, "approved_at": null, "expires_at": null, "evidence_sha256": null}
+}

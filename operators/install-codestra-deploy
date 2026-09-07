@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ "$EUID" -eq 0 ]] || { echo 'root required' >&2; exit 2; }
+[[ "$#" -eq 0 ]] || { echo 'arguments prohibited' >&2; exit 2; }
+source_dir="$(cd "$(dirname "$0")" && pwd)"
+target=/usr/local/bin/codestra-deploy
+[[ -f "$source_dir/codestra-deploy" && ! -L "$source_dir/codestra-deploy" ]] || { echo 'invalid controller source' >&2; exit 1; }
+install -d -o root -g root -m 0755 /usr/local/bin /etc/codestra/deploy-authorizations /usr/local/libexec
+temporary="$(mktemp /usr/local/bin/.codestra-deploy.XXXXXX)"
+rollback="$(mktemp /usr/local/bin/.codestra-deploy.rollback.XXXXXX)"
+trap 'rm -f -- "$temporary" "$rollback"' EXIT
+if [[ -f "$target" && ! -L "$target" ]]; then
+  cp --preserve=mode,ownership,timestamps "$target" "$rollback"
+fi
+install -o root -g root -m 0755 "$source_dir/codestra-deploy" "$temporary"
+python3 -m py_compile "$temporary"
+mv -fT "$temporary" "$target"
+sha256sum "$source_dir/codestra-deploy" "$target"
