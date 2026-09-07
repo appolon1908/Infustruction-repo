@@ -4,9 +4,17 @@ on:
   pull_request:
     paths:
       - "config/stage6-staging-host-provisioning-request.v1.json"
+      - "config/stage6-inventory-authority.v1.json"
+      - "evidence/stage6/STAGE6-PROVISIONING-EVIDENCE-20260901.json"
+      - "scripts/collect_stage6_hetzner_inventory.py"
+      - "scripts/stage6_inventory_*.py"
+      - "scripts/test_stage6_hetzner_inventory_resolution.py"
+      - "scripts/validate_stage6_readonly_inventory.py"
       - "tools/validate_stage6_staging_host_request.py"
       - "tests/test_stage6_staging_host_request.py"
+      - "infra/hetzner/stage6-staging/**"
       - ".github/workflows/validate-stage6-staging-host-request.yml"
+      - ".github/workflows/stage6-readonly-inventory.yml"
       - ".github/workflows/stage6-provision-staging-host.yml"
   push:
     branches:
@@ -17,9 +25,17 @@ on:
       - main
     paths:
       - "config/stage6-staging-host-provisioning-request.v1.json"
+      - "config/stage6-inventory-authority.v1.json"
+      - "evidence/stage6/STAGE6-PROVISIONING-EVIDENCE-20260901.json"
+      - "scripts/collect_stage6_hetzner_inventory.py"
+      - "scripts/stage6_inventory_*.py"
+      - "scripts/test_stage6_hetzner_inventory_resolution.py"
+      - "scripts/validate_stage6_readonly_inventory.py"
       - "tools/validate_stage6_staging_host_request.py"
       - "tests/test_stage6_staging_host_request.py"
+      - "infra/hetzner/stage6-staging/**"
       - ".github/workflows/validate-stage6-staging-host-request.yml"
+      - ".github/workflows/stage6-readonly-inventory.yml"
       - ".github/workflows/stage6-provision-staging-host.yml"
 
 permissions:
@@ -45,25 +61,36 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
-      - name: Validate request authority and regressions
+      - name: Validate request, inventory authority and regressions
         run: |
           set -Eeuo pipefail
-          python3 -m py_compile tools/validate_stage6_staging_host_request.py
+          python3 -m py_compile \
+            tools/validate_stage6_staging_host_request.py \
+            scripts/collect_stage6_hetzner_inventory.py \
+            scripts/stage6_inventory_common.py \
+            scripts/stage6_inventory_resolution.py \
+            scripts/stage6_inventory_output.py \
+            scripts/validate_stage6_readonly_inventory.py
           python3 tools/validate_stage6_staging_host_request.py
-          python3 tests/test_stage6_staging_host_request.py
+          python3 -m unittest tests/test_stage6_staging_host_request.py
+          python3 scripts/validate_stage6_readonly_inventory.py
+          python3 -m unittest scripts/test_stage6_hetzner_inventory_resolution.py
           git diff --check
 
-      - name: Confirm source-only safety state
+      - name: Confirm provisioned but uncertified safety state
         run: |
           set -Eeuo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
           request = json.loads(Path('config/stage6-staging-host-provisioning-request.v1.json').read_text())
-          assert request['deployment_authorized'] is False
-          assert request['host_created'] is False
+          assert request['status'] == 'PROVISIONED_PENDING_CURRENT_VERIFICATION'
+          assert request['host_created'] is True
           assert request['host_verified'] is False
+          assert request['deployment_authorized'] is False
+          assert request['production_certified'] is False
+          assert request['observed_evidence']['path'].startswith('evidence/stage6/')
           assert all(value is False for value in request['safety_controls'].values())
           PY

@@ -1,9 +1,10 @@
 {
   "schema_version": 1,
   "request_id": "codestra-stage6-staging-readonly-20260903",
-  "status": "BLOCKED_ACCOUNT_CREDENTIALS_REQUIRED",
+  "status": "PROVISIONED_PENDING_CURRENT_VERIFICATION",
   "deployment_authorized": false,
-  "host_created": false,
+  "production_certified": false,
+  "host_created": true,
   "host_verified": false,
   "repository": "appolon1908-hue/Infustruction-repo",
   "workflow": ".github/workflows/stage6-provision-staging-host.yml",
@@ -58,6 +59,19 @@
     "enable_payment_or_trading",
     "change_ssh_authorized_keys_outside_workflow",
     "record_secret_values"
+  ],
+  "observed_evidence": {
+    "path": "evidence/stage6/STAGE6-PROVISIONING-EVIDENCE-20260901.json",
+    "sha256": "sha256:2c85d5206e033253159747f14ddac64665226d29b931e668aeb7943a736f3732"
+  },
+  "next_required_evidence": [
+    "fresh protected GET-only Hetzner inventory from current main",
+    "current host identity, SSH host key, operating system, capacity and time readback",
+    "private-network and public-port denial proof",
+    "least-privilege staging-readonly operator proof",
+    "container runtime and failed-unit health",
+    "clean bootstrap replay and rollback-safe recreation evidence",
+    "current sanitized evidence artifact"
   ],
   "safety_controls": {
     "production_changed": false,

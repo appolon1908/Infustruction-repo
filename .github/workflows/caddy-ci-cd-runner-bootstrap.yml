@@ -135,6 +135,7 @@ jobs:
           CADDY_STAGING_MTLS_CLIENT_CERT: ${{ vars.CADDY_STAGING_MTLS_CLIENT_CERT }}
           CADDY_STAGING_MTLS_CLIENT_KEY: ${{ vars.CADDY_STAGING_MTLS_CLIENT_KEY }}
           CADDY_STAGING_MTLS_CA_CERT: ${{ vars.CADDY_STAGING_MTLS_CA_CERT }}
+          CADDY_STAGING_N8N_CLIENT_SECRET_FILE: ${{ vars.CADDY_STAGING_N8N_CLIENT_SECRET_FILE || '/etc/codestra/caddy/secrets/n8n-automation-client-secret' }}
           REPLACE_STALE: ${{ inputs.replace_stale_registration }}
         run: |
           set -Eeuo pipefail
@@ -155,6 +156,7 @@ jobs:
             --environment-variable "CADDY_STAGING_MTLS_CLIENT_CERT=$CADDY_STAGING_MTLS_CLIENT_CERT" \
             --environment-variable "CADDY_STAGING_MTLS_CLIENT_KEY=$CADDY_STAGING_MTLS_CLIENT_KEY" \
             --environment-variable "CADDY_STAGING_MTLS_CA_CERT=$CADDY_STAGING_MTLS_CA_CERT" \
+            --environment-variable "CADDY_STAGING_N8N_CLIENT_SECRET_FILE=$CADDY_STAGING_N8N_CLIENT_SECRET_FILE" \
             "${args[@]}"
       - name: Upload staging runner bootstrap evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

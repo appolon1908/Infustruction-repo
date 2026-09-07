@@ -110,6 +110,20 @@ class CaddyCICDRunnerContractTests(unittest.TestCase):
             self.controller.index("install-codestra-caddy-actions-runner"),
         )
 
+    def test_staging_runner_receives_only_the_secret_file_path(self) -> None:
+        token = "CADDY_STAGING_N8N_CLIENT_SECRET_FILE"
+        self.assertIn(token, self.workflow)
+        self.assertIn(
+            "/etc/codestra/caddy/secrets/n8n-automation-client-secret",
+            self.workflow,
+        )
+        self.assertIn(
+            f'--environment-variable "{token}=${token}"',
+            self.workflow,
+        )
+        self.assertNotIn("N8N_CLIENT_SECRET:", self.workflow)
+        self.assertNotIn("client_secret=", self.workflow)
+
     def test_governance_is_verified_but_never_mutated(self) -> None:
         self.assertLess(
             self.controller.index("protected-branches-ruleset.json"),

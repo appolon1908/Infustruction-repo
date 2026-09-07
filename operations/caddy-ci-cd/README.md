@@ -3,9 +3,9 @@
 This package closes the repository-to-runner handoff for the protected Caddy
 release chain without turning an untrusted pull request into a host command.
 
-The Caddy repository builds, scans, signs, attests, and publishes an exact
-production image. Its bounded runtime workflow then requires two separate,
-one-job runner identities:
+The Caddy repository builds, scans, signs, attests, and publishes one exact
+production image. Its bounded runtime workflow uses two separate one-job runner
+identities:
 
 | Target | Required label | Caddy environment |
 |---|---|---|
@@ -31,10 +31,10 @@ The bootstrap never:
 - starts, reloads, replaces, or retags Caddy;
 - authorizes application writes or production traffic movement.
 
-The target host must already provide the reviewed Docker authorization for the
+The target host must already provide reviewed Docker authorization for the
 dedicated runner identity. The installer fails before registration when that
-authorization is absent. This preserves the existing host security boundary
-instead of silently granting root-equivalent Docker access.
+authorization is absent. This preserves the host security boundary instead of
+silently granting root-equivalent Docker access.
 
 Before registering a runner, the controller reads the exact canonical ruleset
 JSON from the current Caddy `production` SHA and independently reads the live
@@ -50,9 +50,8 @@ JSON from the current Caddy `production` SHA and independently reads the live
 - the four actual required CI contexts.
 
 A mismatch is a hard failure. Ruleset application belongs to the separate,
-protected Caddy governance workflow. The runner bootstrap does not change
-canonical or legacy rulesets and does not represent ruleset verification as an
-account mutation.
+protected Caddy governance workflow. This runner bootstrap verifies governance
+but does not mutate it.
 
 ## Protected bootstrap environments
 
@@ -62,44 +61,84 @@ them to protected `main`:
 - `caddy-staging-runner-bootstrap`
 - `caddy-production-canary-runner-bootstrap`
 
-Both require:
+Both require these secrets:
 
-### Secrets
-
-- `CODESTRA_REPOSITORY_ADMIN_TOKEN`: fine-grained token restricted to the Caddy
-  repository with **Administration: read and write**, **Environments: read and
-  write**, and **Actions: read**. Administration is required for the repository
-  runner registration token and governance readback; Environments is required
-  for the Caddy environment variables; Actions read binds the one-job runner to
-  the exact queued workflow job.
+- `CODESTRA_REPOSITORY_ADMIN_TOKEN`: fine-grained token restricted to Caddy with
+  **Administration: read and write**, **Environments: read and write**, and
+  **Actions: read**. It is used for exact runner registration, environment
+  readback, and queued-job identity verification.
 - `CADDY_RUNNER_SSH_PRIVATE_KEY`: private key for the existing restricted
   operator identity.
 - `CADDY_RUNNER_KNOWN_HOSTS`: pinned known-hosts line for the exact target.
 
-### Variables
-
-Both environments:
+Both require these variables:
 
 - `CADDY_RUNNER_HOST`
 - `CADDY_RUNNER_SSH_USER`
 - `CADDY_RUNNER_SSH_PORT`
 
-Staging additionally:
+Staging additionally requires:
 
 - `CADDY_STAGING_ENV_FILE`
 - `CADDY_STAGING_DATA_SOURCE`
 - `CADDY_STAGING_MTLS_CLIENT_CERT`
 - `CADDY_STAGING_MTLS_CLIENT_KEY`
 - `CADDY_STAGING_MTLS_CA_CERT`
+- `CADDY_STAGING_N8N_CLIENT_SECRET_FILE`
 
-Production additionally:
+`CADDY_STAGING_N8N_CLIENT_SECRET_FILE` contains only an absolute host path. The
+default reviewed path is:
+
+```text
+/etc/codestra/caddy/secrets/n8n-automation-client-secret
+```
+
+### Client-secret file contract
+
+The secret value must never be placed in Git, an Actions secret or variable used
+as a plain environment value, a workflow input, a command line, a log, or an
+artifact. Only the absolute file path crosses the bootstrap boundary.
+
+Because the Actions runner is deliberately non-root, the file must use one of
+these two readable, non-world-accessible ownership models:
+
+1. **Dedicated runner ownership:** owner is the exact ephemeral runner account,
+   mode `0400` or `0600`.
+2. **Root plus dedicated runner group:** owner is `root`, group is a non-root
+   group assigned to the exact ephemeral runner account, mode `0440` or `0640`.
+
+In both models the file must be a regular non-symlink file, have no world bits,
+contain between 8 and 4096 bytes, and contain the exact client secret with no
+leading or trailing whitespace. Root-owned `0400` or `0600` is intentionally
+invalid for the non-root runner because it is unreadable and would deadlock the
+certification job. World-readable modes are always rejected.
+
+The bounded staging proof uses the file through curl's file-reading form so the
+secret value never appears in the process argument list. It mints a maximum
+five-minute token from **`auth-staging.codestra.co`**, then validates:
+
+- the staging issuer;
+- client `n8n-automation`;
+- audience `middleware-api`;
+- scope `middleware.status.read`;
+- a non-wildcard `tenant_id` service-account claim;
+- issued-at, expiry, and maximum token lifetime.
+
+It then sends exactly one authenticated GET through
+Caddy → Kong → Middleware and requires Middleware's distinctive
+`404 command_not_found` response. It separately verifies Middleware `/version`
+against the pinned protected-main SHA, immutable image digest, configuration
+checksum, and staging environment. The proof sends zero application mutations
+and enables no provider effects.
+
+Production additionally requires:
 
 - `CADDY_PRODUCTION_MTLS_CLIENT_CERT`
 - `CADDY_PRODUCTION_MTLS_CLIENT_KEY`
 - `CADDY_PRODUCTION_MTLS_CA_CERT`
 
-Every path must be absolute. The bootstrap verifies every target path before it
-mints a short-lived repository runner-registration token.
+Every path must be absolute. The bootstrap verifies the target contract before
+minting a short-lived repository runner-registration token.
 
 ## Execution
 
@@ -123,16 +162,17 @@ bounded_runtime_run_id=<same run after its production canary job is queued>
 
 Register the staging runner only while the exact bounded staging job is already
 queued for the current Caddy `production` SHA. Register the production canary
-runner only after that same run has queued `production-readonly-canary`;
-speculative runner registration is rejected. The production job still performs
-only the existing GET/HEAD/handshake checks and requires byte-identical
-production runtime readback before and after.
+runner only after that same run queues `production-readonly-canary`; speculative
+registration is rejected. The production job remains GET/HEAD-only, requires
+byte-identical production runtime readback before and after, and verifies the
+staging packet that binds exact Caddy source/image/configuration to the
+staging-Keycloak-authenticated Caddy → Kong → Middleware proof.
 
 `replace_stale_registration=true` deletes only the exact named, non-busy Caddy
 runner record. It never deletes a differently named runner and refuses a busy
 runner.
 
-## Direct restricted-operator use
+## Restricted-operator execution
 
 Where GitHub-hosted SSH is intentionally blocked, run
 `scripts/configure_caddy_ci_cd_runner.sh` from the pre-approved management
@@ -142,7 +182,7 @@ station using owner-only credential files. The command contract is printed by:
 scripts/configure_caddy_ci_cd_runner.sh --help
 ```
 
-The generated evidence contains runner identity, labels, online status,
-installer checksum, environment, exact queued job, and governance-readback
-assertions. It records that the canonical ruleset, unrelated rulesets, and Caddy
-runtime were not changed by the bootstrap, and contains no credential values.
+Generated evidence contains runner identity, labels, online status, installer
+checksum, environment, exact queued job, and governance-readback assertions. It
+records that canonical rulesets, unrelated rulesets, and Caddy runtime were not
+changed by the bootstrap and contains no credential values.
