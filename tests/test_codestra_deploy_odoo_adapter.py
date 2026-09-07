@@ -165,6 +165,35 @@ def test_cumulative_archive_and_member_count_limits_cleanup(tmp_path):
     assert not destination.exists()
 
 
+def test_archive_members_are_limited_during_iteration(monkeypatch, tmp_path):
+    module=adapter(); archive=tmp_path/"a.tar.gz"; destination=tmp_path/"out"; destination.mkdir()
+    with tarfile.open(archive,"w:gz") as bundle:
+        for index in range(3):
+            info=tarfile.TarInfo(str(index)); info.size=1; bundle.addfile(info,io.BytesIO(b"x"))
+    module.MAX_MEMBERS=1
+    monkeypatch.setattr(tarfile.TarFile,"getmembers",lambda _self: (_ for _ in ()).throw(AssertionError("must not materialize archive")))
+    with pytest.raises(module.Blocked,match="member count"):
+        module.extract_verified(archive,destination)
+    assert not destination.exists()
+
+
+def test_failed_post_start_readback_stops_replacement_without_old_restart(monkeypatch,tmp_path):
+    module=adapter(); args=arguments(module); release=tmp_path/"extracted"; (release/"custom-addons").mkdir(parents=True)
+    previous=tmp_path/"previous"; previous.mkdir(); current=tmp_path/"current"; current.symlink_to(previous)
+    target={"release_root":str(tmp_path/"releases"),"current_link":str(current),"service":"odoo","database":"odoo","modules":"addon"}
+    calls=[]
+    monkeypatch.setattr(module,"verify_artifact",lambda *_: (release,"e"*64))
+    monkeypatch.setattr(module,"validate_effective_compose",lambda *_: {})
+    def compose(_target,*command,check=True):
+        calls.append((command,check)); return subprocess.CompletedProcess(command,0,"","")
+    monkeypatch.setattr(module,"docker_compose",compose)
+    monkeypatch.setattr(module,"readback",lambda *_: (_ for _ in ()).throw(module.Blocked("unsafe runtime")))
+    with pytest.raises(module.NeedsRecovery,match="old code was not restarted"):
+        module.deploy(args,authorization(args),target)
+    assert (("stop","odoo"),False) in calls
+    assert sum(1 for command,_ in calls if command==("up","-d","odoo"))==1
+
+
 def test_in_container_importer_must_match_verified_bytes(monkeypatch,tmp_path):
     module=adapter(); release=tmp_path/"release"; (release/"custom-addons").mkdir(parents=True)
     image="odoo@sha256:"+"1"*64

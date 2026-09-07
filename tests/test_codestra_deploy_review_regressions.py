@@ -15,6 +15,14 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_reusable_workflows_upload_recovery_evidence_even_after_failure():
+    for name in ("reusable-codestra-deploy-readiness.yml", "reusable-codestra-upstream-deploy-readiness.yml"):
+        text=(ROOT/".github/workflows"/name).read_text()
+        for marker in ("Upload sanitized staging evidence", "Upload sanitized production-canary evidence"):
+            section=text.split(f"- name: {marker}",1)[1].split("\n      - name:",1)[0]
+            assert "if: ${{ always() }}" in section
+
+
 @pytest.fixture
 def module():
     loader = importlib.machinery.SourceFileLoader(

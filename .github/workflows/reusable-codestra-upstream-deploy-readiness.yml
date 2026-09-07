@@ -529,6 +529,7 @@ jobs:
             --evidence-output "$RUNNER_TEMP/staging-readiness-evidence.json"
 
       - name: Upload sanitized staging evidence
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: staging-readiness-${{ github.repository_id }}-${{ github.sha }}
@@ -593,6 +594,7 @@ jobs:
             --evidence-output "$RUNNER_TEMP/production-canary-evidence.json"
 
       - name: Upload sanitized production-canary evidence
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: production-readonly-canary-${{ github.repository_id }}-${{ github.sha }}

@@ -73,10 +73,11 @@ def extract_verified(archive,destination,deadline=None):
     deadline=deadline or time.monotonic()+MAX_OPERATION_SECONDS; total=0
     try:
         with tarfile.open(archive,"r:gz") as bundle:
-            members=bundle.getmembers()
-            if not members or len(members)>MAX_MEMBERS: raise Blocked("artifact member count is invalid")
-            for m in members:
+            count=0
+            for m in bundle:
+                count+=1
                 if time.monotonic()>deadline: raise Blocked("archive expansion deadline exceeded")
+                if count>MAX_MEMBERS: raise Blocked("artifact member count is invalid")
                 p=Path(m.name)
                 if p.is_absolute() or ".." in p.parts or m.issym() or m.islnk() or not(m.isfile() or m.isdir()): raise Blocked("artifact contains an unsafe member")
                 total+=m.size
@@ -87,6 +88,7 @@ def extract_verified(archive,destination,deadline=None):
                     out.parent.mkdir(parents=True,exist_ok=True); src=bundle.extractfile(m)
                     if src is None: raise Blocked("artifact member is unreadable")
                     with src,out.open("xb") as dst: shutil.copyfileobj(src,dst,1024*1024)
+            if count==0: raise Blocked("artifact member count is invalid")
     except Exception:
         shutil.rmtree(destination,ignore_errors=True); raise
 
@@ -292,14 +294,21 @@ def deploy(args,auth,target):
         extracted,expected=verify_artifact(args,Path(d)); validate_effective_compose(target)
         root.mkdir(mode=0o750,parents=True,exist_ok=True); shutil.move(str(extracted),release_dir)
     runtime_networks=validate_effective_compose(target)
-    nxt=current.with_name(current.name+".next"); nxt.symlink_to(release_dir); upgrade_started=False
+    nxt=current.with_name(current.name+".next"); nxt.symlink_to(release_dir); upgrade_started=False; replacement_started=False
     try:
         docker_compose(target,"stop",target["service"]); nxt.replace(current)
         upgrade_started=True; docker_compose(target,"run","--rm","--no-deps",target["service"],"odoo","-d",target["database"],"-u",target["modules"],"--stop-after-init","--no-http")
         docker_compose(target,"up","-d",target["service"])
+        replacement_started=True
         return readback(target,release_dir,args.source_sha,expected,args,runtime_networks)
     except Exception as e:
-        if upgrade_started: raise NeedsRecovery("upgrade may have changed database; old code was not restarted") from e
+        if upgrade_started:
+            stop_failed=False
+            if replacement_started:
+                stopped=docker_compose(target,"stop",target["service"],check=False)
+                stop_failed=stopped.returncode != 0
+            detail="; replacement service stop failed" if stop_failed else ""
+            raise NeedsRecovery("upgrade may have changed database; old code was not restarted"+detail) from e
         if previous is not None:
             rb=current.with_name(current.name+".rollback"); rb.symlink_to(previous); rb.replace(current); docker_compose(target,"up","-d",target["service"],check=False)
         raise
