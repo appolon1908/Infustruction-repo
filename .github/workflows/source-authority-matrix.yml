@@ -35,9 +35,11 @@ jobs:
           tar -xzf "${archive}" -C "${RUNNER_TEMP}" gitleaks
           mkdir -p "${RUNNER_TEMP}/tracked-source"
           git archive HEAD | tar -x -C "${RUNNER_TEMP}/tracked-source"
+          # The archive has no .git directory: select its reviewed policy explicitly.
           # Show locations, redact secret values, and preserve failure exit codes.
-          (cd "${RUNNER_TEMP}/tracked-source" && "${RUNNER_TEMP}/gitleaks" dir --no-banner --redact --verbose --exit-code 1 .)
+          (cd "${RUNNER_TEMP}/tracked-source" && "${RUNNER_TEMP}/gitleaks" dir --config .gitleaks.toml --no-banner --redact --verbose --exit-code 1 .)
       - name: Verify secret-scan exceptions and negative controls
+        if: ${{ !cancelled() }}
         run: python3 scripts/test_gitleaks_policy.py "${RUNNER_TEMP}/gitleaks"
 
   validate-merge-result:
@@ -69,8 +71,9 @@ jobs:
           scan_root="${RUNNER_TEMP}/tracked-source"
           mkdir -p "${scan_root}"
           git archive HEAD | tar -x -C "${scan_root}"
-          (cd "${scan_root}" && "${RUNNER_TEMP}/authority-gitleaks" dir --no-banner --redact --verbose --exit-code 1 .)
+          (cd "${scan_root}" && "${RUNNER_TEMP}/authority-gitleaks" dir --config .gitleaks.toml --no-banner --redact --verbose --exit-code 1 .)
       - name: Verify secret-scan exceptions and negative controls
+        if: ${{ !cancelled() }}
         run: python3 scripts/test_gitleaks_policy.py "${RUNNER_TEMP}/gitleaks"
 
   validate:
