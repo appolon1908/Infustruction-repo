@@ -220,6 +220,88 @@ class InputAndReportTests(unittest.TestCase):
             with self.subTest(raw=raw), self.assertRaises(validator.LockError):
                 validator.load_repositories(raw)
 
+    def test_committed_source_lock_is_compatible_with_safe_loader(self):
+        raw = validator.LOCK.read_bytes()
+        actual = validator.load_repositories(raw)
+        self.assertTrue(actual)
+        self.assertEqual(actual, yaml.safe_load(raw)["repositories"])
+
+    def test_runtime_aliases_allow_explicit_overrides(self):
+        raw = (self.lock.read_text() + """
+runtime:
+  notification: &worker
+    repository: UNVERIFIED
+    compose_service: notification-worker-staging
+  scheduler:
+    <<: *worker
+    compose_service: scheduler-staging
+  second_scheduler:
+    <<: *worker
+    compose_service: another-worker-staging
+""").encode()
+        self.assertEqual(validator.load_repositories(raw), {"keycloak": DEFINITION})
+        self.assertEqual(yaml.load(raw, Loader=validator.UniqueSafeLoader), yaml.safe_load(raw))
+
+    def test_repository_aliases_preserve_explicit_revision_override(self):
+        raw = f"""
+defaults: &defaults
+  repository: {DEFINITION['repository']}
+  revision: {SHA}
+repositories:
+  keycloak:
+    <<: *defaults
+    revision: {OTHER_SHA}
+""".encode()
+        self.assertEqual(validator.load_repositories(raw)["keycloak"],
+                         {"repository": DEFINITION["repository"], "revision": OTHER_SHA})
+
+    def test_merge_sequences_and_nested_aliases_match_safe_loader(self):
+        raw = f"""
+base: &base
+  repository: {DEFINITION['repository']}
+  revision: {SHA}
+override: &override
+  revision: {OTHER_SHA}
+nested: &nested
+  <<: [*override, *base]
+repositories:
+  keycloak:
+    <<: *nested
+  another:
+    <<: *nested
+""".encode()
+        actual = validator.load_repositories(raw)
+        self.assertEqual(actual, yaml.safe_load(raw)["repositories"])
+        self.assertEqual(actual["keycloak"]["revision"], OTHER_SHA)
+
+    def test_duplicate_literal_keys_inside_inline_merge_are_rejected(self):
+        raw = f"""
+repositories:
+  keycloak:
+    <<: {{repository: {DEFINITION['repository']}, revision: {SHA}, revision: {OTHER_SHA}}}
+""".encode()
+        with self.assertRaises(validator.LockError):
+            validator.load_repositories(raw)
+
+    def test_duplicate_merge_directives_are_rejected(self):
+        raw = f"""
+defaults: &defaults
+  repository: {DEFINITION['repository']}
+  revision: {SHA}
+repositories:
+  keycloak:
+    <<: *defaults
+    <<: *defaults
+""".encode()
+        with self.assertRaises(validator.LockError):
+            validator.load_repositories(raw)
+
+    def test_malformed_merge_operands_fail_closed(self):
+        for operand in ["42", "[42]", "null"]:
+            raw = f"repositories: {{keycloak: {{<<: {operand}}}}}".encode()
+            with self.subTest(operand=operand), self.assertRaises(validator.LockError):
+                validator.load_repositories(raw)
+
     def test_invalid_component_keys_cannot_inject_logs(self):
         for component in [True, 3, "bad\nname", ""]:
             raw = yaml.safe_dump({"repositories": {component: DEFINITION}}).encode()

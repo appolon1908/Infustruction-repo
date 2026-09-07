@@ -34,16 +34,26 @@ class LockError(ValueError):
 
 
 class UniqueSafeLoader(yaml.SafeLoader):
-    """Reject duplicate keys instead of silently dropping locked components."""
+    """Reject literal duplicates while preserving YAML merge/override semantics."""
 
-    def construct_mapping(self, node, deep=False):
-        mapping = {}
-        for key_node, value_node in node.value:
-            key = self.construct_object(key_node, deep=deep)
-            if not isinstance(key, str) or key in mapping:
-                raise LockError("lock mapping keys must be unique strings")
-            mapping[key] = self.construct_object(value_node, deep=deep)
-        return mapping
+    def __init__(self, stream):
+        super().__init__(stream)
+        self._checked_mappings = set()
+
+    def flatten_mapping(self, node):
+        # Check the original mapping before SafeLoader expands << aliases.
+        # Flattened mappings may legitimately contain overridden inherited keys.
+        # Aliases reuse nodes, so each original mapping must be checked once.
+        if node not in self._checked_mappings:
+            keys = set()
+            for key_node, _ in node.value:
+                key = ("<<" if key_node.tag == "tag:yaml.org,2002:merge"
+                       else self.construct_object(key_node))
+                if not isinstance(key, str) or key in keys:
+                    raise LockError("lock mapping keys must be unique strings")
+                keys.add(key)
+            self._checked_mappings.add(node)
+        super().flatten_mapping(node)
 
 
 class NoRedirect(HTTPRedirectHandler):
