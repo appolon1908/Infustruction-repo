@@ -967,7 +967,7 @@ jobs:
           OPERATION: ${{ inputs.operation }}
         run: |
           set -Eeuo pipefail
-          /usr/local/bin/codestra-deploy "$OPERATION" \
+          sudo -n /usr/local/bin/codestra-deploy "$OPERATION" \
             --repository "$GITHUB_REPOSITORY" \
             --source-sha "$GITHUB_SHA" \
             --artifact-kind "$ARTIFACT_KIND" \
@@ -1027,7 +1027,7 @@ jobs:
           CANARY_PERCENT: ${{ inputs.canary_percent }}
         run: |
           set -Eeuo pipefail
-          /usr/local/bin/codestra-deploy promote-production-readonly \
+          sudo -n /usr/local/bin/codestra-deploy promote-production-readonly \
             --repository "$GITHUB_REPOSITORY" \
             --source-sha "$GITHUB_SHA" \
             --artifact-kind "$ARTIFACT_KIND" \
@@ -1035,6 +1035,7 @@ jobs:
             --artifact-digest "$ARTIFACT_DIGEST" \
             --environment production-readonly-canary \
             --health-paths "$HEALTH_PATHS" \
+            --read-only \
             --canary-percent "$CANARY_PERCENT" \
             --allowed-methods GET,HEAD \
             --require-staging-certification \
