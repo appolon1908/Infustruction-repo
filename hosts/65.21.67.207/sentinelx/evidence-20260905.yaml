@@ -1,0 +1,92 @@
+schema_version: 1
+phase: CODESTRA_SERVER_B_SENTINELX_INSTALL
+observed_at_utc: "2026-09-05T10:01:52Z"
+target:
+  requested_role: VICIDIAL_ASTERISK
+  requested_label: codestra-server-b-vicidial
+  target_ip: 65.21.67.207
+  hostname: static
+  os: openSUSE Leap 15.6
+  kernel: Linux 6.4.0-150600.23.103-default x86_64
+  network_addresses:
+    - 65.21.67.207
+    - 10.40.0.2
+  observed_public_ip: 65.21.67.207
+access:
+  authenticated_user: codestra-admin
+  uid: 1001
+  direct_root_ssh: denied_publickey
+  noninteractive_root: unavailable
+  sudo_probe: password_required
+  authorized_nopasswd_scope: restricted_codestra_vicidial_operator_only
+existing_agent_observation:
+  sentinelx_user: absent
+  sentinelx_unit_load_state: not-found
+  sentinelx_service_active: inactive
+  sentinelx_service_enabled: not-found
+  visible_sentinelx_process: absent
+  root_only_identity_policy_and_sudoers_audited: false
+  duplicate_enrollment_excluded: false
+dependencies:
+  systemd_pid_1: true
+  system_state: degraded
+  curl: present
+  git: "2.51.0"
+  python_selected_by_installer: "3.11.15"
+  python_3_11_pip_import: pass
+  python_3_11_venv_import: pass
+  system_python_default: "3.6.15"
+  distribution_packages_installed: []
+installer_review:
+  endpoint: https://get.sentinelx.app/install.sh
+  syntax_check: pass
+  sha256: 56f5da769567a471ccf798fa11105f747738f26ee48d0d106922922e56d3acb9
+  target_review_copy: /home/codestra-admin/sentinelx-install-review/install.sh
+  target_review_copy_mode: "0600"
+  endpoint_blob_installer_commit: ee8628482a83959b9e1a7b99d1082f32b49e4196
+  reviewed_installer_main_commit: e637b12c35e40a81fef3171394fe863235575dfb
+  reviewed_core_commit: d6b33822b61e7fccf39547d5cce8add8bc7021f9
+  reviewed_core_version: 0.11.14
+  upstream_unit_tests_selected: "56 passed"
+  endpoint_matches_current_installer_main: false
+  endpoint_matches_historical_installer_commit: true
+policy_review:
+  bounded_health_read: pass
+  out_of_scope_read_rejected: pass
+  non_rw_edit_rejected: pass
+  unregistered_service_action_rejected: pass
+  empty_allowed_commands_rejects_exec: pass
+  script_run_disabled_by_schema: false
+  script_run_executed_with_empty_allowed_commands: true
+  inline_upload_disabled_by_schema: false
+  inline_upload_succeeded_with_empty_trusted_fetch_hosts: true
+  allowed_prefix_rejects_shell_compound: false
+  blocked_template_deployable: false
+hub:
+  unauthenticated_dns_resolved: true
+  unauthenticated_https_status: 200
+  tls_verification_result: 0
+  authenticated_agent_connection_verified: false
+  owner_account_enrollment_verified: false
+telephony_baseline_after_review:
+  asterisk_service: active
+  asterisk_enabled: enabled
+  mariadb_service: active
+  mariadb_enabled: enabled
+  codestra_vicidial_adapter: active
+  codestra_vicidial_restricted_adapter: active
+  telephony_configuration_changed: false
+result_fields:
+  HOSTNAME: static
+  HOST_ID: NOT_AVAILABLE_NOT_INSTALLED
+  AGENT_VERSION_OR_COMMIT: NOT_INSTALLED
+  INSTALLER_SHA256: 56f5da769567a471ccf798fa11105f747738f26ee48d0d106922922e56d3acb9
+  SERVICE_ACTIVE: inactive
+  SERVICE_ENABLED: not-found
+  RUN_AS_USER: NOT_INSTALLED
+  HUB_CONNECTION_VERIFIED: false
+  OWNER_ACCOUNT_ENROLLMENT_VERIFIED: false
+  READ_ONLY_POLICY_VERIFIED: false
+  UNRESTRICTED_SUDO_PRESENT: UNKNOWN_ROOT_AUDIT_REQUIRED
+  TELEPHONY_CONFIGURATION_CHANGED: false
+  FINAL_STATUS: BLOCKED_ROOT_ACCESS
