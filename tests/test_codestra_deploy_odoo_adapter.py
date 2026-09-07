@@ -188,6 +188,18 @@ def test_compressed_pax_metadata_counts_toward_expansion_limit(tmp_path):
     assert not destination.exists()
 
 
+def test_pax_record_amplification_is_bounded_before_tarfile_parsing(tmp_path):
+    module=adapter(); archive=tmp_path/"pax.tar.gz"; destination=tmp_path/"out"; destination.mkdir()
+    with tarfile.open(archive,"w:gz",format=tarfile.PAX_FORMAT) as bundle:
+        info=tarfile.TarInfo("item")
+        info.pax_headers={f"k{index}":"x" for index in range(10000)}; info.size=1
+        bundle.addfile(info,io.BytesIO(b"x"))
+    module.MAX_EXPANDED_BYTES=4*1024*1024
+    with pytest.raises(module.Blocked,match="extension metadata"):
+        module.extract_verified(archive,destination)
+    assert not destination.exists()
+
+
 def test_failed_post_start_readback_stops_replacement_without_old_restart(monkeypatch,tmp_path):
     module=adapter(); args=arguments(module); release=tmp_path/"extracted"; (release/"custom-addons").mkdir(parents=True)
     previous=tmp_path/"previous"; previous.mkdir(); current=tmp_path/"current"; current.symlink_to(previous)
@@ -215,6 +227,22 @@ def test_nonzero_replacement_start_still_attempts_safe_stop(monkeypatch,tmp_path
     def compose(_target,*command,check=True):
         calls.append((command,check))
         if command==("up","-d","odoo"): raise subprocess.CalledProcessError(1,command)
+        return subprocess.CompletedProcess(command,0,"","")
+    monkeypatch.setattr(module,"docker_compose",compose)
+    with pytest.raises(module.NeedsRecovery): module.deploy(args,authorization(args),target)
+    assert (("stop","odoo"),False) in calls
+
+
+def test_interrupted_replacement_start_still_attempts_safe_stop(monkeypatch,tmp_path):
+    module=adapter(); args=arguments(module); release=tmp_path/"extracted"; (release/"custom-addons").mkdir(parents=True)
+    previous=tmp_path/"previous"; previous.mkdir(); current=tmp_path/"current"; current.symlink_to(previous)
+    target={"release_root":str(tmp_path/"releases"),"current_link":str(current),"service":"odoo","database":"odoo","modules":"addon"}
+    calls=[]
+    monkeypatch.setattr(module,"verify_artifact",lambda *_: (release,"e"*64))
+    monkeypatch.setattr(module,"validate_effective_compose",lambda *_: {})
+    def compose(_target,*command,check=True):
+        calls.append((command,check))
+        if command==("up","-d","odoo"): raise KeyboardInterrupt()
         return subprocess.CompletedProcess(command,0,"","")
     monkeypatch.setattr(module,"docker_compose",compose)
     with pytest.raises(module.NeedsRecovery): module.deploy(args,authorization(args),target)

@@ -7,7 +7,7 @@ import urllib.parse, urllib.request
 from pathlib import Path
 
 SHA256="sha256:"; CONFIG_ROOT=Path("/etc/codestra/odoo-deploy-targets"); EVIDENCE_ROOT=Path("/etc/codestra/deployment-evidence/sha256")
-MAX_ARCHIVE_BYTES=64*1024*1024; MAX_EXPANDED_BYTES=128*1024*1024; MAX_MEMBER_BYTES=32*1024*1024; MAX_MEMBERS=4096; MAX_OPERATION_SECONDS=300; MAX_HEALTH_BYTES=64*1024
+MAX_ARCHIVE_BYTES=64*1024*1024; MAX_EXPANDED_BYTES=128*1024*1024; MAX_MEMBER_BYTES=32*1024*1024; MAX_EXTENSION_BYTES=64*1024; MAX_MEMBERS=4096; MAX_OPERATION_SECONDS=300; MAX_HEALTH_BYTES=64*1024
 NO_SEND_KEYS={"ENABLE_EXTERNAL_DELIVERY":"false","EMAIL_DELIVERY":"false","LIVE_EMAIL_DELIVERY":"false"}
 IMPORTER="custom-addons/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"
 
@@ -72,16 +72,31 @@ def acquire_artifact(reference,destination,deadline=None):
 def extract_verified(archive,destination,deadline=None):
     deadline=deadline or time.monotonic()+MAX_OPERATION_SECONDS; total=0
     try:
-        # Bound the complete decompressed tar stream before TarFile can parse and
-        # materialize PAX/GNU extension headers. This first pass is streaming.
-        expanded=0
+        # Bound the complete stream and extension metadata before TarFile can
+        # amplify many tiny PAX records into an unbounded in-memory mapping.
+        expanded=0; extension_bytes=0
         with gzip.open(archive,"rb") as stream:
             while True:
                 if time.monotonic()>deadline: raise Blocked("archive expansion deadline exceeded")
-                block=stream.read(1024*1024)
-                if not block: break
-                expanded+=len(block)
-                if expanded>MAX_EXPANDED_BYTES: raise Blocked("artifact expansion exceeds limits")
+                header=stream.read(512)
+                if not header: break
+                expanded+=len(header)
+                if len(header)!=512 or expanded>MAX_EXPANDED_BYTES: raise Blocked("artifact expansion exceeds limits")
+                if header==b"\0"*512: continue
+                try: size=tarfile.nti(header[124:136])
+                except ValueError as e: raise Blocked("artifact contains a malformed size") from e
+                if not isinstance(size,int) or size<0: raise Blocked("artifact contains a malformed size")
+                padded=((size+511)//512)*512
+                if header[156:157] in {tarfile.XHDTYPE,tarfile.XGLTYPE,tarfile.GNUTYPE_LONGNAME,tarfile.GNUTYPE_LONGLINK}:
+                    extension_bytes+=size
+                    if extension_bytes>MAX_EXTENSION_BYTES: raise Blocked("artifact extension metadata exceeds limits")
+                remaining=padded
+                while remaining:
+                    if time.monotonic()>deadline: raise Blocked("archive expansion deadline exceeded")
+                    block=stream.read(min(1024*1024,remaining))
+                    if not block: raise Blocked("artifact is truncated")
+                    remaining-=len(block); expanded+=len(block)
+                    if expanded>MAX_EXPANDED_BYTES: raise Blocked("artifact expansion exceeds limits")
         with tarfile.open(archive,"r:gz") as bundle:
             count=0
             for m in bundle:
@@ -311,7 +326,7 @@ def deploy(args,auth,target):
         replacement_started=True
         docker_compose(target,"up","-d",target["service"])
         return readback(target,release_dir,args.source_sha,expected,args,runtime_networks)
-    except Exception as e:
+    except BaseException as e:
         if upgrade_started:
             stop_failed=False
             if replacement_started:
