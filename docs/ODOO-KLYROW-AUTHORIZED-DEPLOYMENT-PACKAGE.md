@@ -30,9 +30,14 @@ database, filestore, configuration, isolated-restore, and rollback-rehearsal
 evidence, requires an immutable rollback target, and serializes execution.
 
 The controller delegates only to the root-owned
-`/usr/local/libexec/codestra-deploy-odoo`. That adapter has not yet been selected
-or released and the controller must fail closed while it is absent. Bootstrap
-is a separately reviewed action. The workflow invokes the controller through
+`/usr/local/libexec/codestra-deploy-odoo`. Its source implementation consumes
+only the preserved digest-bound Odoo release URL, rejects unsafe archive
+members, verifies all five Odoo recovery evidence blobs, preserves no-send
+configuration, switches the immutable release pointer, reads back the actual
+read-only addon mount and importer digest, and restores the previous pointer on
+failure. Its released package digest and Sigstore bundle remain pending until
+this source is protected and the release environment is approved. Bootstrap is
+a separately reviewed action. The workflow invokes the controller through
 non-interactive sudo; no ordinary pull-request job invokes it.
 
 ## Owner-supplied authorization fields
@@ -40,7 +45,7 @@ non-interactive sudo; no ordinary pull-request job invokes it.
 Copy `release/templates/odoo-runtime-deployment-authorization.v1.json` into the
 protected authorization process and supply, without placeholders:
 
-- immutable artifact reference;
+- immutable artifact reference (the preserved Odoo release URL is populated);
 - exact action and environment;
 - released controller SHA-256;
 - execution-runner FQDN and service account;
@@ -53,7 +58,7 @@ protected authorization process and supply, without placeholders:
 - rollback-rehearsal evidence digest;
 - previous source SHA and artifact digest;
 - approval identity, time, expiry, and signed evidence digest;
-- reviewed Odoo adapter source, artifact digest, and installation target.
+- released Odoo adapter artifact digest and installation target.
 
 Unknown values remain `PENDING`; such a record is intentionally rejected.
 
