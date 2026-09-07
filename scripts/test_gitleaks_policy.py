@@ -67,6 +67,9 @@ def main() -> None:
     auth_command = "cu" + "rl --" + "user "
     numeric = auth_command + ":".join([str(65532)] * 2) + " https://example.invalid\n"
     synthetic = auth_command + "qa:" + fake + " https://example.invalid\n"
+    # Pure SHA-256 values are ignored by the default generic-key rule. Use an
+    # explicitly token-shaped fixture and prove the default rule detects it first.
+    token_field = "api_key: " + "gh" + "p_" + fake[:36] + "\n"
     cases = [
         ("reproduce original false positive", ARCHIVED, EVIDENCE, False, True),
         ("allow only archived Podman context", ARCHIVED, EVIDENCE, True, False),
@@ -74,7 +77,8 @@ def main() -> None:
         ("keep other credentials detectable", synthetic, EVIDENCE, True, True),
         ("do not allow another evidence path", ARCHIVED, "other-evidence.md", True, True),
         ("allow typed Git SHA field", "keycloak_locked_sha: " + fake[:40] + "\n", "STAGE6-SOURCE-LOCK.yaml", True, False),
-        ("do not allow unrelated key field", "api_key: " + fake + "\n", "STAGE6-SOURCE-LOCK.yaml", True, True),
+        ("prove default token detection", token_field, "STAGE6-SOURCE-LOCK.yaml", False, True),
+        ("do not allow unrelated token field", token_field, "STAGE6-SOURCE-LOCK.yaml", True, True),
     ]
     for name, content, path, configured, expected in cases:
         findings = scan(binary, content, path, configured)
