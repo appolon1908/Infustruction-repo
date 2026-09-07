@@ -19,6 +19,16 @@ paths = ['''^reports/runtime-reconciliation/pr-30-runtime-certification-20260831
 regexTarget = "line"
 regexes = ['''^\s*keycloak_locked_sha:\s*80fc33c7159440e357219903f62ea7fb84914d59\s*$''']
 
+# This exact revision occurs in the typed source_refresh and conflict_resolution
+# mappings of the authoritative and resolved lock. It is not a Keycloak secret.
+[[allowlists]]
+description = "Reviewed Keycloak source revision in Stage 6 reconciliation mappings"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^STAGE6-SOURCE-LOCK(?:\.RESOLVED)?\.yaml$''']
+regexTarget = "line"
+regexes = ['''^\s*(?:keycloak|keycloak_locked_sha):\s*7aef62a020c87ffcbf0fbb2f8c4890a8e9d13098\s*$''']
+
 # Match the exact non-secret Podman process identity and command, not all
 # numeric credentials or every finding in this historical evidence file.
 [[allowlists]]

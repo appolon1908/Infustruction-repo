@@ -74,6 +74,9 @@ def main() -> None:
     # control is neither a hexadecimal checksum nor an alphabetic word.
     generic_field = 'api_key: "' + fake.translate(str.maketrans("abcdef", "GHJKLM")) + '"\n'
     lock_path = "STAGE6-SOURCE-LOCK.yaml"
+    resolved_path = "STAGE6-SOURCE-LOCK.RESOLVED.yaml"
+    reviewed_revision = "7aef62a020c87ffcbf0fb" + "b2f8c4890a8e9d13098"
+    refreshed = "    keycloak: " + reviewed_revision + "\n"
     cases = [
         ("reproduce original false positive", ARCHIVED, EVIDENCE, False, True),
         ("allow only archived Podman context", ARCHIVED, EVIDENCE, True, False),
@@ -85,6 +88,13 @@ def main() -> None:
         ("do not allow unrelated token family", token_field, lock_path, True, True),
         ("prove default generic-key detection", generic_field, lock_path, False, True),
         ("do not allow unrelated generic key", generic_field, lock_path, True, True),
+        ("reproduce source-refresh SHA false positive", refreshed, lock_path, False, True),
+        ("allow exact reviewed source-refresh SHA", refreshed, lock_path, True, False),
+        ("allow exact reviewed resolved-refresh SHA", refreshed, resolved_path, True, False),
+        ("allow exact reviewed resolved conflict SHA", "  keycloak_locked_sha: " + reviewed_revision + "\n", resolved_path, True, False),
+        ("do not allow refreshed SHA in other files", refreshed, "other-lock.yaml", True, True),
+        ("keep tokens detectable in resolved lock", token_field, resolved_path, True, True),
+        ("keep generic keys detectable in resolved lock", generic_field, resolved_path, True, True),
     ]
     for name, content, path, configured, expected in cases:
         findings, reasons = scan(binary, content, path, configured)
