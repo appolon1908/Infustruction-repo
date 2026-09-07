@@ -2,7 +2,7 @@
 """Fail-closed exact-artifact Odoo deployment adapter."""
 from __future__ import annotations
 
-import argparse, hashlib, json, os, shutil, socket, stat, subprocess, tarfile, tempfile, time
+import argparse, hashlib, ipaddress, json, os, shutil, socket, stat, subprocess, tarfile, tempfile, time
 import urllib.parse, urllib.request
 from pathlib import Path
 
@@ -107,6 +107,11 @@ def load_target(path,host):
         if not p.is_absolute() or ".." in p.parts: raise Blocked(f"unsafe target path: {k}")
     if v.get("no_send_env")!=NO_SEND_KEYS: raise Blocked("target no-send policy mismatch")
     if "@sha256:" not in str(v["service_image"]) or not v["internal_networks"]: raise Blocked("target image/network policy incomplete")
+    health_url=urllib.parse.urlparse(str(v["health_base_url"]))
+    try: loopback=ipaddress.ip_address(health_url.hostname or "").is_loopback
+    except ValueError: loopback=False
+    if health_url.scheme not in {"http","https"} or not loopback or health_url.username or health_url.password or health_url.query or health_url.fragment or health_url.path not in {"","/"}:
+        raise Blocked("health base URL must be an origin on a literal loopback address")
     return v
 
 def docker_compose(target,*cmd,check=True):
@@ -114,13 +119,13 @@ def docker_compose(target,*cmd,check=True):
     for f in target["compose_files"]: argv += ["-f",f]
     return subprocess.run([*argv,*cmd],cwd=target["compose_directory"],check=check,text=True,capture_output=True)
 
-def validate_effective_compose(target,release_dir):
+def validate_effective_compose(target):
     doc=json.loads(docker_compose(target,"config","--format","json").stdout); svc=doc.get("services",{}).get(target["service"],{})
     env=svc.get("environment",{}); env=dict(x.split("=",1) for x in env if "=" in x) if isinstance(env,list) else env
     if svc.get("image")!=target["service_image"] or any(str(env.get(k,"")).lower()!=v for k,v in NO_SEND_KEYS.items()): raise Blocked("effective service image or no-send policy mismatch")
     networks=set(svc.get("networks",{})); approved=set(target["internal_networks"])
     if not networks or not networks<=approved or any(not doc.get("networks",{}).get(n,{}).get("internal") for n in networks): raise Blocked("effective service network is not egress-isolated")
-    expected=f"{release_dir/'custom-addons'}:{target['addon_mount']}:ro"; volumes=svc.get("volumes",[])
+    expected=f"{Path(target['current_link'])/'custom-addons'}:{target['addon_mount']}:ro"; volumes=svc.get("volumes",[])
     normalized=[f"{x.get('source')}:{x.get('target')}:{'ro' if x.get('read_only') else 'rw'}" if isinstance(x,dict) else x for x in volumes]
     if normalized.count(expected)!=1: raise Blocked("effective addon mount mismatch or shadowing")
 
@@ -146,9 +151,15 @@ def check_health(target,health_paths):
 def readback(target,release_dir,source_sha,expected_importer,args):
     container=docker_compose(target,"ps","-q",target["service"]).stdout.strip()
     if not container: raise Blocked("Odoo container is absent")
-    mounts=json.loads(subprocess.run(["docker","inspect",container,"--format","{{json .Mounts}}"],check=True,text=True,capture_output=True).stdout)
+    inspected=json.loads(subprocess.run(["docker","inspect",container],check=True,text=True,capture_output=True).stdout)
+    if not isinstance(inspected,list) or len(inspected)!=1: raise Blocked("running container inspection is malformed")
+    inspected=inspected[0]; mounts=inspected.get("Mounts",[])
     matches=[m for m in mounts if m.get("Destination")==target["addon_mount"]]
     if len(matches)!=1 or matches[0].get("Source")!=str(release_dir/"custom-addons") or matches[0].get("RW") is not False: raise Blocked("running addon mount is altered or shadowed")
+    config=inspected.get("Config",{}); environment=dict(item.split("=",1) for item in config.get("Env",[]) if "=" in item)
+    networks=set(inspected.get("NetworkSettings",{}).get("Networks",{}))
+    if config.get("Image")!=target["service_image"] or any(environment.get(k,"").lower()!=v for k,v in NO_SEND_KEYS.items()): raise Blocked("running image or no-send policy mismatch")
+    if not networks or not networks<=set(target["internal_networks"]): raise Blocked("running container network is not approved")
     observed=subprocess.run(["docker","exec",container,"sha256sum",f"{target['addon_mount']}/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"],check=True,text=True,capture_output=True).stdout.split()[0]
     if observed!=expected_importer: raise Blocked("in-container importer differs from verified artifact")
     return {"source_sha":source_sha,"release_dir":str(release_dir),"container":container,"expected_importer_sha256":expected_importer,"observed_importer_sha256":observed,"health":check_health(target,args.health_paths),"no_send":True}
@@ -158,9 +169,9 @@ def deploy(args,auth,target):
     root=Path(target["release_root"]); release_dir=root/args.source_sha; current=Path(target["current_link"]); previous=current.resolve(strict=True) if current.is_symlink() else None
     if release_dir.exists() or (current.exists() and not current.is_symlink()): raise Blocked("immutable release or current pointer is unsafe")
     with tempfile.TemporaryDirectory(prefix="codestra-odoo-artifact-") as d:
-        extracted,expected=verify_artifact(args,Path(d)); validate_effective_compose(target,extracted)
+        extracted,expected=verify_artifact(args,Path(d)); validate_effective_compose(target)
         root.mkdir(mode=0o750,parents=True,exist_ok=True); shutil.move(str(extracted),release_dir)
-    validate_effective_compose(target,release_dir)
+    validate_effective_compose(target)
     nxt=current.with_name(current.name+".next"); nxt.symlink_to(release_dir); upgrade_started=False
     try:
         docker_compose(target,"stop",target["service"]); nxt.replace(current)
@@ -196,6 +207,7 @@ def main(argv=None):
         validate_recovery_evidence(auth); target=load_target(CONFIG_ROOT/f"{args.validated_target_host}.json",args.validated_target_host)
         if args.action=="certify-staging-readonly":
             with tempfile.TemporaryDirectory(prefix="codestra-odoo-verify-") as d: _,expected=verify_artifact(args,Path(d))
+            validate_effective_compose(target)
             result=readback(target,Path(target["release_root"])/args.source_sha,args.source_sha,expected,args)
             write_evidence(args.evidence_output,{"status":"PASS",**result})
         else:

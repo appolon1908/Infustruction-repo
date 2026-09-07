@@ -139,11 +139,11 @@ def test_production_is_rejected_before_any_mutation(monkeypatch, tmp_path):
 
 
 def test_effective_configuration_rejects_send_before_mutation(monkeypatch, tmp_path):
-    module=adapter(); target={"service":"odoo","service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"addon_mount":"/mnt/extra-addons"}
+    module=adapter(); target={"service":"odoo","service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"addon_mount":"/mnt/extra-addons","current_link":str(tmp_path/"current")}
     document={"services":{"odoo":{"image":target["service_image"],"environment":dict(module.NO_SEND_KEYS)|{"EMAIL_DELIVERY":"true"},"networks":{"private":{}},"volumes":[]}},"networks":{"private":{"internal":True}}}
     monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,json.dumps(document),""))
     with pytest.raises(module.Blocked,match="no-send"):
-        module.validate_effective_compose(target,tmp_path)
+        module.validate_effective_compose(target)
 
 
 def test_streaming_limit_removes_partial_file(monkeypatch,tmp_path):
@@ -167,10 +167,11 @@ def test_cumulative_archive_and_member_count_limits_cleanup(tmp_path):
 
 def test_in_container_importer_must_match_verified_bytes(monkeypatch,tmp_path):
     module=adapter(); release=tmp_path/"release"; (release/"custom-addons").mkdir(parents=True)
-    target={"service":"odoo","addon_mount":"/mnt/extra-addons","health":{},"health_base_url":"http://127.0.0.1"}
+    image="odoo@sha256:"+"1"*64
+    target={"service":"odoo","addon_mount":"/mnt/extra-addons","health":{},"health_base_url":"http://127.0.0.1","service_image":image,"internal_networks":["private"]}
     monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,"cid\n",""))
     def run(argv,**kwargs):
-        if argv[1]=="inspect": return subprocess.CompletedProcess(argv,0,json.dumps([{"Destination":"/mnt/extra-addons","Source":str(release/"custom-addons"),"RW":False}]),"")
+        if argv[1]=="inspect": return subprocess.CompletedProcess(argv,0,json.dumps([{"Mounts":[{"Destination":"/mnt/extra-addons","Source":str(release/"custom-addons"),"RW":False}],"Config":{"Image":image,"Env":[f"{k}={v}" for k,v in module.NO_SEND_KEYS.items()]},"NetworkSettings":{"Networks":{"private":{}}}}]),"")
         return subprocess.CompletedProcess(argv,0,"f"*64+"  importer\n","")
     monkeypatch.setattr(module.subprocess,"run",run)
     with pytest.raises(module.Blocked,match="differs"):
@@ -182,6 +183,32 @@ def test_each_health_endpoint_is_required_and_redirects_are_disabled(monkeypatch
     with pytest.raises(module.Blocked,match="set differs"):
         module.check_health(target,"/live")
     assert module.NoRedirect().redirect_request(None,None,None,None,None,None,None) is None
+
+
+def test_target_rejects_non_loopback_health_origin(tmp_path):
+    module=adapter(); path=tmp_path/"target.json"
+    target={"schema":"codestra.odoo-deploy-target.v2","target_host":"staging-odoo","release_root":"/srv/releases","current_link":"/srv/current","compose_directory":"/srv/compose","compose_files":["compose.yml"],"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp","addon_mount":"/mnt/extra-addons","no_send_env":dict(module.NO_SEND_KEYS),"service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"health_base_url":"https://example.com","health":{}}
+    path.write_text(json.dumps(target)); path.chmod(0o600)
+    with pytest.raises(module.Blocked,match="loopback"):
+        module.load_target(path,"staging-odoo")
+
+
+def test_effective_compose_uses_stable_current_path(monkeypatch,tmp_path):
+    module=adapter(); current=tmp_path/"current"; image="odoo@sha256:"+"1"*64
+    target={"service":"odoo","service_image":image,"internal_networks":["private"],"addon_mount":"/mnt/extra-addons","current_link":str(current)}
+    document={"services":{"odoo":{"image":image,"environment":dict(module.NO_SEND_KEYS),"networks":{"private":{}},"volumes":[f"{current}/custom-addons:/mnt/extra-addons:ro"]}},"networks":{"private":{"internal":True}}}
+    monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,json.dumps(document),""))
+    module.validate_effective_compose(target)
+
+
+def test_readback_rejects_running_send_enabled(monkeypatch,tmp_path):
+    module=adapter(); release=tmp_path/"release"; (release/"custom-addons").mkdir(parents=True); image="odoo@sha256:"+"1"*64
+    target={"service":"odoo","addon_mount":"/mnt/extra-addons","health":{},"health_base_url":"http://127.0.0.1","service_image":image,"internal_networks":["private"]}
+    monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,"cid\n",""))
+    inspection={"Mounts":[{"Destination":"/mnt/extra-addons","Source":str(release/"custom-addons"),"RW":False}],"Config":{"Image":image,"Env":["ENABLE_EXTERNAL_DELIVERY=false","EMAIL_DELIVERY=true","LIVE_EMAIL_DELIVERY=false"]},"NetworkSettings":{"Networks":{"private":{}}}}
+    monkeypatch.setattr(module.subprocess,"run",lambda argv,**kwargs: subprocess.CompletedProcess(argv,0,json.dumps([inspection]),""))
+    with pytest.raises(module.Blocked,match="no-send"):
+        module.readback(target,release,"b"*40,"e"*64,arguments(module))
 
 
 def test_recovery_evidence_is_candidate_bound(tmp_path):
