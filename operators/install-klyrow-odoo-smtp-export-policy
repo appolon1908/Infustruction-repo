@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ "$EUID" -eq 0 ]] || { echo 'root required' >&2; exit 2; }
+[[ "$#" -eq 0 ]] || { echo 'arguments prohibited' >&2; exit 2; }
+source_dir="$(cd "$(dirname "$0")" && pwd)"
+policy="$source_dir/klyrow-odoo-smtp-export.sudoers"
+helper=/usr/local/sbin/export-odoo-postal-credential
+target=/etc/sudoers.d/klyrow-odoo-smtp-export
+[[ -f "$helper" && ! -L "$helper" ]] || { echo 'approved exporter is absent or a symlink' >&2; exit 1; }
+read -r mode uid gid links < <(stat -Lc '%a %u %g %h' "$helper")
+[[ "$uid:$gid:$links" == "0:0:1" && "$mode" == 755 ]] || { echo 'exporter metadata mismatch' >&2; exit 1; }
+visudo -cf /etc/sudoers
+visudo -cf "$policy"
+backup="$(mktemp /etc/sudoers.d/.klyrow-odoo-smtp-export.rollback.XXXXXX)"
+temporary="$(mktemp /etc/sudoers.d/.klyrow-odoo-smtp-export.XXXXXX)"
+trap 'rm -f -- "$backup" "$temporary"' EXIT
+if [[ -f "$target" && ! -L "$target" ]]; then cp --preserve=mode,ownership,timestamps "$target" "$backup"; fi
+install -o root -g root -m 0440 "$policy" "$temporary"
+mv -fT "$temporary" "$target"
+if ! visudo -cf /etc/sudoers; then
+  if [[ -s "$backup" ]]; then mv -fT "$backup" "$target"; else rm -f -- "$target"; fi
+  visudo -cf /etc/sudoers
+  exit 1
+fi
+printf 'POLICY_INSTALL=PASS\n'
