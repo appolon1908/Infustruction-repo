@@ -15,13 +15,13 @@ paths = ['''^reports/runtime-reconciliation/pr-30-runtime-certification-20260831
 regexTarget = "line"
 regexes = ['''^\s*keycloak_locked_sha:\s*80fc33c7159440e357219903f62ea7fb84914d59\s*$''']
 
-# Gitleaks' curl rule crosses the newline between an archived grep expression
-# and this Podman command. The captured value is a Unix UID:GID, not curl auth.
-# Match this exact command, evidence file and rule, not all numeric credentials.
+# Gitleaks joins an archived search expression to the following Podman command.
+# Match the exact non-secret process identity and command in this evidence file,
+# never a file-wide exception or an exception for arbitrary numeric credentials.
 [[allowlists]]
-description = "Archived Podman process identity, incorrectly joined to preceding curl search expression"
+description = "Archived Podman UID:GID, incorrectly joined to the preceding search expression"
 targetRules = ["curl-auth-user"]
 condition = "AND"
 paths = ['''^evidence/server-a-consolidation-20260901/PRODUCTION-SAFETY-SWITCH-INVENTORY\.md$''']
 regexTarget = "match"
-regexes = ['''(?m)^/opt/codestra/backups/middleware-control-plane-20260815T073500Z/compose/telephony-gateway-schema-aware-ack-release-20260728/deployment-dropin-before\.conf:7:ExecStart=/usr/bin/podman run --rm --name codestra-telephony-event-gateway-rc4 --pull=never --network=host --user=65532:65532$''']
+regexes = ['''/opt/codestra/backups/middleware-control-plane-20260815T073500Z/compose/telephony-gateway-schema-aware-ack-release-20260728/deployment-dropin-before\.conf:7:ExecStart=/usr/bin/podman run --rm --name codestra-telephony-event-gateway-rc4 --pull=never --network=host --user=65532:65532(?:\s|$)''']

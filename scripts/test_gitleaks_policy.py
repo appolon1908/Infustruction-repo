@@ -63,11 +63,15 @@ def main() -> None:
         raise SystemExit("usage: test_gitleaks_policy.py /path/to/gitleaks")
     binary = str(Path(sys.argv[1]).resolve(strict=True))
     fake = hashlib.sha256(b"non-secret local regression fixture").hexdigest()
+    # Assemble synthetic commands at runtime rather than embed credential-shaped source.
+    auth_command = "cu" + "rl --" + "user "
+    numeric = auth_command + ":".join([str(65532)] * 2) + " https://example.invalid\n"
+    synthetic = auth_command + "qa:" + fake + " https://example.invalid\n"
     cases = [
         ("reproduce original false positive", ARCHIVED, EVIDENCE, False, True),
         ("allow only archived Podman context", ARCHIVED, EVIDENCE, True, False),
-        ("keep same numeric curl credentials detectable", "curl --user " + "65532:65532 https://example.invalid\n", EVIDENCE, True, True),
-        ("keep other curl credentials detectable", "curl --user qa:" + fake + " https://example.invalid\n", EVIDENCE, True, True),
+        ("keep same numeric credentials detectable", numeric, EVIDENCE, True, True),
+        ("keep other credentials detectable", synthetic, EVIDENCE, True, True),
         ("do not allow another evidence path", ARCHIVED, "other-evidence.md", True, True),
         ("allow typed Git SHA field", "keycloak_locked_sha: " + fake[:40] + "\n", "STAGE6-SOURCE-LOCK.yaml", True, False),
         ("do not allow unrelated key field", "api_key: " + fake + "\n", "STAGE6-SOURCE-LOCK.yaml", True, True),

@@ -18,7 +18,7 @@ class ProductionReadinessWaveTests(unittest.TestCase):
 
     def test_invariant_names_real_effect_controls_not_aliases(self):
         safety = self.text.split("## Global safety invariants\n", 1)[1].split("\n## ", 1)[0]
-        names = set(re.findall(r"\b[A-Z][A-Z_]+\b", safety))
+        names = set(re.findall(r"\b[A-Z][A-Z0-9_]+\b", safety))
         required = {"LIVE_EMAIL_DELIVERY", "LIVE_SMS_DELIVERY", "LIVE_PSTN_DIALING", "PRODUCTION_DIALING", "CALLBACK_DISPATCH", "ODOO_WRITE", "LIVE_WRITE", "N8N_EXTERNAL_EFFECTS", "SOCIAL_PUBLISHING_ENABLED", "LIVE_ADVERTISING_ENABLED", "EXTERNAL_DELIVERY_ENABLED", "EXTERNAL_MODEL_CALLS_ENABLED"}
         self.assertTrue(required <= names, required - names)
         self.assertFalse({"SOCIAL_PUBLISHING", "LIVE_ADVERTISING"} & names)
