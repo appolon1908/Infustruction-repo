@@ -12,8 +12,6 @@ FILES = (
     ".github/workflows/stage6-source-regressions.yml",
     "STAGE6-SOURCE-LOCK.yaml",
     "STAGE6-SOURCE-LOCK.RESOLVED.yaml",
-    "STAGE6-RUNTIME-PROVENANCE.md",
-    "STAGE6-SAFETY-CAPABILITY-MATRIX.yaml",
     "deploy/staging/intake-observability/compose.yaml",
     "deploy/staging/intake-observability/runtime-lock.v1.json",
     "deploy/staging/runtime-reconciliation/compose.legacy-application-safety-hold.yaml",
