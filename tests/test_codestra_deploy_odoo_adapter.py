@@ -3,6 +3,7 @@ import importlib.machinery
 import importlib.util
 import io
 import json
+import os
 import tarfile
 import subprocess
 from pathlib import Path
@@ -11,6 +12,18 @@ import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(autouse=True)
+def protected_fixture_ownership(monkeypatch):
+    """Model root-owned protected evidence without privileged CI operations."""
+    if os.geteuid() == 0 and os.environ.get("CODESTRA_TEST_UNPRIVILEGED") != "1":
+        return
+    original = Path.lstat
+    def root_lstat(path):
+        values=list(original(path)); values[4]=values[5]=0
+        return os.stat_result(values)
+    monkeypatch.setattr(Path,"lstat",root_lstat)
 
 
 def adapter():
