@@ -37,7 +37,8 @@ jobs:
           tar -xzf "${archive}" -C "${RUNNER_TEMP}" gitleaks
           mkdir -p "${RUNNER_TEMP}/tracked-source"
           git archive HEAD | tar -x -C "${RUNNER_TEMP}/tracked-source"
-          (cd "${RUNNER_TEMP}/tracked-source" && "${RUNNER_TEMP}/gitleaks" dir --no-banner --redact --exit-code 1 .)
+          # Show finding locations while redacting secret values; never suppress failures.
+          (cd "${RUNNER_TEMP}/tracked-source" && "${RUNNER_TEMP}/gitleaks" dir --no-banner --redact --verbose --exit-code 1 .)
 
   validate-merge-result:
     runs-on: ubuntu-latest
@@ -69,7 +70,8 @@ jobs:
           scan_root="${RUNNER_TEMP}/tracked-source"
           mkdir -p "${scan_root}"
           git archive HEAD | tar -x -C "${scan_root}"
-          (cd "${scan_root}" && "${RUNNER_TEMP}/authority-gitleaks" dir --no-banner --redact --exit-code 1 .)
+          # Keep the merge-result scan equally strict and diagnosable.
+          (cd "${scan_root}" && "${RUNNER_TEMP}/authority-gitleaks" dir --no-banner --redact --verbose --exit-code 1 .)
 
   validate:
     name: validate
