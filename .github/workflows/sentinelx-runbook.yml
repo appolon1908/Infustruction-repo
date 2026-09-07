@@ -1,0 +1,31 @@
+name: SentinelX runbook safety
+
+on:
+  pull_request:
+    paths:
+      - 'hosts/65.21.67.207/sentinelx/**'
+      - 'tests/test_sentinelx_runbook.py'
+      - '.github/workflows/sentinelx-runbook.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: sentinelx-runbook-${{ matrix.identity }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        identity: [source, merge]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ matrix.identity == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checkout
+        env:
+          EXPECTED_SHA: ${{ matrix.identity == 'source' && github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Test runbook without executing installation or host probes
+        run: python3 -m unittest discover -s tests -p test_sentinelx_runbook.py -v
