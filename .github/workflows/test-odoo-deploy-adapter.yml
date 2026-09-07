@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install --disable-pip-version-check --no-input pytest==8.4.2
-      - run: python -m pytest -q tests/test_codestra_deploy_controller.py tests/test_codestra_deploy_odoo_adapter.py tests/test_codestra_deploy_package.py tests/test_codestra_deploy_release_workflow.py
+      - run: python -m pytest -q tests/test_codestra_deploy_controller.py tests/test_codestra_deploy_odoo_adapter.py tests/test_codestra_deploy_package.py tests/test_codestra_deploy_release_workflow.py tests/test_codestra_deploy_review_regressions.py
         env:
           CODESTRA_TEST_UNPRIVILEGED: '1'
       - run: python -m py_compile operators/codestra-deploy operators/codestra-deploy-odoo scripts/build_codestra_deploy_package.py
