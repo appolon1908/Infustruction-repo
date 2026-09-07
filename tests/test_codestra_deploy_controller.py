@@ -17,10 +17,15 @@ def protected_fixture_ownership(monkeypatch):
     if os.geteuid() == 0 and os.environ.get("CODESTRA_TEST_UNPRIVILEGED") != "1":
         return
     original = Path.lstat
+    original_fstat = os.fstat
     def root_lstat(path):
         values=list(original(path)); values[4]=values[5]=0
         return os.stat_result(values)
     monkeypatch.setattr(Path,"lstat",root_lstat)
+    def root_fstat(descriptor):
+        values=list(original_fstat(descriptor)); values[4]=values[5]=0
+        return os.stat_result(values)
+    monkeypatch.setattr(os,"fstat",root_fstat)
 
 
 def controller():
