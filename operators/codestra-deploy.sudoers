@@ -1,0 +1,4 @@
+# Installation of this file is a separate reviewed bootstrap operation.
+# The deployment runner may invoke only the controller; the controller itself
+# requires an exact root-owned authorization record for every operation.
+codestra-deploy-runner ALL=(root) NOPASSWD: /usr/local/bin/codestra-deploy *
