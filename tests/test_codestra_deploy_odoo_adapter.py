@@ -140,7 +140,7 @@ def test_production_is_rejected_before_any_mutation(monkeypatch, tmp_path):
 
 def test_effective_configuration_rejects_send_before_mutation(monkeypatch, tmp_path):
     module=adapter(); target={"service":"odoo","service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"addon_mount":"/mnt/extra-addons","current_link":str(tmp_path/"current")}
-    document={"services":{"odoo":{"image":target["service_image"],"environment":dict(module.NO_SEND_KEYS)|{"EMAIL_DELIVERY":"true"},"networks":{"private":{}},"volumes":[]}},"networks":{"private":{"internal":True}}}
+    document={"services":{"odoo":{"image":target["service_image"],"environment":dict(module.NO_SEND_KEYS)|{"EMAIL_DELIVERY":"true"},"networks":{"private":{}},"volumes":[]}},"networks":{"private":{"internal":True,"name":"project_private"}}}
     monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,json.dumps(document),""))
     with pytest.raises(module.Blocked,match="no-send"):
         module.validate_effective_compose(target)
@@ -175,14 +175,24 @@ def test_in_container_importer_must_match_verified_bytes(monkeypatch,tmp_path):
         return subprocess.CompletedProcess(argv,0,"f"*64+"  importer\n","")
     monkeypatch.setattr(module.subprocess,"run",run)
     with pytest.raises(module.Blocked,match="differs"):
-        module.readback(target,release,"b"*40,"e"*64,arguments(module))
+        module.readback(target,release,"b"*40,"e"*64,arguments(module),{"private"})
 
 
 def test_each_health_endpoint_is_required_and_redirects_are_disabled(monkeypatch):
     module=adapter(); target={"health":{"/live":{"status":200,"json_field":"status","json_value":"ok"},"/ready":{"status":200,"json_field":"status","json_value":"ok"}},"health_base_url":"http://127.0.0.1"}
-    with pytest.raises(module.Blocked,match="set differs"):
+    with pytest.raises(module.Blocked,match="differs"):
         module.check_health(target,"/live")
     assert module.NoRedirect().redirect_request(None,None,None,None,None,None,None) is None
+
+
+def test_health_rejects_empty_set_and_origin_escape(monkeypatch):
+    module=adapter(); target={"health":{},"health_base_url":"http://127.0.0.1:8069"}
+    with pytest.raises(module.Blocked,match="empty"):
+        module.check_health(target,"")
+    target["health"]={"@example.com/x":{"status":200,"json_field":"status","json_value":"ok"}}
+    monkeypatch.setattr(module.urllib.request,"build_opener",lambda *_: pytest.fail("network must not be reached"))
+    with pytest.raises(module.Blocked,match="origin-relative"):
+        module.check_health(target,"@example.com/x")
 
 
 def test_target_rejects_non_loopback_health_origin(tmp_path):
@@ -196,9 +206,22 @@ def test_target_rejects_non_loopback_health_origin(tmp_path):
 def test_effective_compose_uses_stable_current_path(monkeypatch,tmp_path):
     module=adapter(); current=tmp_path/"current"; image="odoo@sha256:"+"1"*64
     target={"service":"odoo","service_image":image,"internal_networks":["private"],"addon_mount":"/mnt/extra-addons","current_link":str(current)}
-    document={"services":{"odoo":{"image":image,"environment":dict(module.NO_SEND_KEYS),"networks":{"private":{}},"volumes":[f"{current}/custom-addons:/mnt/extra-addons:ro"]}},"networks":{"private":{"internal":True}}}
+    document={"services":{"odoo":{"image":image,"environment":dict(module.NO_SEND_KEYS),"networks":{"private":{}},"volumes":[f"{current}/custom-addons:/mnt/extra-addons:ro"]}},"networks":{"private":{"internal":True,"name":"project_private"}}}
     monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,json.dumps(document),""))
-    module.validate_effective_compose(target)
+    assert module.validate_effective_compose(target)=={"project_private"}
+
+
+def test_runtime_network_uses_compose_resolved_name(monkeypatch,tmp_path):
+    module=adapter(); release=tmp_path/"release"; (release/"custom-addons").mkdir(parents=True); image="odoo@sha256:"+"1"*64
+    target={"service":"odoo","addon_mount":"/mnt/extra-addons","health":{"/live":{"status":200,"json_field":"status","json_value":"ok"}},"health_base_url":"http://127.0.0.1","service_image":image,"internal_networks":["private"]}
+    monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,"cid\n",""))
+    inspection={"Mounts":[{"Destination":"/mnt/extra-addons","Source":str(release/"custom-addons"),"RW":False}],"Config":{"Image":image,"Env":[f"{k}={v}" for k,v in module.NO_SEND_KEYS.items()]},"NetworkSettings":{"Networks":{"project_private":{}}}}
+    def run(argv,**kwargs):
+        if argv[1]=="inspect": return subprocess.CompletedProcess(argv,0,json.dumps([inspection]),"")
+        return subprocess.CompletedProcess(argv,0,"e"*64+"  importer\n","")
+    monkeypatch.setattr(module.subprocess,"run",run); monkeypatch.setattr(module,"check_health",lambda *_:{"/live":"PASS"})
+    result=module.readback(target,release,"b"*40,"e"*64,arguments(module),{"project_private"})
+    assert result["health"]=={"/live":"PASS"}
 
 
 def test_readback_rejects_running_send_enabled(monkeypatch,tmp_path):
@@ -208,7 +231,7 @@ def test_readback_rejects_running_send_enabled(monkeypatch,tmp_path):
     inspection={"Mounts":[{"Destination":"/mnt/extra-addons","Source":str(release/"custom-addons"),"RW":False}],"Config":{"Image":image,"Env":["ENABLE_EXTERNAL_DELIVERY=false","EMAIL_DELIVERY=true","LIVE_EMAIL_DELIVERY=false"]},"NetworkSettings":{"Networks":{"private":{}}}}
     monkeypatch.setattr(module.subprocess,"run",lambda argv,**kwargs: subprocess.CompletedProcess(argv,0,json.dumps([inspection]),""))
     with pytest.raises(module.Blocked,match="no-send"):
-        module.readback(target,release,"b"*40,"e"*64,arguments(module))
+        module.readback(target,release,"b"*40,"e"*64,arguments(module),{"private"})
 
 
 def test_recovery_evidence_is_candidate_bound(tmp_path):

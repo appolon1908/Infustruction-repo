@@ -125,19 +125,30 @@ def validate_effective_compose(target):
     if svc.get("image")!=target["service_image"] or any(str(env.get(k,"")).lower()!=v for k,v in NO_SEND_KEYS.items()): raise Blocked("effective service image or no-send policy mismatch")
     networks=set(svc.get("networks",{})); approved=set(target["internal_networks"])
     if not networks or not networks<=approved or any(not doc.get("networks",{}).get(n,{}).get("internal") for n in networks): raise Blocked("effective service network is not egress-isolated")
+    runtime_networks={doc.get("networks",{}).get(name,{}).get("name") for name in networks}
+    if None in runtime_networks or "" in runtime_networks: raise Blocked("effective network lacks a resolved runtime name")
     expected=f"{Path(target['current_link'])/'custom-addons'}:{target['addon_mount']}:ro"; volumes=svc.get("volumes",[])
     normalized=[f"{x.get('source')}:{x.get('target')}:{'ro' if x.get('read_only') else 'rw'}" if isinstance(x,dict) else x for x in volumes]
     if normalized.count(expected)!=1: raise Blocked("effective addon mount mismatch or shadowing")
+    return runtime_networks
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self,*_): return None
 
 def check_health(target,health_paths):
     paths=[p for p in health_paths.split(",") if p]
-    if set(paths)!=set(target["health"]): raise Blocked("health endpoint set differs from approved target")
-    opener=urllib.request.build_opener(NoRedirect); results={}
+    if not paths or set(paths)!=set(target["health"]): raise Blocked("health endpoint set is empty or differs from approved target")
+    results={}
+    for path in paths:
+        parsed_path=urllib.parse.urlsplit(path)
+        if not path.startswith("/") or path.startswith("//") or parsed_path.scheme or parsed_path.netloc or parsed_path.query or parsed_path.fragment or parsed_path.path!=path or "\\" in path:
+            raise Blocked(f"health endpoint is not an origin-relative path: {path}")
+    opener=urllib.request.build_opener(NoRedirect)
     for path in paths:
         rule=target["health"][path]; url=target["health_base_url"].rstrip("/")+path
+        parsed_url=urllib.parse.urlsplit(url)
+        if parsed_url.hostname!=urllib.parse.urlsplit(target["health_base_url"]).hostname:
+            raise Blocked(f"health endpoint escaped approved origin: {path}")
         try:
             with opener.open(url,timeout=rule.get("timeout_seconds",5)) as r:
                 body=r.read(MAX_HEALTH_BYTES+1)
@@ -148,7 +159,7 @@ def check_health(target,health_paths):
         results[path]="PASS"
     return results
 
-def readback(target,release_dir,source_sha,expected_importer,args):
+def readback(target,release_dir,source_sha,expected_importer,args,runtime_networks):
     container=docker_compose(target,"ps","-q",target["service"]).stdout.strip()
     if not container: raise Blocked("Odoo container is absent")
     inspected=json.loads(subprocess.run(["docker","inspect",container],check=True,text=True,capture_output=True).stdout)
@@ -159,7 +170,7 @@ def readback(target,release_dir,source_sha,expected_importer,args):
     config=inspected.get("Config",{}); environment=dict(item.split("=",1) for item in config.get("Env",[]) if "=" in item)
     networks=set(inspected.get("NetworkSettings",{}).get("Networks",{}))
     if config.get("Image")!=target["service_image"] or any(environment.get(k,"").lower()!=v for k,v in NO_SEND_KEYS.items()): raise Blocked("running image or no-send policy mismatch")
-    if not networks or not networks<=set(target["internal_networks"]): raise Blocked("running container network is not approved")
+    if not networks or not networks<=set(runtime_networks): raise Blocked("running container network is not approved")
     observed=subprocess.run(["docker","exec",container,"sha256sum",f"{target['addon_mount']}/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"],check=True,text=True,capture_output=True).stdout.split()[0]
     if observed!=expected_importer: raise Blocked("in-container importer differs from verified artifact")
     return {"source_sha":source_sha,"release_dir":str(release_dir),"container":container,"expected_importer_sha256":expected_importer,"observed_importer_sha256":observed,"health":check_health(target,args.health_paths),"no_send":True}
@@ -171,13 +182,13 @@ def deploy(args,auth,target):
     with tempfile.TemporaryDirectory(prefix="codestra-odoo-artifact-") as d:
         extracted,expected=verify_artifact(args,Path(d)); validate_effective_compose(target)
         root.mkdir(mode=0o750,parents=True,exist_ok=True); shutil.move(str(extracted),release_dir)
-    validate_effective_compose(target)
+    runtime_networks=validate_effective_compose(target)
     nxt=current.with_name(current.name+".next"); nxt.symlink_to(release_dir); upgrade_started=False
     try:
         docker_compose(target,"stop",target["service"]); nxt.replace(current)
         upgrade_started=True; docker_compose(target,"run","--rm","--no-deps",target["service"],"odoo","-d",target["database"],"-u",target["modules"],"--stop-after-init","--no-http")
         docker_compose(target,"up","-d",target["service"])
-        return readback(target,release_dir,args.source_sha,expected,args)
+        return readback(target,release_dir,args.source_sha,expected,args,runtime_networks)
     except Exception as e:
         if upgrade_started: raise NeedsRecovery("upgrade may have changed database; old code was not restarted") from e
         if previous is not None:
@@ -207,8 +218,8 @@ def main(argv=None):
         validate_recovery_evidence(auth); target=load_target(CONFIG_ROOT/f"{args.validated_target_host}.json",args.validated_target_host)
         if args.action=="certify-staging-readonly":
             with tempfile.TemporaryDirectory(prefix="codestra-odoo-verify-") as d: _,expected=verify_artifact(args,Path(d))
-            validate_effective_compose(target)
-            result=readback(target,Path(target["release_root"])/args.source_sha,args.source_sha,expected,args)
+            runtime_networks=validate_effective_compose(target)
+            result=readback(target,Path(target["release_root"])/args.source_sha,args.source_sha,expected,args,runtime_networks)
             write_evidence(args.evidence_output,{"status":"PASS",**result})
         else:
             write_evidence(args.evidence_output,{"status":"PREFLIGHT","source_sha":args.source_sha,"artifact_digest":args.artifact_digest})
