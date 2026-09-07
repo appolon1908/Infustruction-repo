@@ -1035,6 +1035,7 @@ jobs:
             --artifact-digest "$ARTIFACT_DIGEST" \
             --environment production-readonly-canary \
             --health-paths "$HEALTH_PATHS" \
+            --read-only \
             --canary-percent "$CANARY_PERCENT" \
             --allowed-methods GET,HEAD \
             --require-staging-certification \

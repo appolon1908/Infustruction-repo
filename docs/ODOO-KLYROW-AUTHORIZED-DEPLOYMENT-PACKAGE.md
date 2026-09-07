@@ -44,6 +44,7 @@ protected authorization process and supply, without placeholders:
 - exact action and environment;
 - released controller SHA-256;
 - execution-runner FQDN and service account;
+- exact sanitized evidence-output path;
 - approved execution-window start and end;
 - database backup evidence digest;
 - filestore backup evidence digest;
@@ -55,6 +56,16 @@ protected authorization process and supply, without placeholders:
 - reviewed Odoo adapter source, artifact digest, and installation target.
 
 Unknown values remain `PENDING`; such a record is intentionally rejected.
+
+## Required caller integration
+
+The preserved Odoo candidate pins the reusable workflow at
+`1b4a90810eb03db3eae2b676b2d418daa434ec16`; merging this infrastructure
+repair does not alter that candidate. After this PR is protected and released,
+the owner must choose one of two separately reviewed integrations: have an
+authorized orchestrator consume the unchanged Odoo artifact, or update Odoo's
+workflow pin and produce a new source candidate with a new source SHA and
+artifact digest. The old candidate identity must not be reported for the latter.
 
 ## Separate approval scopes
 

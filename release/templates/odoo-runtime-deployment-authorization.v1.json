@@ -9,8 +9,10 @@
   "environment": "PENDING_EXACT_ENVIRONMENT",
   "action": "PENDING_EXACT_ACTION",
   "controller_sha256": "PENDING_CONTROLLER_RELEASE_SHA256",
+  "adapter_sha256": "PENDING_ODOO_ADAPTER_RELEASE_SHA256",
   "execution_host": "PENDING_RUNNER_FQDN",
   "target_host": "middleware",
+  "evidence_output": "PENDING_EXACT_EVIDENCE_OUTPUT_PATH",
   "window": {"starts_at": null, "ends_at": null},
   "recovery": {
     "database": {"status": "PENDING", "evidence_sha256": null},

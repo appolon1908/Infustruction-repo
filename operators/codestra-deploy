@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
 import fcntl
 import hashlib
@@ -21,7 +22,8 @@ SCHEMA = "codestra.runtime-deployment-authorization.v1"
 SHA = re.compile(r"^[0-9a-f]{40}$")
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 ROOTS = (Path("/etc/codestra/deploy-authorizations"),)
-LOCK = Path("/run/lock/codestra-deploy.lock")
+TARGET_MAP = Path("/etc/codestra/deploy-targets.json")
+LOCK = Path("/run/codestra-deploy/controller.lock")
 ADAPTER = Path("/usr/local/libexec/codestra-deploy-odoo")
 ODOO_REPOSITORY = "appolon1908-hue/Odoo"
 ALLOWED_ACTIONS = {
@@ -35,7 +37,7 @@ class Blocked(RuntimeError):
     pass
 
 
-def load_regular_root_file(path: Path) -> tuple[dict, bytes]:
+def load_regular_root_file(path: Path, roots: tuple[Path, ...] = ROOTS) -> tuple[dict, bytes]:
     try:
         info = path.lstat()
     except OSError as exc:
@@ -45,7 +47,7 @@ def load_regular_root_file(path: Path) -> tuple[dict, bytes]:
     if info.st_mode & 0o022:
         raise Blocked("authorization must not be group/world writable")
     resolved = path.resolve(strict=True)
-    if not any(resolved == root or root in resolved.parents for root in ROOTS):
+    if not any(resolved == root or root in resolved.parents for root in roots):
         raise Blocked("authorization is outside the approved root")
     raw = path.read_bytes()
     try:
@@ -73,11 +75,23 @@ def own_sha256() -> str:
     return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
 
-def validate_authorization(auth: dict, args: argparse.Namespace, now: dt.datetime) -> None:
+def validate_target_map(mapping: dict, environment: str) -> str:
+    if set(mapping) != {"schema", "targets"} or mapping.get("schema") != "codestra.deploy-target-map.v1":
+        raise Blocked("deployment target map is malformed")
+    targets = mapping.get("targets")
+    if not isinstance(targets, dict) or set(targets) != {"staging-readonly", "production-readonly-canary"}:
+        raise Blocked("deployment target map is incomplete")
+    target = targets.get(environment)
+    if not isinstance(target, str) or not target or target.startswith("PENDING"):
+        raise Blocked(f"deployment target is unassigned: {environment}")
+    return target
+
+
+def validate_authorization(auth: dict, args: argparse.Namespace, now: dt.datetime, target_host: str) -> None:
     required = {
         "schema", "status", "repository", "source_sha", "artifact_kind",
         "artifact_reference", "artifact_digest", "environment", "action",
-        "controller_sha256", "execution_host", "target_host", "window",
+        "controller_sha256", "adapter_sha256", "execution_host", "target_host", "evidence_output", "window",
         "recovery", "rollback_target", "approval",
     }
     if set(auth) != required:
@@ -97,6 +111,7 @@ def validate_authorization(auth: dict, args: argparse.Namespace, now: dt.datetim
         "action": args.action,
         "controller_sha256": own_sha256(),
         "execution_host": socket.getfqdn(),
+        "evidence_output": args.evidence_output,
     }
     for field, value in expected.items():
         if auth.get(field) != value:
@@ -105,19 +120,25 @@ def validate_authorization(auth: dict, args: argparse.Namespace, now: dt.datetim
         raise Blocked("repository, action, and environment tuple is not approved")
     if not SHA.fullmatch(args.source_sha) or not DIGEST.fullmatch(args.artifact_digest):
         raise Blocked("source or artifact digest is invalid")
-    if auth.get("target_host") != "middleware":
+    if auth.get("target_host") != target_host:
         raise Blocked("authorization target_host mismatch")
     window = auth.get("window")
     if not isinstance(window, dict) or set(window) != {"starts_at", "ends_at"}:
         raise Blocked("authorization window is incomplete")
-    if not parse_time(window["starts_at"], "window.starts_at") <= now <= parse_time(window["ends_at"], "window.ends_at"):
+    starts_at = parse_time(window["starts_at"], "window.starts_at")
+    ends_at = parse_time(window["ends_at"], "window.ends_at")
+    if starts_at >= ends_at or not starts_at <= now <= ends_at:
         raise Blocked("authorization is outside its execution window")
     approval = auth.get("approval")
     if not isinstance(approval, dict) or set(approval) != {"status", "approved_by", "approved_at", "expires_at", "evidence_sha256"}:
         raise Blocked("approval evidence is incomplete")
     if approval["status"] != "APPROVED" or not approval["approved_by"]:
         raise Blocked("deployment is not approved")
-    if now > parse_time(approval["expires_at"], "approval.expires_at"):
+    approved_at = parse_time(approval["approved_at"], "approval.approved_at")
+    expires_at = parse_time(approval["expires_at"], "approval.expires_at")
+    if approved_at > now or approved_at >= expires_at:
+        raise Blocked("deployment approval interval is incoherent")
+    if now > expires_at:
         raise Blocked("deployment approval expired")
     if not DIGEST.fullmatch(str(approval["evidence_sha256"])):
         raise Blocked("approval evidence digest is invalid")
@@ -134,6 +155,84 @@ def validate_authorization(auth: dict, args: argparse.Namespace, now: dt.datetim
         raise Blocked("rollback target is incomplete")
     if not SHA.fullmatch(str(rollback["source_sha"])) or not DIGEST.fullmatch(str(rollback["artifact_digest"])):
         raise Blocked("rollback target is invalid")
+
+
+def validate_invocation(args: argparse.Namespace) -> None:
+    if not args.read_only or not args.deny_external_effects:
+        raise Blocked("read-only and deny-external-effects are mandatory")
+    if args.action == "promote-production-readonly":
+        required = (
+            args.require_staging_certification,
+            args.require_backup,
+            args.require_isolated_restore,
+            args.require_rollback_rehearsal,
+        )
+        if not all(required) or args.allowed_methods != "GET,HEAD":
+            raise Blocked("production safeguards are incomplete")
+        try:
+            percentage = float(args.canary_percent)
+        except (TypeError, ValueError) as exc:
+            raise Blocked("production canary percentage is invalid") from exc
+        if not __import__("math").isfinite(percentage) or not 0 < percentage <= 1:
+            raise Blocked("production canary percentage is invalid")
+    evidence = Path(args.evidence_output)
+    if not evidence.is_absolute() or ".." in evidence.parts or evidence.name in {"", ".", ".."}:
+        raise Blocked("evidence output path is invalid")
+    if evidence.exists() and (evidence.is_symlink() or not evidence.is_file()):
+        raise Blocked("evidence output path is unsafe")
+
+
+def validate_trusted_executable(path: Path, expected_sha256: str, trusted_root: Path = Path("/")) -> Path:
+    if not re.fullmatch(r"[0-9a-f]{64}", expected_sha256):
+        raise Blocked("adapter digest is invalid")
+    resolved = path.resolve(strict=True)
+    trusted_root = trusted_root.resolve(strict=True)
+    if resolved != trusted_root and trusted_root not in resolved.parents:
+        raise Blocked("adapter is outside its trusted root")
+    chain = [resolved]
+    chain.extend(parent for parent in resolved.parents if parent == trusted_root or trusted_root in parent.parents)
+    for ancestor in chain:
+        info = ancestor.lstat()
+        if info.st_uid != 0 or info.st_gid != 0 or info.st_mode & 0o022:
+            raise Blocked("adapter or ancestor metadata is unsafe")
+    info = resolved.lstat()
+    if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or not info.st_mode & 0o111:
+        raise Blocked("Odoo deployment adapter is missing or unsafe")
+    if hashlib.sha256(resolved.read_bytes()).hexdigest() != expected_sha256:
+        raise Blocked("Odoo deployment adapter digest mismatch")
+    return resolved
+
+
+@contextlib.contextmanager
+def deployment_lock(path: Path, trusted_root: Path = Path("/run")):
+    directory = path.parent
+    directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    trusted_root = trusted_root.resolve(strict=True)
+    resolved_directory = directory.resolve(strict=True)
+    if resolved_directory != trusted_root and trusted_root not in resolved_directory.parents:
+        raise Blocked("deployment lock directory is outside its trusted root")
+    chain = [resolved_directory]
+    chain.extend(parent for parent in resolved_directory.parents if parent == trusted_root or trusted_root in parent.parents)
+    for ancestor in chain:
+        info = ancestor.lstat()
+        if not stat.S_ISDIR(info.st_mode) or info.st_uid != 0 or info.st_gid != 0 or info.st_mode & 0o022:
+            raise Blocked("deployment lock directory is unsafe")
+    flags = os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags, 0o600)
+    except OSError as exc:
+        raise Blocked("deployment lock file cannot be opened safely") from exc
+    try:
+        file_info = os.fstat(descriptor)
+        if not stat.S_ISREG(file_info.st_mode) or file_info.st_uid != 0 or file_info.st_gid != 0 or file_info.st_nlink != 1 or file_info.st_mode & 0o077:
+            raise Blocked("deployment lock file metadata is unsafe")
+        try:
+            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise Blocked("another deployment is already running") from exc
+        yield
+    finally:
+        os.close(descriptor)
 
 
 def parser() -> argparse.ArgumentParser:
@@ -153,27 +252,49 @@ def parser() -> argparse.ArgumentParser:
     return value
 
 
+def build_adapter_arguments(args: argparse.Namespace, authorization: Path, target_host: str) -> list[str]:
+    result = [
+        args.action,
+        "--repository", args.repository,
+        "--source-sha", args.source_sha,
+        "--artifact-kind", args.artifact_kind,
+        "--artifact-reference", args.artifact_reference,
+        "--artifact-digest", args.artifact_digest,
+        "--environment", args.environment,
+        "--health-paths", args.health_paths,
+        "--evidence-output", args.evidence_output,
+        "--authorization", str(authorization.resolve()),
+        "--validated-target-host", target_host,
+        "--read-only", "--deny-external-effects",
+    ]
+    if args.action == "promote-production-readonly":
+        result.extend([
+            "--canary-percent", args.canary_percent,
+            "--allowed-methods", "GET,HEAD",
+            "--require-staging-certification", "--require-backup",
+            "--require-isolated-restore", "--require-rollback-rehearsal",
+        ])
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     forwarded = list(sys.argv[1:] if argv is None else argv)
     args = parser().parse_args(forwarded)
     try:
         if os.geteuid() != 0:
             raise Blocked("controller must run as root on the approved runner")
-        if not args.read_only or not args.deny_external_effects:
-            raise Blocked("read-only and deny-external-effects are mandatory")
+        validate_invocation(args)
         auth_path = Path(args.authorization) if args.authorization else ROOTS[0] / args.environment / f"{args.source_sha}.json"
         auth, _ = load_regular_root_file(auth_path)
-        validate_authorization(auth, args, dt.datetime.now(dt.timezone.utc))
-        LOCK.parent.mkdir(mode=0o755, parents=True, exist_ok=True)
-        with LOCK.open("w", encoding="utf-8") as lock:
-            try:
-                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except BlockingIOError as exc:
-                raise Blocked("another deployment is already running") from exc
-            adapter_info = ADAPTER.lstat()
-            if not stat.S_ISREG(adapter_info.st_mode) or adapter_info.st_uid != 0 or adapter_info.st_gid != 0 or adapter_info.st_mode & 0o022:
-                raise Blocked("Odoo deployment adapter is missing or unsafe")
-            completed = subprocess.run([str(ADAPTER), *forwarded], check=False)
+        target_mapping, _ = load_regular_root_file(TARGET_MAP, (TARGET_MAP.parent,))
+        target_host = validate_target_map(target_mapping, args.environment)
+        now = dt.datetime.now(dt.timezone.utc)
+        validate_authorization(auth, args, now, target_host)
+        adapter = validate_trusted_executable(ADAPTER, str(auth.get("adapter_sha256", "")))
+        with deployment_lock(LOCK):
+            validate_authorization(auth, args, dt.datetime.now(dt.timezone.utc), target_host)
+            adapter_arguments = build_adapter_arguments(args, auth_path, target_host)
+            completed = subprocess.run([str(adapter), *adapter_arguments], check=False)
             if completed.returncode:
                 raise Blocked("Odoo deployment adapter failed")
         return 0
