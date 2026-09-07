@@ -9,8 +9,11 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "reports/runtime-reconciliation/STAGE6-EVIDENCE-SHA256SUMS"
 FILES = (
     ".github/workflows/validate-stage6-source-lock.yml",
+    ".github/workflows/stage6-source-regressions.yml",
     "STAGE6-SOURCE-LOCK.yaml",
     "STAGE6-SOURCE-LOCK.RESOLVED.yaml",
+    "STAGE6-RUNTIME-PROVENANCE.md",
+    "STAGE6-SAFETY-CAPABILITY-MATRIX.yaml",
     "deploy/staging/intake-observability/compose.yaml",
     "deploy/staging/intake-observability/runtime-lock.v1.json",
     "deploy/staging/runtime-reconciliation/compose.legacy-application-safety-hold.yaml",
@@ -27,10 +30,12 @@ FILES = (
     "scripts/prepare_stage6_locked_checkouts.py",
     "scripts/resolve_stage6_source_lock.py",
     "scripts/validate_stage6_authority_heads.py",
+    "scripts/validate_stage6_remediation.py",
     "scripts/validate_stage6_resolved_source_lock.py",
     "scripts/validate_stage6_source_lock.py",
     "scripts/validate_stage6_staging_plan.py",
     "scripts/verify_stage6_middleware_artifact.py",
+    "tests/test_stage6_source_regressions.py",
 )
 
 

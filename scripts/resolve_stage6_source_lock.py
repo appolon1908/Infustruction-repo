@@ -43,12 +43,17 @@ SAFETY_KEYS = (
     "LIVE_WRITE",
     "LIVE_WRITES",
 )
+# Image names are reviewed authority, not inferred from arbitrary component names.
 IMAGE_REFERENCES = {
     "middleware": "ghcr.io/appolon1908-hue/codestra-middleware",
     "odoo": "docker.io/library/odoo",
     "n8n": "docker.io/n8nio/n8n",
     "openbao": "ghcr.io/openbao/openbao",
+    "social_runtime": "ghcr.io/appolon1908-hue/social.codestra.co",
+    "kong": "docker.io/kong/kong-gateway",
+    "keycloak": "quay.io/keycloak/keycloak",
 }
+UPSTREAM_COMPONENTS = {"odoo", "n8n", "openbao", "kong", "keycloak"}
 CORE_COMPONENTS = {"middleware", "odoo", "n8n"}
 MIDDLEWARE_RUN_ID = 33427334862
 INSPECTION_HOST = "37.27.128.39"
@@ -67,8 +72,11 @@ def file_sha256(path: Path) -> str:
 
 def middleware_artifact_verification() -> dict:
     try:
-        return json.loads(run(sys.executable, str(MIDDLEWARE_VERIFIER), "--json"))
-    except (OSError, subprocess.CalledProcessError, json.JSONDecodeError) as exc:
+        result = json.loads(run(sys.executable, str(MIDDLEWARE_VERIFIER), "--json"))
+        if not isinstance(result, dict):
+            raise ValueError("artifact verifier returned a non-object result")
+        return result
+    except (OSError, subprocess.CalledProcessError, ValueError) as exc:
         return {
             "status": "FAIL",
             "error": (getattr(exc, "output", None) or str(exc))[-2000:],
@@ -104,7 +112,7 @@ def local_image_labels(reference: str) -> dict:
             run("docker", "--host", DOCKER_ENDPOINT, "image", "inspect", reference)
         )[0]
         return image["Config"].get("Labels") or {}
-    except (OSError, subprocess.CalledProcessError, json.JSONDecodeError, KeyError):
+    except (OSError, subprocess.CalledProcessError, ValueError, KeyError, IndexError, TypeError):
         return {}
 
 
@@ -234,6 +242,7 @@ def source_evidence(component: str, definition: dict) -> dict:
 
 
 def artifact_evidence(component: str, definition: dict, source: dict) -> dict:
+    """Resolve known artifact classes; unsupported provenance is a failure, not a crash."""
     artifact_class = definition["artifact_class"]
     digest = definition["image_digest"]
     result = {
@@ -249,33 +258,66 @@ def artifact_evidence(component: str, definition: dict, source: dict) -> dict:
             }
         )
         return result
-    if not DIGEST.fullmatch(digest):
+    if not isinstance(digest, str) or not DIGEST.fullmatch(digest):
         result["status"] = "FAIL_UNRESOLVED_BLOCKING_ARTIFACT"
         return result
 
-    registry = registry_resolution(IMAGE_REFERENCES[component], digest)
+    reference = IMAGE_REFERENCES.get(component)
+    if reference is None:
+        result["status"] = "FAIL_UNREVIEWED_IMAGE_REFERENCE"
+        result["error"] = "A reviewed registry reference and artifact verifier are required."
+        return result
+
+    expected_class = (
+        "custom_signed_image" if component == "middleware"
+        else "custom_attested_image" if component == "social_runtime"
+        else "official_upstream_image_plus_codestra_config"
+    )
+    if artifact_class != expected_class:
+        result["status"] = "FAIL_ARTIFACT_CLASS_MISMATCH"
+        result["expected_classification"] = expected_class
+        return result
+
+    registry = registry_resolution(reference, digest)
     result.update(registry)
+    if component == "social_runtime":
+        # A resolvable custom image is NOT an official upstream artifact. The
+        # historical SBOM/provenance claim is not a cryptographic verification
+        # performed by this resolver, nor is it rollback/runtime authorization.
+        result["runtime_image_required"] = True
+        result["cryptographic_verification"] = {
+            "status": "FAIL",
+            "reason": "No reviewed Social Runtime attestation verifier is configured.",
+        }
+        result["status"] = (
+            "FAIL_ATTESTATION_VERIFICATION_REQUIRED"
+            if registry["registry_resolution"] == "PASS"
+            else "FAIL_REGISTRY_RESOLUTION"
+        )
+        return result
     if component == "middleware":
         labels = local_image_labels(registry["reference"])
         verification = middleware_artifact_verification()
-        manifest = (
-            json.loads(MIDDLEWARE_RELEASE_MANIFEST.read_text())
-            if MIDDLEWARE_RELEASE_MANIFEST.exists()
-            else {}
-        )
+        try:
+            manifest = json.loads(MIDDLEWARE_RELEASE_MANIFEST.read_text())
+            if not isinstance(manifest, dict):
+                raise ValueError("release manifest must be an object")
+            manifest_source = manifest.get("source") or {}
+            manifest_image = manifest.get("image") or {}
+            if not isinstance(manifest_source, dict) or not isinstance(manifest_image, dict):
+                raise ValueError("release manifest source and image must be objects")
+        except (OSError, ValueError):
+            result["status"] = "FAIL_INVALID_RELEASE_MANIFEST"
+            return result
         result.update(
             {
                 "oci_revision": labels.get("org.opencontainers.image.revision"),
                 "oci_source": labels.get("org.opencontainers.image.source"),
                 "verified_source_revision": verification.get("source_sha"),
                 "release_workflow_run": f"https://github.com/appolon1908-hue/Middleware-/actions/runs/{MIDDLEWARE_RUN_ID}",
-                "release_manifest_sha256": (
-                    file_sha256(MIDDLEWARE_RELEASE_MANIFEST)
-                    if MIDDLEWARE_RELEASE_MANIFEST.exists()
-                    else None
-                ),
-                "release_manifest_source_sha": (manifest.get("source") or {}).get("git_sha"),
-                "release_manifest_image_digest": (manifest.get("image") or {}).get("digest"),
+                "release_manifest_sha256": file_sha256(MIDDLEWARE_RELEASE_MANIFEST),
+                "release_manifest_source_sha": manifest_source.get("git_sha"),
+                "release_manifest_image_digest": manifest_image.get("digest"),
                 "cryptographic_verification": verification,
             }
         )
@@ -290,6 +332,9 @@ def artifact_evidence(component: str, definition: dict, source: dict) -> dict:
         result["status"] = "PASS" if exact else "FAIL_CRYPTOGRAPHIC_PROVENANCE"
         return result
 
+    if component not in UPSTREAM_COMPONENTS:
+        result["status"] = "FAIL_UNSUPPORTED_PROVENANCE_MODEL"
+        return result
     result["codestra_config_revision"] = definition["revision"]
     result["image_not_built_from_codestra_config"] = True
     labels = local_image_labels(registry["reference"])

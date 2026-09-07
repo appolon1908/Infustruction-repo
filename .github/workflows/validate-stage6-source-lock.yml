@@ -19,10 +19,13 @@ on:
       - "scripts/prepare_stage6_locked_checkouts.py"
       - "scripts/resolve_stage6_source_lock.py"
       - "scripts/validate_stage6_authority_heads.py"
+      - "scripts/validate_stage6_remediation.py"
       - "scripts/validate_stage6_resolved_source_lock.py"
       - "scripts/validate_stage6_source_lock.py"
       - "scripts/validate_stage6_staging_plan.py"
       - "scripts/verify_stage6_middleware_artifact.py"
+      - "tests/test_stage6_source_regressions.py"
+      - ".github/workflows/stage6-source-regressions.yml"
       - ".github/workflows/validate-stage6-source-lock.yml"
   push:
     branches: [main]
@@ -39,10 +42,13 @@ on:
       - "scripts/prepare_stage6_locked_checkouts.py"
       - "scripts/resolve_stage6_source_lock.py"
       - "scripts/validate_stage6_authority_heads.py"
+      - "scripts/validate_stage6_remediation.py"
       - "scripts/validate_stage6_resolved_source_lock.py"
       - "scripts/validate_stage6_source_lock.py"
       - "scripts/validate_stage6_staging_plan.py"
       - "scripts/verify_stage6_middleware_artifact.py"
+      - "tests/test_stage6_source_regressions.py"
+      - ".github/workflows/stage6-source-regressions.yml"
       - ".github/workflows/validate-stage6-source-lock.yml"
 
 permissions:
@@ -63,14 +69,24 @@ jobs:
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
         with:
           cosign-release: v3.0.6
-      - run: python -m py_compile scripts/build_stage6_reconciliation_matrix.py scripts/generate_stage6_evidence_checksums.py scripts/prepare_stage6_locked_checkouts.py scripts/resolve_stage6_source_lock.py scripts/validate_stage6_authority_heads.py scripts/validate_stage6_resolved_source_lock.py scripts/validate_stage6_source_lock.py scripts/validate_stage6_staging_plan.py scripts/verify_stage6_middleware_artifact.py
+      - run: python -m py_compile scripts/build_stage6_reconciliation_matrix.py scripts/generate_stage6_evidence_checksums.py scripts/prepare_stage6_locked_checkouts.py scripts/resolve_stage6_source_lock.py scripts/validate_stage6_authority_heads.py scripts/validate_stage6_remediation.py scripts/validate_stage6_resolved_source_lock.py scripts/validate_stage6_source_lock.py scripts/validate_stage6_staging_plan.py scripts/verify_stage6_middleware_artifact.py
+      - name: Validate remediation pins and migration isolation
+        run: |
+          python scripts/validate_stage6_remediation.py
+          python -O scripts/validate_stage6_remediation.py
+      - name: Offline regression tests
+        run: python -m unittest discover -s tests -p test_stage6_source_regressions.py -v
       - run: python scripts/build_stage6_reconciliation_matrix.py
       - run: git diff --exit-code -- reports/runtime-reconciliation/STAGE6-RECONCILIATION-MATRIX.csv
+      - name: Verify deterministic evidence checksums
+        run: |
+          python scripts/generate_stage6_evidence_checksums.py
+          git diff --exit-code -- reports/runtime-reconciliation/STAGE6-EVIDENCE-SHA256SUMS
+          sha256sum --check reports/runtime-reconciliation/STAGE6-EVIDENCE-SHA256SUMS
       - run: python scripts/validate_stage6_source_lock.py
-      - run: python scripts/validate_stage6_authority_heads.py
-      - run: python scripts/verify_stage6_middleware_artifact.py
       - run: python scripts/validate_stage6_staging_plan.py
       - run: python scripts/validate_stage6_resolved_source_lock.py
-      - run: python scripts/generate_stage6_evidence_checksums.py
-      - run: git diff --exit-code -- reports/runtime-reconciliation/STAGE6-EVIDENCE-SHA256SUMS
-      - run: sha256sum --check reports/runtime-reconciliation/STAGE6-EVIDENCE-SHA256SUMS
+      # Never expose a cross-repository credential to PR-controlled code or turn
+      # external-head drift into a passing source-lock result.
+      - run: python scripts/validate_stage6_authority_heads.py
+      - run: python scripts/verify_stage6_middleware_artifact.py
