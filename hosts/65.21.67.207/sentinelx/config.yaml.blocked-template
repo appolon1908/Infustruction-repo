@@ -1,0 +1,49 @@
+# REVIEW-ONLY: installation is blocked. Do not deploy this file until every
+# policy compatibility gate in README.md passes against the exact core commit.
+
+agent:
+  hostname_label: codestra-server-b-vicidial
+  preferred_profile: compact
+
+exec:
+  timeout_default: 15
+  timeout_max: 30
+
+# Deny generic exec. Do not add even read-only-looking prefixes: the reviewed
+# core executes matching strings through bash -lc and prefix matches can be
+# extended with shell compound operators.
+allowed_commands: []
+
+# No service action is exposed, including status/restart of SentinelX itself.
+services: {}
+locations: {}
+playbooks: {}
+
+# Backstop only, not a supported operation-disable control. The reviewed
+# script/upload handlers fail before I/O because /dev/null is not a directory.
+upload_base: /dev/null
+
+security:
+  trusted_fetch_hosts: []
+  file_url_timeout_seconds: 5
+
+# Exact, sanitized host-health files only. Every entry is read-only. No
+# directory containing credentials, customer records, recordings, backups,
+# Asterisk/VICIdial/MariaDB data, SSH state, or SentinelX identity is exposed.
+file_ops:
+  paths:
+    - path: /etc/os-release
+      access: r
+    - path: /proc/loadavg
+      access: r
+    - path: /proc/meminfo
+      access: r
+    - path: /proc/uptime
+      access: r
+    - path: /proc/version
+      access: r
+    - path: /proc/sys/kernel/hostname
+      access: r
+  max_read_bytes: 16384
+  max_list_entries: 16
+  max_search_results: 16
