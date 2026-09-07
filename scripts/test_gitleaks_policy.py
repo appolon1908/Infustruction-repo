@@ -52,7 +52,7 @@ def scan(binary: str, content: str, path: str, configured: bool = True) -> tuple
             raise RuntimeError("Gitleaks report must be a list")
         if completed.returncode != (1 if findings else 0):
             raise RuntimeError("Gitleaks exit status contradicts its findings")
-        # Print only detector decision metadata on failure, never finding values.
+        # Emit decision metadata only, never finding values or unredacted logs.
         reasons = []
         for raw in completed.stderr.splitlines():
             line = re.sub(r"\x1b\[[0-9;]*m", "", raw)
@@ -70,7 +70,9 @@ def main() -> None:
     numeric = auth_command + ":".join([str(65532)] * 2) + " https://example.invalid\n"
     synthetic = auth_command + "qa:" + fake + " https://example.invalid\n"
     token_field = "api_key: " + "gh" + "p_" + fake[:36] + "\n"
-    generic_field = 'api_key: "' + fake.translate(str.maketrans("0123456789abcdef", "qWeRtYuIoPaSdFgH")) + '"\n'
+    # Keep digits while replacing hexadecimal letters, so the generic-key
+    # control is neither a hexadecimal checksum nor an alphabetic word.
+    generic_field = 'api_key: "' + fake.translate(str.maketrans("abcdef", "GHJKLM")) + '"\n'
     lock_path = "STAGE6-SOURCE-LOCK.yaml"
     cases = [
         ("reproduce original false positive", ARCHIVED, EVIDENCE, False, True),
