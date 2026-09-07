@@ -5,7 +5,8 @@ useDefault = true
 description = "Reviewed Stage 6 Keycloak Git SHA field; not credential material"
 condition = "AND"
 paths = ['''^STAGE6-SOURCE-LOCK\.yaml$''']
-regexes = ['''keycloak_locked_sha:\s*[0-9a-f]{40}''']
+regexTarget = "line"
+regexes = ['''^\s*keycloak_locked_sha:\s*[0-9a-f]{40}\s*$''']
 
 [[allowlists]]
 description = "Historical PR 30 Keycloak merge 48 Git SHA; verified Git object, not credential material"
@@ -13,3 +14,14 @@ condition = "AND"
 paths = ['''^reports/runtime-reconciliation/pr-30-runtime-certification-20260831/STAGE6-SOURCE-LOCK\.yaml$''']
 regexTarget = "line"
 regexes = ['''^\s*keycloak_locked_sha:\s*80fc33c7159440e357219903f62ea7fb84914d59\s*$''']
+
+# Gitleaks' curl rule crosses the newline between an archived grep expression
+# and this Podman command. The captured value is a Unix UID:GID, not curl auth.
+# Match this exact command, evidence file and rule, not all numeric credentials.
+[[allowlists]]
+description = "Archived Podman process identity, incorrectly joined to preceding curl search expression"
+targetRules = ["curl-auth-user"]
+condition = "AND"
+paths = ['''^evidence/server-a-consolidation-20260901/PRODUCTION-SAFETY-SWITCH-INVENTORY\.md$''']
+regexTarget = "match"
+regexes = ['''(?m)^/opt/codestra/backups/middleware-control-plane-20260815T073500Z/compose/telephony-gateway-schema-aware-ack-release-20260728/deployment-dropin-before\.conf:7:ExecStart=/usr/bin/podman run --rm --name codestra-telephony-event-gateway-rc4 --pull=never --network=host --user=65532:65532$''']

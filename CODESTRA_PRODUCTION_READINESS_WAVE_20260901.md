@@ -8,7 +8,7 @@ Bring the canonical Codestra platform repositories to a single production-certif
 ## Global safety invariants
 - These controls apply only to the explicitly reviewed workload and operation scope. Klyrow/Postal is `OUT_OF_SCOPE_ACTIVE_PRODUCTION_DO_NOT_TOUCH` under the canonical Stage 6 lock; this wave does not authorize disabling or changing that separate production email path. No in-scope Stage 6 route, credential, queue, webhook, or request may reach it before separate authorization.
 - Do not modify SSH access, sshd configuration, authorized keys, SSH ports, or emergency operator access.
-- Keep LIVE_EMAIL_DELIVERY, LIVE_SMS_DELIVERY, PRODUCTION_DIALING, CALLBACK_DISPATCH, ODOO_WRITE, LIVE_WRITE, N8N_EXTERNAL_EFFECTS, SOCIAL_PUBLISHING, LIVE_ADVERTISING and equivalent provider/business-effect switches disabled until separately certified.
+- Keep LIVE_EMAIL_DELIVERY, LIVE_SMS_DELIVERY, LIVE_PSTN_DIALING, PRODUCTION_DIALING, CALLBACK_DISPATCH, ODOO_WRITE, LIVE_WRITE, N8N_EXTERNAL_EFFECTS, SOCIAL_PUBLISHING_ENABLED, LIVE_ADVERTISING_ENABLED, EXTERNAL_DELIVERY_ENABLED, EXTERNAL_MODEL_CALLS_ENABLED and equivalent provider/business-effect switches disabled until separately certified. These are exact control names, not aliases; effective network/gateway denial and negative read-back remain required where a workload does not implement a switch.
 - Never bypass branch protection, required reviews, CODEOWNERS, required Actions checks, or protected-environment approvals.
 - Never deploy mutable tags such as latest. Production artifacts must be immutable and attributable to exact source SHAs.
 - Never place credentials, recovery keys, root tokens, private keys, production .env files, database dumps, or secret values in Git, logs, PRs, Actions artifacts, or evidence.
@@ -50,6 +50,7 @@ Production activation remains blocked until at minimum:
 - PRODUCTION_READ_ONLY_CANARY=PASS
 
 ## Core repositories in this wave
+- codestra-production-platform
 - Caddy
 - Kong
 - Keycloak
@@ -68,6 +69,8 @@ Production activation remains blocked until at minimum:
 - Codestra-OpenBao
 - codestra-production-runtime-authority
 - Infustruction-repo
+
+All names in this wave refer to repositories under `appolon1908-hue`. The public API edge and observability workloads owned by `codestra-production-platform` are part of the certification denominator; they cannot be excluded from the source-lock, exact-head CI, staging, recovery, or rollback gates.
 
 ## Observability/security repositories in this wave
 - Codestra-Prometheus
