@@ -1,0 +1,7 @@
+{
+  "schema": "codestra.deploy-target-map.v1",
+  "targets": {
+    "staging-readonly": "PENDING_STAGING_TARGET_HOST",
+    "production-readonly-canary": "middleware"
+  }
+}

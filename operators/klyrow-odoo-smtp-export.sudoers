@@ -1,0 +1,2 @@
+# Exact no-argument exporter authority. The empty argument string is required.
+klyrow-deploy ALL=(root) NOPASSWD: /usr/local/sbin/export-odoo-postal-credential ""

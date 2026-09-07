@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ "$EUID" -eq 0 ]] || { echo 'root required' >&2; exit 2; }
+[[ "$#" -eq 0 ]] || { echo 'arguments prohibited' >&2; exit 2; }
+source_dir="$(cd "$(dirname "$0")" && pwd)"
+target=/usr/local/bin/codestra-deploy
+[[ -f "$source_dir/codestra-deploy" && ! -L "$source_dir/codestra-deploy" ]] || { echo 'invalid controller source' >&2; exit 1; }
+install -d -o root -g root -m 0755 /usr/local/bin /etc/codestra/deploy-authorizations /usr/local/libexec
+temporary="$(mktemp /usr/local/bin/.codestra-deploy.XXXXXX)"
+rollback="$(mktemp /usr/local/bin/.codestra-deploy.rollback.XXXXXX)"
+had_target=NO
+if [[ -f "$target" && ! -L "$target" ]]; then
+  cp --preserve=mode,ownership,timestamps "$target" "$rollback"
+  had_target=YES
+fi
+restore_previous() {
+  if [[ "$had_target" == YES && -s "$rollback" ]]; then
+    mv -fT "$rollback" "$target"
+  else
+    rm -f -- "$target"
+  fi
+}
+trap 'rc=$?; if [[ $rc -ne 0 ]]; then restore_previous; fi; rm -f -- "$temporary" "$rollback"; exit $rc' EXIT
+install -o root -g root -m 0755 "$source_dir/codestra-deploy" "$temporary"
+python3 -m py_compile "$temporary"
+mv -fT "$temporary" "$target"
+cmp -s "$source_dir/codestra-deploy" "$target" || { echo 'installed controller mismatch' >&2; exit 1; }
+sha256sum "$source_dir/codestra-deploy" "$target"
