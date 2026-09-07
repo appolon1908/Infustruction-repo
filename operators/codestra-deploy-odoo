@@ -2,7 +2,7 @@
 """Fail-closed exact-artifact Odoo deployment adapter."""
 from __future__ import annotations
 
-import argparse, hashlib, ipaddress, json, math, os, re, shutil, socket, stat, subprocess, tarfile, tempfile, time
+import argparse, gzip, hashlib, ipaddress, json, math, os, re, shutil, socket, stat, subprocess, tarfile, tempfile, time
 import urllib.parse, urllib.request
 from pathlib import Path
 
@@ -72,6 +72,16 @@ def acquire_artifact(reference,destination,deadline=None):
 def extract_verified(archive,destination,deadline=None):
     deadline=deadline or time.monotonic()+MAX_OPERATION_SECONDS; total=0
     try:
+        # Bound the complete decompressed tar stream before TarFile can parse and
+        # materialize PAX/GNU extension headers. This first pass is streaming.
+        expanded=0
+        with gzip.open(archive,"rb") as stream:
+            while True:
+                if time.monotonic()>deadline: raise Blocked("archive expansion deadline exceeded")
+                block=stream.read(1024*1024)
+                if not block: break
+                expanded+=len(block)
+                if expanded>MAX_EXPANDED_BYTES: raise Blocked("artifact expansion exceeds limits")
         with tarfile.open(archive,"r:gz") as bundle:
             count=0
             for m in bundle:
@@ -298,8 +308,8 @@ def deploy(args,auth,target):
     try:
         docker_compose(target,"stop",target["service"]); nxt.replace(current)
         upgrade_started=True; docker_compose(target,"run","--rm","--no-deps",target["service"],"odoo","-d",target["database"],"-u",target["modules"],"--stop-after-init","--no-http")
-        docker_compose(target,"up","-d",target["service"])
         replacement_started=True
+        docker_compose(target,"up","-d",target["service"])
         return readback(target,release_dir,args.source_sha,expected,args,runtime_networks)
     except Exception as e:
         if upgrade_started:
