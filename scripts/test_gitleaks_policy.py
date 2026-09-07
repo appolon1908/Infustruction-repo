@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-"""Exercise narrow false-positive exceptions against the pinned Gitleaks binary.
-
-All credential-shaped negative controls are generated locally, never real secrets.
-No service, provider, Docker daemon or deployment is contacted by these tests.
-"""
+"""Test narrow exceptions using generated, non-secret negative controls only."""
 from __future__ import annotations
 
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -30,7 +27,7 @@ ARCHIVED = (
 )
 
 
-def scan(binary: str, content: str, path: str, configured: bool = True) -> list[dict]:
+def scan(binary: str, content: str, path: str, configured: bool = True) -> tuple[list[dict], list[str]]:
     with tempfile.TemporaryDirectory(prefix="stage6-gitleaks-regression-") as directory:
         base = Path(directory)
         source = base / "source"
@@ -45,7 +42,7 @@ def scan(binary: str, content: str, path: str, configured: bool = True) -> list[
         report = base / "report.json"
         completed = subprocess.run(
             [binary, "dir", "--no-banner", "--redact", "--exit-code", "1",
-             "--config", str(config), "--report-format", "json", "--report-path", str(report), "."],
+             "--log-level", "trace", "--config", str(config), "--report-format", "json", "--report-path", str(report), "."],
             cwd=source, capture_output=True, text=True, timeout=30,
         )
         if completed.returncode not in (0, 1) or not report.is_file():
@@ -55,7 +52,13 @@ def scan(binary: str, content: str, path: str, configured: bool = True) -> list[
             raise RuntimeError("Gitleaks report must be a list")
         if completed.returncode != (1 if findings else 0):
             raise RuntimeError("Gitleaks exit status contradicts its findings")
-        return findings
+        # Print only detector decision metadata on failure, never finding values.
+        reasons = []
+        for raw in completed.stderr.splitlines():
+            line = re.sub(r"\x1b\[[0-9;]*m", "", raw)
+            if "skipping" in line:
+                reasons.append("skipping" + line.split("skipping", 1)[1].split("finding=", 1)[0])
+        return findings, reasons
 
 
 def main() -> None:
@@ -63,26 +66,29 @@ def main() -> None:
         raise SystemExit("usage: test_gitleaks_policy.py /path/to/gitleaks")
     binary = str(Path(sys.argv[1]).resolve(strict=True))
     fake = hashlib.sha256(b"non-secret local regression fixture").hexdigest()
-    # Assemble synthetic commands at runtime rather than embed credential-shaped source.
     auth_command = "cu" + "rl --" + "user "
     numeric = auth_command + ":".join([str(65532)] * 2) + " https://example.invalid\n"
     synthetic = auth_command + "qa:" + fake + " https://example.invalid\n"
-    # Pure SHA-256 values are ignored by the default generic-key rule. Use an
-    # explicitly token-shaped fixture and prove the default rule detects it first.
     token_field = "api_key: " + "gh" + "p_" + fake[:36] + "\n"
+    generic_field = 'api_key: "' + fake.translate(str.maketrans("0123456789abcdef", "qWeRtYuIoPaSdFgH")) + '"\n'
+    lock_path = "STAGE6-SOURCE-LOCK.yaml"
     cases = [
         ("reproduce original false positive", ARCHIVED, EVIDENCE, False, True),
         ("allow only archived Podman context", ARCHIVED, EVIDENCE, True, False),
         ("keep same numeric credentials detectable", numeric, EVIDENCE, True, True),
         ("keep other credentials detectable", synthetic, EVIDENCE, True, True),
         ("do not allow another evidence path", ARCHIVED, "other-evidence.md", True, True),
-        ("allow typed Git SHA field", "keycloak_locked_sha: " + fake[:40] + "\n", "STAGE6-SOURCE-LOCK.yaml", True, False),
-        ("prove default token detection", token_field, "STAGE6-SOURCE-LOCK.yaml", False, True),
-        ("do not allow unrelated token field", token_field, "STAGE6-SOURCE-LOCK.yaml", True, True),
+        ("allow typed Git SHA field", "keycloak_locked_sha: " + fake[:40] + "\n", lock_path, True, False),
+        ("prove default token detection", token_field, lock_path, False, True),
+        ("do not allow unrelated token family", token_field, lock_path, True, True),
+        ("prove default generic-key detection", generic_field, lock_path, False, True),
+        ("do not allow unrelated generic key", generic_field, lock_path, True, True),
     ]
     for name, content, path, configured, expected in cases:
-        findings = scan(binary, content, path, configured)
+        findings, reasons = scan(binary, content, path, configured)
         if bool(findings) != expected:
+            for reason in reasons:
+                print(reason)
             raise RuntimeError(f"secret-scan regression failed: {name}")
         print(f"PASS: {name}")
     print(f"GITLEAKS_POLICY_REGRESSIONS=PASS ({len(cases)} cases)")

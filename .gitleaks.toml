@@ -1,8 +1,11 @@
 [extend]
 useDefault = true
 
+# Git SHA exceptions apply only to the detector that misidentifies this field,
+# never to other token families or every finding in the same file.
 [[allowlists]]
 description = "Reviewed Stage 6 Keycloak Git SHA field; not credential material"
+targetRules = ["generic-api-key"]
 condition = "AND"
 paths = ['''^STAGE6-SOURCE-LOCK\.yaml$''']
 regexTarget = "line"
@@ -10,14 +13,14 @@ regexes = ['''^\s*keycloak_locked_sha:\s*[0-9a-f]{40}\s*$''']
 
 [[allowlists]]
 description = "Historical PR 30 Keycloak merge 48 Git SHA; verified Git object, not credential material"
+targetRules = ["generic-api-key"]
 condition = "AND"
 paths = ['''^reports/runtime-reconciliation/pr-30-runtime-certification-20260831/STAGE6-SOURCE-LOCK\.yaml$''']
 regexTarget = "line"
 regexes = ['''^\s*keycloak_locked_sha:\s*80fc33c7159440e357219903f62ea7fb84914d59\s*$''']
 
-# Gitleaks joins an archived search expression to the following Podman command.
-# Match the exact non-secret process identity and command in this evidence file,
-# never a file-wide exception or an exception for arbitrary numeric credentials.
+# Match the exact non-secret Podman process identity and command, not all
+# numeric credentials or every finding in this historical evidence file.
 [[allowlists]]
 description = "Archived Podman UID:GID, incorrectly joined to the preceding search expression"
 targetRules = ["curl-auth-user"]
