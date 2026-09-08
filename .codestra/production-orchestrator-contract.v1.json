@@ -11,6 +11,7 @@
   "required_check_app_id": 15368,
   "required_checks": [
     "orchestrator-contract",
+    "validate",
     "validate-source",
     "validate-merge-result"
   ],
