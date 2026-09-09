@@ -3,13 +3,27 @@ import importlib.machinery
 import importlib.util
 import io
 import json
+import os
 import tarfile
+import subprocess
 from pathlib import Path
 
 import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(autouse=True)
+def protected_fixture_ownership(monkeypatch):
+    """Model root-owned protected evidence without privileged CI operations."""
+    if os.geteuid() == 0 and os.environ.get("CODESTRA_TEST_UNPRIVILEGED") != "1":
+        return
+    original = Path.lstat
+    def root_lstat(path):
+        values=list(original(path)); values[4]=values[5]=0
+        return os.stat_result(values)
+    monkeypatch.setattr(Path,"lstat",root_lstat)
 
 
 def adapter():
@@ -70,20 +84,21 @@ def test_unsafe_archive_member_is_rejected(tmp_path):
 
 
 def test_recovery_requires_each_exact_evidence_blob(tmp_path):
-    module = adapter(); recovery = {}
+    module = adapter(); recovery = {}; binding={"source_sha":"b"*40,"artifact_digest":"sha256:"+"a"*64,"target_host":"staging-odoo","recovery_set_id":"set-1","rollback_source_sha":"c"*40,"rollback_artifact_digest":"sha256:"+"d"*64}
     for name in ("database", "filestore", "configuration", "isolated_restore", "rollback_rehearsal"):
-        body = json.dumps({"scope": name, "status": "PASS"}, sort_keys=True).encode()
+        body = json.dumps({"scope": name, "status": "PASS", **binding}, sort_keys=True).encode()
         digest = hashlib.sha256(body).hexdigest(); (tmp_path / f"{digest}.json").write_bytes(body)
         recovery[name] = {"status": "PASS", "evidence_sha256": "sha256:" + digest}
-    module.validate_recovery_evidence({"recovery": recovery}, tmp_path)
+    auth={"recovery":recovery,"source_sha":binding["source_sha"],"artifact_digest":binding["artifact_digest"],"target_host":binding["target_host"],"recovery_set_id":binding["recovery_set_id"],"rollback_target":{"source_sha":binding["rollback_source_sha"],"artifact_digest":binding["rollback_artifact_digest"]}}
+    module.validate_recovery_evidence(auth, tmp_path)
     recovery["filestore"]["evidence_sha256"] = "sha256:" + "0" * 64
     with pytest.raises(module.Blocked, match="filestore"):
-        module.validate_recovery_evidence({"recovery": recovery}, tmp_path)
+        module.validate_recovery_evidence(auth, tmp_path)
 
 
 def test_target_requires_exact_no_send_policy(monkeypatch, tmp_path):
     module = adapter(); path = tmp_path / "target.json"
-    target = {"schema":"codestra.odoo-deploy-target.v1","target_host":"staging-odoo","release_root":"/srv/releases","current_link":"/srv/current","compose_directory":"/srv/compose","compose_files":["compose.yml"],"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp","addon_mount":"/mnt/extra-addons","no_send_env":dict(module.NO_SEND_KEYS)}
+    target = {"schema":"codestra.odoo-deploy-target.v2","target_host":"staging-odoo","release_root":"/srv/releases","current_link":"/srv/current","compose_directory":"/srv/compose","compose_files":["compose.yml"],"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp","addon_mount":"/mnt/extra-addons","no_send_env":dict(module.NO_SEND_KEYS),"service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"health_base_url":"http://127.0.0.1:8069","health":{"/web/health":{"status":200,"json_field":"status","json_value":"ok"}}}
     path.write_text(json.dumps(target)); path.chmod(0o600)
     loaded = module.load_target(path, "staging-odoo"); assert loaded["target_host"] == "staging-odoo"
     target["no_send_env"]["LIVE_EMAIL_DELIVERY"] = "true"; path.write_text(json.dumps(target))
@@ -91,20 +106,276 @@ def test_target_requires_exact_no_send_policy(monkeypatch, tmp_path):
         module.load_target(path, "staging-odoo")
 
 
-def test_failed_upgrade_restores_previous_pointer_and_restarts(monkeypatch, tmp_path):
+def test_failed_upgrade_enters_needs_recovery_without_old_restart(monkeypatch, tmp_path):
     module = adapter(); source_tree = tmp_path / "tree"; importer = source_tree / "custom-addons/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"; importer.parent.mkdir(parents=True); importer.write_text("safe")
     archive = tmp_path / "source.tar.gz"
     with tarfile.open(archive, "w:gz") as bundle: bundle.add(source_tree, arcname=".")
     args = arguments(module, "sha256:" + module.sha256(archive)); args.artifact_reference = archive.as_uri()
     previous = tmp_path / "releases" / ("c" * 40); previous.mkdir(parents=True)
     current = tmp_path / "current"; current.symlink_to(previous)
-    target = {"release_root":str(tmp_path / "releases"),"c":"", "current_link":str(current),"compose_files":["compose.yml"],"compose_directory":str(tmp_path),"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp"}
+    target = {"release_root":str(tmp_path / "releases"),"current_link":str(current),"compose_files":["compose.yml"],"compose_directory":str(tmp_path),"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp","service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"addon_mount":"/mnt/extra-addons"}
     calls = []
+    monkeypatch.setattr(module, "validate_effective_compose", lambda *_: None)
     def compose(_target, *command, check=True):
         calls.append(command)
+        if command[0] == "config":
+            release = source_tree if len(calls)==1 else tmp_path/"releases"/args.source_sha
+            body={"services":{"odoo":{"image":target["service_image"],"environment":dict(module.NO_SEND_KEYS),"networks":{"private":{}},"volumes":[{"source":str(release/"custom-addons"),"target":"/mnt/extra-addons","read_only":True}]}},"networks":{"private":{"internal":True,"name":"project_private"}}}
+            return module.subprocess.CompletedProcess(command,0,json.dumps(body),"")
         if command[0] == "run": raise module.subprocess.CalledProcessError(1, command)
         return module.subprocess.CompletedProcess(command, 0, "", "")
     monkeypatch.setattr(module, "docker_compose", compose)
-    with pytest.raises(module.subprocess.CalledProcessError): module.deploy(args, authorization(args), target)
-    assert current.resolve() == previous.resolve()
-    assert ("up", "-d", "odoo") in calls
+    with pytest.raises(module.NeedsRecovery): module.deploy(args, authorization(args), target)
+    assert current.resolve() != previous.resolve()
+    assert ("up", "-d", "odoo") not in calls
+
+
+def test_production_is_rejected_before_any_mutation(monkeypatch, tmp_path):
+    module=adapter(); args=arguments(module); args.action="promote-production-readonly"
+    calls=[]; monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: calls.append(_a))
+    with pytest.raises(module.Blocked,match="traffic canary"):
+        module.deploy(args,authorization(args),{})
+    assert calls == []
+
+
+def test_effective_configuration_rejects_send_before_mutation(monkeypatch, tmp_path):
+    module=adapter(); target={"service":"odoo","service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"addon_mount":"/mnt/extra-addons","current_link":str(tmp_path/"current")}
+    document={"services":{"odoo":{"image":target["service_image"],"environment":dict(module.NO_SEND_KEYS)|{"EMAIL_DELIVERY":"true"},"networks":{"private":{}},"volumes":[]}},"networks":{"private":{"internal":True,"name":"project_private"}}}
+    monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,json.dumps(document),""))
+    with pytest.raises(module.Blocked,match="no-send"):
+        module.validate_effective_compose(target)
+
+
+def test_streaming_limit_removes_partial_file(monkeypatch,tmp_path):
+    module=adapter(); module.MAX_ARCHIVE_BYTES=8
+    source=tmp_path/"large"; source.write_bytes(b"x"*9); destination=tmp_path/"partial"
+    with pytest.raises(module.Blocked,match="maximum size"):
+        module.acquire_artifact(source.as_uri(),destination)
+    assert not destination.exists()
+
+
+def test_cumulative_archive_and_member_count_limits_cleanup(tmp_path):
+    module=adapter(); archive=tmp_path/"a.tar.gz"; destination=tmp_path/"out"; destination.mkdir()
+    with tarfile.open(archive,"w:gz") as bundle:
+        for name in ("one","two"):
+            info=tarfile.TarInfo(name); info.size=6; bundle.addfile(info,io.BytesIO(b"x"*6))
+    module.MAX_EXPANDED_BYTES=10
+    with pytest.raises(module.Blocked,match="expansion"):
+        module.extract_verified(archive,destination)
+    assert not destination.exists()
+
+
+def test_archive_members_are_limited_during_iteration(monkeypatch, tmp_path):
+    module=adapter(); archive=tmp_path/"a.tar.gz"; destination=tmp_path/"out"; destination.mkdir()
+    with tarfile.open(archive,"w:gz") as bundle:
+        for index in range(3):
+            info=tarfile.TarInfo(str(index)); info.size=1; bundle.addfile(info,io.BytesIO(b"x"))
+    module.MAX_MEMBERS=1
+    monkeypatch.setattr(tarfile.TarFile,"getmembers",lambda _self: (_ for _ in ()).throw(AssertionError("must not materialize archive")))
+    with pytest.raises(module.Blocked,match="member count"):
+        module.extract_verified(archive,destination)
+    assert not destination.exists()
+
+
+def test_compressed_pax_metadata_counts_toward_expansion_limit(tmp_path):
+    module=adapter(); archive=tmp_path/"pax.tar.gz"; destination=tmp_path/"out"; destination.mkdir()
+    with tarfile.open(archive,"w:gz",format=tarfile.PAX_FORMAT) as bundle:
+        info=tarfile.TarInfo("item"); info.pax_headers={"comment":"x"*8192}; info.size=1
+        bundle.addfile(info,io.BytesIO(b"x"))
+    module.MAX_EXPANDED_BYTES=1024
+    with pytest.raises(module.Blocked,match="expansion"):
+        module.extract_verified(archive,destination)
+    assert not destination.exists()
+
+
+def test_pax_record_amplification_is_bounded_before_tarfile_parsing(tmp_path):
+    module=adapter(); archive=tmp_path/"pax.tar.gz"; destination=tmp_path/"out"; destination.mkdir()
+    with tarfile.open(archive,"w:gz",format=tarfile.PAX_FORMAT) as bundle:
+        info=tarfile.TarInfo("item")
+        info.pax_headers={f"k{index}":"x" for index in range(10000)}; info.size=1
+        bundle.addfile(info,io.BytesIO(b"x"))
+    module.MAX_EXPANDED_BYTES=4*1024*1024
+    with pytest.raises(module.Blocked,match="extension metadata"):
+        module.extract_verified(archive,destination)
+    assert not destination.exists()
+
+
+def test_failed_post_start_readback_stops_replacement_without_old_restart(monkeypatch,tmp_path):
+    module=adapter(); args=arguments(module); release=tmp_path/"extracted"; (release/"custom-addons").mkdir(parents=True)
+    previous=tmp_path/"previous"; previous.mkdir(); current=tmp_path/"current"; current.symlink_to(previous)
+    target={"release_root":str(tmp_path/"releases"),"current_link":str(current),"service":"odoo","database":"odoo","modules":"addon"}
+    calls=[]
+    monkeypatch.setattr(module,"verify_artifact",lambda *_: (release,"e"*64))
+    monkeypatch.setattr(module,"validate_effective_compose",lambda *_: {})
+    def compose(_target,*command,check=True):
+        calls.append((command,check)); return subprocess.CompletedProcess(command,0,"","")
+    monkeypatch.setattr(module,"docker_compose",compose)
+    monkeypatch.setattr(module,"readback",lambda *_: (_ for _ in ()).throw(module.Blocked("unsafe runtime")))
+    with pytest.raises(module.NeedsRecovery,match="old code was not restarted"):
+        module.deploy(args,authorization(args),target)
+    assert (("stop","odoo"),False) in calls
+    assert sum(1 for command,_ in calls if command==("up","-d","odoo"))==1
+
+
+def test_nonzero_replacement_start_still_attempts_safe_stop(monkeypatch,tmp_path):
+    module=adapter(); args=arguments(module); release=tmp_path/"extracted"; (release/"custom-addons").mkdir(parents=True)
+    previous=tmp_path/"previous"; previous.mkdir(); current=tmp_path/"current"; current.symlink_to(previous)
+    target={"release_root":str(tmp_path/"releases"),"current_link":str(current),"service":"odoo","database":"odoo","modules":"addon"}
+    calls=[]
+    monkeypatch.setattr(module,"verify_artifact",lambda *_: (release,"e"*64))
+    monkeypatch.setattr(module,"validate_effective_compose",lambda *_: {})
+    def compose(_target,*command,check=True):
+        calls.append((command,check))
+        if command==("up","-d","odoo"): raise subprocess.CalledProcessError(1,command)
+        return subprocess.CompletedProcess(command,0,"","")
+    monkeypatch.setattr(module,"docker_compose",compose)
+    with pytest.raises(module.NeedsRecovery): module.deploy(args,authorization(args),target)
+    assert (("stop","odoo"),False) in calls
+
+
+def test_interrupted_replacement_start_still_attempts_safe_stop(monkeypatch,tmp_path):
+    module=adapter(); args=arguments(module); release=tmp_path/"extracted"; (release/"custom-addons").mkdir(parents=True)
+    previous=tmp_path/"previous"; previous.mkdir(); current=tmp_path/"current"; current.symlink_to(previous)
+    target={"release_root":str(tmp_path/"releases"),"current_link":str(current),"service":"odoo","database":"odoo","modules":"addon"}
+    calls=[]
+    monkeypatch.setattr(module,"verify_artifact",lambda *_: (release,"e"*64))
+    monkeypatch.setattr(module,"validate_effective_compose",lambda *_: {})
+    def compose(_target,*command,check=True):
+        calls.append((command,check))
+        if command==("up","-d","odoo"): raise KeyboardInterrupt()
+        return subprocess.CompletedProcess(command,0,"","")
+    monkeypatch.setattr(module,"docker_compose",compose)
+    with pytest.raises(module.NeedsRecovery): module.deploy(args,authorization(args),target)
+    assert (("stop","odoo"),False) in calls
+
+
+def test_in_container_importer_must_match_verified_bytes(monkeypatch,tmp_path):
+    module=adapter(); release=tmp_path/"release"; (release/"custom-addons").mkdir(parents=True)
+    image="odoo@sha256:"+"1"*64
+    target={"service":"odoo","addon_mount":"/mnt/extra-addons","health":{},"health_base_url":"http://127.0.0.1","service_image":image,"internal_networks":["private"]}
+    monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,"cid\n",""))
+    def run(argv,**kwargs):
+        if argv[1]=="inspect": return subprocess.CompletedProcess(argv,0,json.dumps([{"Mounts":[{"Destination":"/mnt/extra-addons","Source":str(release/"custom-addons"),"RW":False}],"Config":{"Image":image,"Env":[f"{k}={v}" for k,v in module.NO_SEND_KEYS.items()]},"NetworkSettings":{"Networks":{"private":{}}}}]),"")
+        return subprocess.CompletedProcess(argv,0,"f"*64+"  importer\n","")
+    monkeypatch.setattr(module,"validate_effective_compose",lambda _target: {"private":"private"})
+    monkeypatch.setattr(module,"validate_runtime_networks",lambda *_args: None)
+    monkeypatch.setattr(module.subprocess,"run",run)
+    with pytest.raises(module.Blocked,match="differs"):
+        module.readback(target,release,"b"*40,"e"*64,arguments(module))
+
+
+def test_each_health_endpoint_is_required_and_redirects_are_disabled(monkeypatch):
+    module=adapter(); target={"health":{"/live":{"status":200,"json_field":"status","json_value":"ok"},"/ready":{"status":200,"json_field":"status","json_value":"ok"}},"health_base_url":"http://127.0.0.1"}
+    with pytest.raises(module.Blocked,match="set differs"):
+        module.check_health(target,"/live")
+    assert module.NoRedirect().redirect_request(None,None,None,None,None,None,None) is None
+
+
+def test_target_rejects_non_loopback_health_origin(tmp_path):
+    module=adapter(); path=tmp_path/"target.json"
+    target={"schema":"codestra.odoo-deploy-target.v2","target_host":"staging-odoo","release_root":"/srv/releases","current_link":"/srv/current","compose_directory":"/srv/compose","compose_files":["compose.yml"],"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp","addon_mount":"/mnt/extra-addons","no_send_env":dict(module.NO_SEND_KEYS),"service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"health_base_url":"https://example.com","health":{}}
+    path.write_text(json.dumps(target)); path.chmod(0o600)
+    with pytest.raises(module.Blocked,match="loopback"):
+        module.load_target(path,"staging-odoo")
+
+
+def test_effective_compose_uses_stable_current_path(monkeypatch,tmp_path):
+    module=adapter(); current=tmp_path/"current"; image="odoo@sha256:"+"1"*64
+    target={"service":"odoo","service_image":image,"internal_networks":["private"],"addon_mount":"/mnt/extra-addons","current_link":str(current)}
+    document={"services":{"odoo":{"image":image,"environment":dict(module.NO_SEND_KEYS),"networks":{"private":{}},"volumes":[f"{current}/custom-addons:/mnt/extra-addons:ro"]}},"networks":{"private":{"internal":True,"name":"project_private"}}}
+    monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,json.dumps(document),""))
+    assert module.validate_effective_compose(target)=={"private":"project_private"}
+
+
+def test_readback_rejects_running_send_enabled(monkeypatch,tmp_path):
+    module=adapter(); release=tmp_path/"release"; (release/"custom-addons").mkdir(parents=True); image="odoo@sha256:"+"1"*64
+    target={"service":"odoo","addon_mount":"/mnt/extra-addons","health":{},"health_base_url":"http://127.0.0.1","service_image":image,"internal_networks":["private"]}
+    monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,"cid\n",""))
+    inspection={"Mounts":[{"Destination":"/mnt/extra-addons","Source":str(release/"custom-addons"),"RW":False}],"Config":{"Image":image,"Env":["ENABLE_EXTERNAL_DELIVERY=false","EMAIL_DELIVERY=true","LIVE_EMAIL_DELIVERY=false"]},"NetworkSettings":{"Networks":{"private":{}}}}
+    monkeypatch.setattr(module.subprocess,"run",lambda argv,**kwargs: subprocess.CompletedProcess(argv,0,json.dumps([inspection]),""))
+    with pytest.raises(module.Blocked,match="no-send"):
+        module.readback(target,release,"b"*40,"e"*64,arguments(module))
+
+
+def test_recovery_evidence_is_candidate_bound(tmp_path):
+    module=adapter(); recovery={}; base={"source_sha":"b"*40,"artifact_digest":"sha256:"+"a"*64,"target_host":"staging-odoo","recovery_set_id":"set-1","rollback_source_sha":"c"*40,"rollback_artifact_digest":"sha256:"+"d"*64}
+    for name in ("database","filestore","configuration","isolated_restore","rollback_rehearsal"):
+        body={"scope":name,"status":"PASS",**base}; raw=json.dumps(body,sort_keys=True).encode(); digest=hashlib.sha256(raw).hexdigest(); (tmp_path/f"{digest}.json").write_bytes(raw); recovery[name]={"status":"PASS","evidence_sha256":"sha256:"+digest}
+    auth={"source_sha":"9"*40,"artifact_digest":base["artifact_digest"],"target_host":base["target_host"],"recovery_set_id":base["recovery_set_id"],"rollback_target":{"source_sha":base["rollback_source_sha"],"artifact_digest":base["rollback_artifact_digest"]},"recovery":recovery}
+    with pytest.raises(module.Blocked,match="content mismatch"):
+        module.validate_recovery_evidence(auth,tmp_path)
+
+
+def test_health_rejects_empty_set_and_origin_escape(monkeypatch):
+    module=adapter(); target={"health":{},"health_base_url":"http://127.0.0.1:8069"}
+    with pytest.raises(module.Blocked,match="at least one"):
+        module.check_health(target,"")
+    target["health"]={"@example.com/x":{"status":200,"json_field":"status","json_value":"ok"}}
+    monkeypatch.setattr(module.urllib.request,"build_opener",lambda *_: pytest.fail("network must not be reached"))
+    with pytest.raises(module.Blocked,match="origin-relative"):
+        module.check_health(target,"@example.com/x")
+
+
+def test_runtime_network_uses_compose_resolved_name(monkeypatch,tmp_path):
+    module=adapter(); release=tmp_path/"release"; (release/"custom-addons").mkdir(parents=True); image="odoo@sha256:"+"1"*64
+    target={"service":"odoo","addon_mount":"/mnt/extra-addons","health":{"/live":{"status":200,"json_field":"status","json_value":"ok"}},"health_base_url":"http://127.0.0.1","service_image":image,"internal_networks":["private"]}
+    monkeypatch.setattr(module,"docker_compose",lambda *_a,**_k: subprocess.CompletedProcess([],0,"cid\n",""))
+    inspection={"Mounts":[{"Destination":"/mnt/extra-addons","Source":str(release/"custom-addons"),"RW":False}],"Config":{"Image":image,"Env":[f"{k}={v}" for k,v in module.NO_SEND_KEYS.items()]},"NetworkSettings":{"Networks":{"project_private":{"NetworkID":"net-id-1"}}}}
+    def run(argv,**kwargs):
+        if argv[1]=="inspect": return subprocess.CompletedProcess(argv,0,json.dumps([inspection]),"")
+        if argv[1:3]==["network","inspect"]: return subprocess.CompletedProcess(argv,0,json.dumps([{"Name":"project_private","Id":"net-id-1","Internal":True}]),"")
+        return subprocess.CompletedProcess(argv,0,"e"*64+"  importer\n","")
+    monkeypatch.setattr(module,"validate_effective_compose",lambda _target:{"private":"project_private"})
+    monkeypatch.setattr(module.subprocess,"run",run); monkeypatch.setattr(module,"check_health",lambda *_:{"/live":"PASS"})
+    result=module.readback(target,release,"b"*40,"e"*64,arguments(module),{"private":"project_private"})
+    assert result["health"]=={"/live":"PASS"}
+
+
+@pytest.mark.parametrize("kind", ["sparse", "solaris"])
+def test_extension_bypasses_rejected_before_tarfile(monkeypatch, tmp_path, kind):
+    import gzip
+    module=adapter(); archive=tmp_path/"input.tar.gz"; out=tmp_path/"out"; out.mkdir()
+    if kind == "sparse":
+        metadata=tarfile.TarInfo._create_pax_generic_header({"GNU.sparse.major":"1", "GNU.sparse.minor":"0"}, tarfile.XHDTYPE, "utf-8")
+        info=tarfile.TarInfo("item"); info.size=512
+        raw=metadata + info.tobuf() + b"100000\n".ljust(512, b"\0")
+    else:
+        info=tarfile.TarInfo("pax"); info.type=tarfile.SOLARIS_XHDTYPE; info.size=module.MAX_EXTENSION_BYTES+512
+        raw=info.tobuf() + b"x"*info.size
+    with gzip.open(archive, "wb") as stream: stream.write(raw)
+    def forbidden(*a, **kw): raise AssertionError("TarFile must not parse rejected metadata")
+    monkeypatch.setattr(module.tarfile, "open", forbidden)
+    with pytest.raises(module.Blocked): module.extract_verified(archive,out)
+    assert not out.exists()
+
+
+@pytest.mark.parametrize("stop_raises", [False, True])
+def test_sigterm_startup_records_recovery(monkeypatch, tmp_path, stop_raises):
+    import signal
+    module=adapter(); args=arguments(module); release=tmp_path/"extracted"; release.mkdir()
+    target={"release_root":str(tmp_path/"releases"),"current_link":str(tmp_path/"current"),"service":"odoo","database":"odoo","modules":"addon"}
+    calls=[]
+    monkeypatch.setattr(module,"verify_artifact",lambda *_: (release,"e"*64))
+    monkeypatch.setattr(module,"validate_effective_compose",lambda *_: {})
+    def compose(_target,*command,check=True):
+        calls.append((command,check))
+        if command[0]=="up": os.kill(os.getpid(), signal.SIGTERM)
+        if command[0]=="stop" and not check:
+            os.kill(os.getpid(), signal.SIGTERM)
+            if stop_raises: raise OSError("stop unavailable")
+        return subprocess.CompletedProcess(command,0,"","")
+    monkeypatch.setattr(module,"docker_compose",compose)
+    monkeypatch.setattr(module,"parser",lambda: type("Parser",(),{"parse_args":lambda self,_:args})())
+    monkeypatch.setattr(module.os,"geteuid",lambda:0)
+    monkeypatch.setattr(module,"root_regular",lambda *_:{})
+    monkeypatch.setattr(module,"validate_handoff",lambda *_:None)
+    monkeypatch.setattr(module,"validate_recovery_evidence",lambda *_:None)
+    monkeypatch.setattr(module,"load_target",lambda *_:target)
+    args.evidence_output=str(tmp_path/"evidence.json")
+    previous=signal.getsignal(signal.SIGTERM)
+    assert module.main([])==2
+    evidence=json.loads(Path(args.evidence_output).read_text())
+    assert evidence["status"]=="NEEDS_RECOVERY"
+    assert ("stop failed" in evidence["reason"]) == stop_raises
+    assert (("stop","odoo"),False) in calls
+    assert signal.getsignal(signal.SIGTERM)==previous
