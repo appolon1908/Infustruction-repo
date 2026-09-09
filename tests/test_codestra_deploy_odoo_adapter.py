@@ -329,3 +329,53 @@ def test_runtime_network_uses_compose_resolved_name(monkeypatch,tmp_path):
     monkeypatch.setattr(module.subprocess,"run",run); monkeypatch.setattr(module,"check_health",lambda *_:{"/live":"PASS"})
     result=module.readback(target,release,"b"*40,"e"*64,arguments(module),{"private":"project_private"})
     assert result["health"]=={"/live":"PASS"}
+
+
+@pytest.mark.parametrize("kind", ["sparse", "solaris"])
+def test_extension_bypasses_rejected_before_tarfile(monkeypatch, tmp_path, kind):
+    import gzip
+    module=adapter(); archive=tmp_path/"input.tar.gz"; out=tmp_path/"out"; out.mkdir()
+    if kind == "sparse":
+        metadata=tarfile.TarInfo._create_pax_generic_header({"GNU.sparse.major":"1", "GNU.sparse.minor":"0"}, tarfile.XHDTYPE, "utf-8")
+        info=tarfile.TarInfo("item"); info.size=512
+        raw=metadata + info.tobuf() + b"100000\n".ljust(512, b"\0")
+    else:
+        info=tarfile.TarInfo("pax"); info.type=tarfile.SOLARIS_XHDTYPE; info.size=module.MAX_EXTENSION_BYTES+512
+        raw=info.tobuf() + b"x"*info.size
+    with gzip.open(archive, "wb") as stream: stream.write(raw)
+    def forbidden(*a, **kw): raise AssertionError("TarFile must not parse rejected metadata")
+    monkeypatch.setattr(module.tarfile, "open", forbidden)
+    with pytest.raises(module.Blocked): module.extract_verified(archive,out)
+    assert not out.exists()
+
+
+@pytest.mark.parametrize("stop_raises", [False, True])
+def test_sigterm_startup_records_recovery(monkeypatch, tmp_path, stop_raises):
+    import signal
+    module=adapter(); args=arguments(module); release=tmp_path/"extracted"; release.mkdir()
+    target={"release_root":str(tmp_path/"releases"),"current_link":str(tmp_path/"current"),"service":"odoo","database":"odoo","modules":"addon"}
+    calls=[]
+    monkeypatch.setattr(module,"verify_artifact",lambda *_: (release,"e"*64))
+    monkeypatch.setattr(module,"validate_effective_compose",lambda *_: {})
+    def compose(_target,*command,check=True):
+        calls.append((command,check))
+        if command[0]=="up": os.kill(os.getpid(), signal.SIGTERM)
+        if command[0]=="stop" and not check:
+            os.kill(os.getpid(), signal.SIGTERM)
+            if stop_raises: raise OSError("stop unavailable")
+        return subprocess.CompletedProcess(command,0,"","")
+    monkeypatch.setattr(module,"docker_compose",compose)
+    monkeypatch.setattr(module,"parser",lambda: type("Parser",(),{"parse_args":lambda self,_:args})())
+    monkeypatch.setattr(module.os,"geteuid",lambda:0)
+    monkeypatch.setattr(module,"root_regular",lambda *_:{})
+    monkeypatch.setattr(module,"validate_handoff",lambda *_:None)
+    monkeypatch.setattr(module,"validate_recovery_evidence",lambda *_:None)
+    monkeypatch.setattr(module,"load_target",lambda *_:target)
+    args.evidence_output=str(tmp_path/"evidence.json")
+    previous=signal.getsignal(signal.SIGTERM)
+    assert module.main([])==2
+    evidence=json.loads(Path(args.evidence_output).read_text())
+    assert evidence["status"]=="NEEDS_RECOVERY"
+    assert ("stop failed" in evidence["reason"]) == stop_raises
+    assert (("stop","odoo"),False) in calls
+    assert signal.getsignal(signal.SIGTERM)==previous

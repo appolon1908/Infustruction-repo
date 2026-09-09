@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse, gzip, hashlib, ipaddress, json, math, os, re, shutil, socket, stat, subprocess, tarfile, tempfile, time
 import urllib.parse, urllib.request
+import signal
+from contextlib import contextmanager
 from pathlib import Path
 
 SHA256="sha256:"; CONFIG_ROOT=Path("/etc/codestra/odoo-deploy-targets"); EVIDENCE_ROOT=Path("/etc/codestra/deployment-evidence/sha256")
@@ -13,6 +15,25 @@ IMPORTER="custom-addons/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"
 
 class Blocked(RuntimeError): pass
 class NeedsRecovery(RuntimeError): pass
+class Terminated(BaseException): pass
+
+@contextmanager
+def termination_cleanup():
+    signals = (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)
+    previous = {sig: signal.getsignal(sig) for sig in signals}
+    def terminate(signum, _frame):
+        # Preserve the cleanup/evidence window if cancellation is repeated.
+        for sig in signals:
+            signal.signal(sig, signal.SIG_IGN)
+        raise Terminated(f"termination signal {signum}")
+    try:
+        for sig in signals:
+            signal.signal(sig, terminate)
+        yield
+    finally:
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
+
 
 def sha256(path):
     h=hashlib.sha256()
@@ -87,9 +108,20 @@ def extract_verified(archive,destination,deadline=None):
                 except ValueError as e: raise Blocked("artifact contains a malformed size") from e
                 if not isinstance(size,int) or size<0: raise Blocked("artifact contains a malformed size")
                 padded=((size+511)//512)*512
-                if header[156:157] in {tarfile.XHDTYPE,tarfile.XGLTYPE,tarfile.GNUTYPE_LONGNAME,tarfile.GNUTYPE_LONGLINK}:
+                if header[156:157] in {tarfile.XHDTYPE,tarfile.XGLTYPE,tarfile.SOLARIS_XHDTYPE,tarfile.GNUTYPE_LONGNAME,tarfile.GNUTYPE_LONGLINK}:
                     extension_bytes+=size
                     if extension_bytes>MAX_EXTENSION_BYTES: raise Blocked("artifact extension metadata exceeds limits")
+                if header[156:157] == tarfile.GNUTYPE_SPARSE:
+                    raise Blocked("sparse archive members are prohibited")
+                if header[156:157] in {tarfile.XHDTYPE, tarfile.XGLTYPE, tarfile.SOLARIS_XHDTYPE}:
+                    metadata=stream.read(padded)
+                    if len(metadata)!=padded: raise Blocked("artifact is truncated")
+                    expanded+=len(metadata)
+                    if expanded>MAX_EXPANDED_BYTES: raise Blocked("artifact expansion exceeds limits")
+                    # Sparse 1.0 maps live in the next payload, outside PAX limits.
+                    if b"GNU.sparse" in metadata:
+                        raise Blocked("sparse archive members are prohibited")
+                    continue
                 remaining=padded
                 while remaining:
                     if time.monotonic()>deadline: raise Blocked("archive expansion deadline exceeded")
@@ -330,8 +362,11 @@ def deploy(args,auth,target):
         if upgrade_started:
             stop_failed=False
             if replacement_started:
-                stopped=docker_compose(target,"stop",target["service"],check=False)
-                stop_failed=stopped.returncode != 0
+                try:
+                    stopped=docker_compose(target,"stop",target["service"],check=False)
+                    stop_failed=stopped.returncode != 0
+                except BaseException:
+                    stop_failed=True
             detail="; replacement service stop failed" if stop_failed else ""
             raise NeedsRecovery("upgrade may have changed database; old code was not restarted"+detail) from e
         if previous is not None:
@@ -352,7 +387,7 @@ def parser():
     for f in ("read-only","deny-external-effects","require-staging-certification","require-backup","require-isolated-restore","require-rollback-rehearsal"): p.add_argument(f"--{f}",action="store_true")
     p.add_argument("--canary-percent"); p.add_argument("--allowed-methods"); return p
 
-def main(argv=None):
+def _main(argv=None):
     args=parser().parse_args(argv)
     try:
         if os.geteuid()!=0: raise Blocked("adapter requires root dispatcher execution")
@@ -376,5 +411,13 @@ def main(argv=None):
         print(f"ODOO_DEPLOYMENT_NEEDS_RECOVERY={e}",file=os.sys.stderr); return 2
     except (Blocked,OSError,subprocess.SubprocessError,tarfile.TarError,json.JSONDecodeError) as e:
         print(f"ODOO_DEPLOYMENT_BLOCKED={e}",file=os.sys.stderr); return 1
+
+def main(argv=None):
+    with termination_cleanup():
+        try:
+            return _main(argv)
+        except Terminated as exc:
+            print(f"ODOO_DEPLOYMENT_BLOCKED={exc}", file=os.sys.stderr)
+            return 1
 
 if __name__=="__main__": raise SystemExit(main())
