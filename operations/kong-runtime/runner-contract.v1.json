@@ -1,0 +1,56 @@
+{
+  "schema": "codestra.kong-runtime-runner-contract.v1",
+  "repository": "appolon1908-hue/Kong",
+  "target": {
+    "environment": "staging",
+    "runner_name": "codestra-kong-staging-01",
+    "required_labels": ["self-hosted", "linux", "kong-runtime"],
+    "workflow": ".github/workflows/release.yml",
+    "workflow_name": "Generate immutable Kong release evidence",
+    "job_name": "runtime-topology"
+  },
+  "runner_application": {
+    "version": "2.337.0",
+    "download_url": "https://github.com/actions/runner/releases/download/v2.337.0/actions-runner-linux-x64-2.337.0.tar.gz",
+    "sha256": "70920811a4f8ad4328818682bca5c6469c1c942fab52448868071d0063816613"
+  },
+  "runtime_readback": {
+    "docker_socket": "unix:///var/run/docker.sock",
+    "containers": [
+      "codestra-caddy-upstream-gateway",
+      "codestra-kong-kong-gateway-1",
+      "codestra-middleware-integration-api-1",
+      "codestra-redis-1"
+    ],
+    "required_networks": {
+      "caddy_kong": "codestra_edge",
+      "kong_middleware": "codestra_edge",
+      "kong_redis": "codestra_backend",
+      "middleware_redis": "codestra_backend"
+    }
+  },
+  "security_invariants": {
+    "runner_repository_scoped": true,
+    "runner_ephemeral": true,
+    "runner_accepts_one_job": true,
+    "runner_update_disabled": true,
+    "registration_token_stdin_only": true,
+    "registration_token_persisted": false,
+    "registration_token_logged": false,
+    "queued_job_identity_verified_before_registration": true,
+    "docker_authorization_must_preexist": true,
+    "docker_authorization_created_by_bootstrap": false,
+    "runtime_container_mutation_allowed": false,
+    "runtime_network_mutation_allowed": false,
+    "kong_admin_mutation_allowed": false,
+    "production_traffic_authorized": false,
+    "external_effects_authorized": false,
+    "workflow_gate_weakening_allowed": false
+  },
+  "completion": {
+    "runner_bootstrap_is_certification": false,
+    "runtime_topology_job_must_succeed": true,
+    "release_evidence_must_authenticate_staging_certification": true,
+    "issues_close_only_after_required_runtime_evidence": [58, 52, 49]
+  }
+}
