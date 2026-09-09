@@ -9,7 +9,8 @@ gates:
   ISOLATED_RESTORE:
     status: PASS
     evidence: SERVER-37-RESTORE-EVIDENCE.md
-    reason: Klyrow/PostgreSQL/Mautic/Postal, Telnexa core/billing/Keycloak PostgreSQL/Redis/RabbitMQ/Jasmin, and Kyqra PostgreSQL/Redis restored into isolated no-public-port targets with no residual resources.
+    reason: Klyrow/PostgreSQL/Mautic/Postal, Telnexa core/billing/Keycloak PostgreSQL/Redis/RabbitMQ/Jasmin, and Kyqra PostgreSQL/Redis
+      restored into isolated no-public-port targets with no residual resources.
   POSITIVE_AND_NEGATIVE_MTLS_E2E:
     status: FAIL
     evidence: EXTERNAL_AUTHORITY_REQUIRED
@@ -28,8 +29,10 @@ gates:
     reason: The reviewed candidate is not deployed and no approved production test identity is available.
   CONTROLLED_PRIVATE_INTEGRATION_E2E:
     status: FAIL
-    evidence: EXTERNAL_AUTHORITY_REQUIRED
-    reason: Positive mTLS identity and approved downstream provider authorities are unavailable.
+    evidence: SERVER-37-KLYROW-EVENT-DELIVERY-EVIDENCE.md
+    reason: Recorded Klyrow transport passed positive and negative mTLS, but delivery returned HTTP 422 unsupported_klyrow_event.
+      Server A receiver/operator tuple reconciliation remains required; no fresh runtime verification is claimed.
+    evidence_sha256: 0c9df7c43e2eb2d2fd7d62ac6bee0c1fb0443f56ad367ba9569d904a003a3c78
   KEYCLOAK_AUTH_E2E:
     status: FAIL
     evidence: SERVER-37-PRODUCTION-API-MATRIX.yaml
@@ -37,7 +40,9 @@ gates:
   MAUTIC_KLYROW_E2E:
     status: PASS
     evidence: SERVER-37-MAUTIC-INTEGRATION-EVIDENCE.md
-    reason: Dedicated OAuth2 client-credentials integration is enabled on the private network; token issuance, users/self, contact CRUD, segment membership, campaign membership, and cleanup passed. Public Mautic API/OAuth routes remain denied by Nginx.
+    reason: Dedicated OAuth2 client-credentials integration is enabled on the private network; token issuance, users/self,
+      contact CRUD, segment membership, campaign membership, and cleanup passed. Public Mautic API/OAuth routes remain denied
+      by Nginx.
   ALERT_AND_RETENTION_E2E:
     status: FAIL
     evidence: STAGE7-OBSERVABILITY-EVIDENCE.md

@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import hashlib
+
+import hashlib
 import re
 from pathlib import Path
 from typing import Any
@@ -91,7 +93,7 @@ def main() -> None:
     configuration_changes = {
         row["service"]: row for row in rollback["production_configuration_changes"]
     }
-    assert set(configuration_changes) == {"MAUTIC_API", "TELNEXA_ADMIN_DENY_EDGE"}
+    assert set(configuration_changes) == {"MAUTIC_API", "TELNEXA_ADMIN_DENY_EDGE", "PRIVATE_GATEWAY_NGINX_EDGE", "KLYROW_EVENT_CONFIGURATION_BRIDGE"}
     configuration_change = configuration_changes["MAUTIC_API"]
     assert configuration_change["before_state"] == "GLOBAL_API_DISABLED"
     assert (
@@ -106,6 +108,12 @@ def main() -> None:
     assert admin_deny["after_state"] == "DNS_AND_DEDICATED_TLS_PRESENT_HTTPS_403"
     assert admin_deny["rollback_procedure"]
     assert admin_deny["rollback_status"] == "PASS"
+    for service in ("PRIVATE_GATEWAY_NGINX_EDGE", "KLYROW_EVENT_CONFIGURATION_BRIDGE"):
+        row = configuration_changes[service]
+        assert row["before_state"] and row["after_state"] and row["rollback_bundle"]
+        assert row["rollback_procedure"]
+        assert hashlib.sha256((ROOT / row["evidence"]).read_bytes()).hexdigest() == row["evidence_sha256"]
+    assert configuration_changes["PRIVATE_GATEWAY_NGINX_EDGE"]["rollback_status"] == "FAIL"
     assert rollback["candidate_promotions"]
     deployed = {
         "KLYROW_GATEWAY_AND_WORKER",

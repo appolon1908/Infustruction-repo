@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -338,6 +339,10 @@ def main() -> None:
     summary = load(SUMMARY_PATH)
     certification = load(CERTIFICATION_PATH)
     gates = load(GATE_EVIDENCE_PATH)
+    delivery = gates["gates"]["CONTROLLED_PRIVATE_INTEGRATION_E2E"]
+    assert delivery["status"] == "FAIL"
+    assert delivery["evidence"] == "SERVER-37-KLYROW-EVENT-DELIVERY-EVIDENCE.md"
+    assert hashlib.sha256((ROOT / delivery["evidence"]).read_bytes()).hexdigest() == delivery["evidence_sha256"]
     production_services = validate_inventory(inventory)
     endpoint_total, api_counts = validate_api(api)
     validate_integrations(integration)

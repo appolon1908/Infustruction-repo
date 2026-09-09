@@ -603,6 +603,32 @@ def main() -> None:
         ],
         "required_next_action": "Independent reviewers approve the remaining exact Telnexa and Kyqra heads; release owners publish signed digests and perform isolated rollback rehearsals before production promotion.",
     }
+    rollback["production_configuration_changes"].extend(
+        [{'service': 'PRIVATE_GATEWAY_NGINX_EDGE',
+          'before_state': '390839d0d142e335e722d7127e30eebc68c32314849ff145468a28794bdafca3',
+          'after_state': '66c66dab3d1e67c230687af6d58e2fefe32d85e2ec9d44c2d0de9ea5b2d05231',
+          'rollback_bundle': '/var/backups/codestra-operators/private-gateway-edge-20260903T002126Z',
+          'rollback_procedure': 'Authorized operator must restore the recorded prior Nginx configuration, '
+                                'verify its checksum and nginx -t, reload, then restore the protected '
+                                'configuration and verify its checksum, certificate denial and gateway '
+                                'health. This rehearsal is not evidenced.',
+          'rollback_status': 'FAIL',
+          'evidence': 'SERVER-37-PRIVATE-GATEWAY-RELEASE-EVIDENCE.md',
+          'evidence_sha256': 'da8ed21364a61ed81a1a2e72caa7b1785858b17e5bef6821c40519d1155993f4'},
+         {'service': 'KLYROW_EVENT_CONFIGURATION_BRIDGE',
+          'before_state': 'LEGACY_BASE_GUARD_NOT_BOUND_TO_APPROVED_MTLS_AUTHORITY',
+          'after_state': 'GATEWAY_AND_WORKER_LEGACY_BASE_GUARD_BOUND_TO_APPROVED_MTLS_AUTHORITY',
+          'rollback_bundle': '/var/backups/codestra-operators/klyrow-event-bridge-20260903T004520Z',
+          'rollback_procedure': 'Authorized operator restores the gateway and delivery-worker '
+                                'configuration together from the recorded bundle, recreates both at the '
+                                'unchanged image digest, and verifies isolation and no-send controls; '
+                                'forward recovery reapplies the bridge to both services. The cited '
+                                'historical report records rollback and forward recovery PASS.',
+          'rollback_status': 'PASS',
+          'evidence': 'SERVER-37-KLYROW-EVENT-DELIVERY-EVIDENCE.md',
+          'evidence_sha256': '0c9df7c43e2eb2d2fd7d62ac6bee0c1fb0443f56ad367ba9569d904a003a3c78'}]
+    )
+    rollback["reason"] = 'Historical image rollback controls do not certify later configuration changes. The private Nginx edge rollback rehearsal is not evidenced; Telnexa and Kyqra remain review-gated. Platform rollback remains FAIL.'
     OUTPUT_ROLLBACK.write_text(yaml.safe_dump(rollback, sort_keys=False, width=120))
 
     print(

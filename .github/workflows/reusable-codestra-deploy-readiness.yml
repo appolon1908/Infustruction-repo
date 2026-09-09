@@ -859,10 +859,12 @@ jobs:
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
               "$manifest"
             tag="deploy-ready-${source_sha}"
+            mapfile -d '' release_assets < <(find evidence -maxdepth 1 -type f -print0 | sort -z)
+            [[ "${#release_assets[@]}" -gt 0 ]] || { echo "No regular release assets found" >&2; exit 1; }
             if gh release view "$tag" >/dev/null 2>&1; then
-              gh release upload "$tag" evidence/* --clobber
+              gh release upload "$tag" "${release_assets[@]}" --clobber
             else
-              gh release create "$tag" evidence/* \
+              gh release create "$tag" "${release_assets[@]}" \
                 --target "$source_sha" \
                 --title "Deploy-ready source ${source_sha}" \
                 --notes "Exact signed source/configuration candidate. Runtime deployment remains separately gated."
@@ -965,7 +967,7 @@ jobs:
           OPERATION: ${{ inputs.operation }}
         run: |
           set -Eeuo pipefail
-          /usr/local/bin/codestra-deploy "$OPERATION" \
+          sudo -n /usr/local/bin/codestra-deploy "$OPERATION" \
             --repository "$GITHUB_REPOSITORY" \
             --source-sha "$GITHUB_SHA" \
             --artifact-kind "$ARTIFACT_KIND" \
@@ -1025,7 +1027,7 @@ jobs:
           CANARY_PERCENT: ${{ inputs.canary_percent }}
         run: |
           set -Eeuo pipefail
-          /usr/local/bin/codestra-deploy promote-production-readonly \
+          sudo -n /usr/local/bin/codestra-deploy promote-production-readonly \
             --repository "$GITHUB_REPOSITORY" \
             --source-sha "$GITHUB_SHA" \
             --artifact-kind "$ARTIFACT_KIND" \
@@ -1033,6 +1035,7 @@ jobs:
             --artifact-digest "$ARTIFACT_DIGEST" \
             --environment production-readonly-canary \
             --health-paths "$HEALTH_PATHS" \
+            --read-only \
             --canary-percent "$CANARY_PERCENT" \
             --allowed-methods GET,HEAD \
             --require-staging-certification \

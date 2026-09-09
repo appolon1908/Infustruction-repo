@@ -3,6 +3,7 @@ name: Full platform certification evidence
 on:
   pull_request:
     paths:
+      - "SERVER-37-*.md"
       - "PRODUCTION-API-MATRIX.yaml"
       - "SERVER-37-PRODUCTION-API-MATRIX.yaml"
       - "SERVER-37-PRODUCTION-ROLLBACK.yaml"
