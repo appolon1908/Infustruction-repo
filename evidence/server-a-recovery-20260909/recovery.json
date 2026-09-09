@@ -1,0 +1,324 @@
+{
+  "after_backup": {
+    "health": [
+      {
+        "health": "healthy",
+        "name": "codestra-appolon-middleware-integration-api-1",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "name": "codestra-kong-kong-gateway-1",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "name": "codestra-caddy-upstream-gateway",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "name": "codestra-n8n-1",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "name": "codestra-odoo-1",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "name": "codestra-redis-1",
+        "paused": false,
+        "running": true
+      }
+    ],
+    "observed_at": "2026-09-09T18:27:18.642592+00:00"
+  },
+  "authorization": {
+    "operator_or_policy_changes": false,
+    "received_on": "2026-09-09",
+    "source": "Owner approved fresh protected backup, brief application-writer pause, validation and isolated restore in this conversation."
+  },
+  "backup": {
+    "ciphertext_sha256": "aeaa2e2b5ceae7bc3c30e18bc8db1e771df7a8b1732eea9d9f9f5759a8ef5002",
+    "consistency_pause_duration_ms": 11698,
+    "evidence_manifest_sha256": "cca2de0996e226e7f11c9437f4a5337d1ece64e46d39f9ac1889560277abbad2",
+    "operator_status": "PASS",
+    "stamp": "20260909T182238Z",
+    "validation_status": "PASS"
+  },
+  "host": {
+    "hostname": "middleware",
+    "private_ip": "10.40.0.1",
+    "public_ip": "65.109.65.169"
+  },
+  "operator_evidence": [
+    {
+      "fields": {
+        "action": "backup",
+        "release": {
+          "change_id": "CHG-20260821-CODESTRA-PRODUCTION-ACTIVATION-01",
+          "image_digest": "sha256:bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a",
+          "maintenance_date": "2026-09-06",
+          "protected_sha": "8e365724d1216581471835ee05d5fdc7b13ee501"
+        },
+        "returncode": 0,
+        "schema": "codestra.production-operator.v1",
+        "status": "PASS",
+        "unit": "codestra-readiness-backup.service",
+        "window": {
+          "maintenance_date": "2026-09-06",
+          "maintenance_window": "WAIVED_BY_OWNER",
+          "owner_window_waiver_evidence": "PASS",
+          "window_check": "BYPASSED_BY_VALID_OWNER_WAIVER"
+        }
+      },
+      "path": "/var/lib/codestra-production-operator/evidence/20260909T182635Z-2459663-backup.json",
+      "safety_boolean_fields": {
+        "active_calls_zero": true,
+        "active_channels_zero": true,
+        "required_runtime_flags_false": true,
+        "sip_registration_performed": false,
+        "telephony_probe_pass": true
+      },
+      "sha256": "08771a20ae330818c71f3fb0cf715b4cc9ea902cd95eddfe1c012a06c686d04e"
+    },
+    {
+      "fields": {
+        "action": "validate-backup",
+        "backup_stamp": "20260909T182238Z",
+        "release": {
+          "change_id": "CHG-20260821-CODESTRA-PRODUCTION-ACTIVATION-01",
+          "image_digest": "sha256:bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a",
+          "maintenance_date": "2026-09-06",
+          "protected_sha": "8e365724d1216581471835ee05d5fdc7b13ee501"
+        },
+        "returncode": 0,
+        "schema": "codestra.production-operator.v1",
+        "status": "PASS",
+        "window": {
+          "maintenance_date": "2026-09-06",
+          "maintenance_window": "WAIVED_BY_OWNER",
+          "owner_window_waiver_evidence": "PASS",
+          "window_check": "BYPASSED_BY_VALID_OWNER_WAIVER"
+        }
+      },
+      "path": "/var/lib/codestra-production-operator/evidence/20260909T182755Z-2679555-validate-backup.json",
+      "safety_boolean_fields": {
+        "active_calls_zero": true,
+        "active_channels_zero": true,
+        "required_runtime_flags_false": true,
+        "sip_registration_performed": false,
+        "telephony_probe_pass": true
+      },
+      "sha256": "d494594fe1f276e15c053e1ec1aac7fe85294a9202fca155bcb3e76b590ae32a"
+    },
+    {
+      "path": "/var/lib/codestra-production-operator/evidence/20260909T183105Z-2701666-restore-test.json",
+      "sha256": "99860056f274dc12acfc0939f78e514b2986b569648869d6bbcf0022648e63f2",
+      "fields": {
+        "action": "restore-test",
+        "isolated_middleware_migration": "PASS",
+        "release": {
+          "change_id": "CHG-20260821-CODESTRA-PRODUCTION-ACTIVATION-01",
+          "image_digest": "sha256:bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a",
+          "maintenance_date": "2026-09-06",
+          "protected_sha": "8e365724d1216581471835ee05d5fdc7b13ee501"
+        },
+        "returncode": 0,
+        "schema": "codestra.production-operator.v1",
+        "status": "PASS",
+        "tested_backup_stamp": "20260909T182238Z",
+        "tested_middleware_database_head": "0056_klyrow_delivery_events",
+        "unit": "codestra-readiness-restore.service",
+        "window": {
+          "maintenance_date": "2026-09-06",
+          "maintenance_window": "WAIVED_BY_OWNER",
+          "owner_window_waiver_evidence": "PASS",
+          "window_check": "BYPASSED_BY_VALID_OWNER_WAIVER"
+        }
+      },
+      "safety_boolean_fields": {
+        "active_calls_zero": true,
+        "active_channels_zero": true,
+        "required_runtime_flags_false": true,
+        "sip_registration_performed": false,
+        "telephony_probe_pass": true
+      }
+    }
+  ],
+  "outstanding": {
+    "fresh_offsite_upload": "NOT_RUN",
+    "full_stack_production_certification": "NOT_COMPLETED",
+    "independent_machine_decryption_proof": "NOT_ESTABLISHED",
+    "required_writable_files": [
+      "/opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml",
+      "/opt/codestra/middleware/deploy/internal-n8n-private/compose.internal-n8n.yaml"
+    ],
+    "sentinelx_write_access": "BLOCKED_NO_WRITABLE_PATHS",
+    "server_a_target_assignment_pr": "https://github.com/appolon1908-hue/Infustruction-repo/pull/112",
+    "server_a_target_assignment_status": "AWAITING_INDEPENDENT_REVIEW"
+  },
+  "protected_operator": {
+    "installed_manifest_check": "PASS",
+    "path": "/usr/local/sbin/codestra-production-operator",
+    "sha256": "9ddaeb6df45514688f66db7ea9f8e86f93e6876b7eb90e6460f9ce251bad26a0"
+  },
+  "restore": {
+    "status": "PASS",
+    "target_backup": "20260909T182238Z",
+    "observed_at": "2026-09-09T18:32:20.857523+00:00",
+    "measured_rto_ms": 157503,
+    "result": {
+      "path": "/opt/codestra/evidence/production-readiness-restore/20260909T182822Z/RESTORE-RESULT.txt",
+      "sha256": "6e83ed3ac1bc29d7f08d9a3b99d4322877386c8e57c024f848acb1ef37b37999",
+      "fields": {
+        "RESTORE_REHEARSAL_GATE": "PASS",
+        "RESTORE_BACKUP_STAMP": "20260909T182238Z",
+        "ISOLATED_ROLE_MODEL": "PASS",
+        "MIDDLEWARE_DATA_OWNER_NOLOGIN": "PASS",
+        "KEYCLOAK_DATA_OWNER_NOLOGIN": "PASS",
+        "RESTORE_ROLE_MEMBERSHIP_SCOPE": "ISOLATED_ONLY",
+        "PRODUCTION_ROLE_PRIVILEGES_UNCHANGED": "PASS",
+        "PG_RESTORE": "PASS",
+        "PG_RESTORE_ERRORS": "0",
+        "DEFAULT_PRIVILEGES_RESTORED": "PASS",
+        "DEFAULT_ACL_MISMATCHES": "0",
+        "OBJECT_OWNERSHIP": "PASS",
+        "REASSIGNED_OWNERSHIP_MISMATCHES": "0",
+        "DATABASE_RESTORE": "PASS",
+        "FILESTORE_RESTORE": "PASS",
+        "ODOO_ORM_FILESTORE_READS": "PASS",
+        "BACKUP_CHECKSUM_GATE": "PASS",
+        "INNER_CHECKSUM_GATE": "PASS",
+        "ISOLATED_NETWORK_GATE": "PASS",
+        "PUBLISHED_PORT_COUNT": "0",
+        "DATABASE_RESTORE_COUNT": "4",
+        "DATABASE_IDENTITY_GATE": "PASS",
+        "SCHEMA_HEALTH_GATE": "PASS",
+        "APPLICATION_VOLUME_RESTORE_GATE": "PASS",
+        "ODOO_DATABASE_FILESTORE_PAIR_GATE": "PASS",
+        "ODOO_DATABASE_AUTHENTICATION_GATE": "PASS",
+        "ODOO_ISOLATED_APPLICATION_HEALTH_GATE": "PASS",
+        "ODOO_FILESTORE_OBJECT_READ_GATE": "PASS",
+        "ODOO_FILESTORE_OBJECTS_READ": "37",
+        "REPOSITORY_MATERIALIZATION_MS": "74552",
+        "DATABASE_IMPORT_MS": "65726",
+        "APPLICATION_HEALTH_MS": "4382",
+        "MEASURED_RTO_MS": "157503",
+        "CONFIGURATION_RESTORE_GATE": "PASS",
+        "LOCAL_RUNTIME_IMAGE_ARCHIVE_GATE": "PASS",
+        "EXACT_RUNTIME_IMAGE_ID_BINDING_GATE": "PASS",
+        "MIDDLEWARE_CANDIDATE_IMAGE": "ghcr.io/appolon1908-hue/codestra-middleware@sha256:bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a",
+        "MIDDLEWARE_CANDIDATE_SOURCE_SHA": "63b6c0c8bca5168a1178895bd12858d0b1e8086e",
+        "MIDDLEWARE_MIGRATION_HEAD": "0056_klyrow_delivery_events",
+        "MIDDLEWARE_SCHEMA_TABLE_COUNT": "2",
+        "MIDDLEWARE_ISOLATED_MIGRATION_GATE": "PASS",
+        "MIDDLEWARE_MIGRATION_IDENTITY": "middleware_app",
+        "MIDDLEWARE_PRODUCTION_GRANTS_MATCH": "PASS",
+        "MIDDLEWARE_CANDIDATE_HEALTH_GATE": "PASS",
+        "MIDDLEWARE_CANDIDATE_READINESS_GATE": "PASS",
+        "MIDDLEWARE_CANDIDATE_DATABASE_READINESS": "PASS",
+        "DISPOSABLE_CLEANUP_REQUIRED": "YES"
+      }
+    },
+    "evidence_checksum_check": "PASS",
+    "cleanup": {
+      "containers_remaining": [],
+      "network_remaining": false,
+      "volume_remaining": false,
+      "plaintext_work_directory_remaining": false
+    }
+  },
+  "schema": "codestra.server-a-recovery-observation.v1",
+  "source_fix": {
+    "installed": false,
+    "merge_commit": "56005c75d42ef04fc5083443f1aa54c7f4b1ec9f",
+    "merged_at": "2026-09-09T18:24:49Z",
+    "url": "https://github.com/appolon1908-hue/Middleware-/pull/202"
+  },
+  "after_restore": {
+    "observed_at": "2026-09-09T18:32:20.857523+00:00",
+    "health": [
+      {
+        "name": "codestra-appolon-middleware-integration-api-1",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": null,
+        "pids_limit": null
+      },
+      {
+        "name": "codestra-kong-kong-gateway-1",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": null,
+        "pids_limit": 512
+      },
+      {
+        "name": "codestra-caddy-upstream-gateway",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": null,
+        "pids_limit": null
+      },
+      {
+        "name": "codestra-n8n-1",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": null,
+        "pids_limit": 256
+      },
+      {
+        "name": "codestra-odoo-1",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": null,
+        "pids_limit": null
+      },
+      {
+        "name": "codestra-redis-1",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": null,
+        "pids_limit": null
+      },
+      {
+        "name": "codestra-odoo-internal-proxy",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": null,
+        "pids_limit": null
+      },
+      {
+        "name": "codestra-n8n-internal-proxy",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": null,
+        "pids_limit": null
+      }
+    ]
+  },
+  "scope": "Local recovery proof for installed protected platform tuple 8e365724d1216581471835ee05d5fdc7b13ee501 and candidate image digest bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a. This is not certification of the newer appolon Middleware integration release or of every portfolio workload."
+}

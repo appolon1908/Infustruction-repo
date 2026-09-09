@@ -22,6 +22,9 @@ class KongRuntimeRunnerContractTests(unittest.TestCase):
         cls.controller = (ROOT / "scripts/configure_kong_runtime_runner.sh").read_text(
             encoding="utf-8"
         )
+        cls.workflow = (
+            ROOT / ".github/workflows/kong-runtime-runner-bootstrap.yml"
+        ).read_text(encoding="utf-8")
 
     def test_exact_runner_binary_is_pinned(self) -> None:
         app = self.contract["runner_application"]
@@ -88,7 +91,10 @@ class KongRuntimeRunnerContractTests(unittest.TestCase):
     def test_explicit_stale_replacement_reaches_unregistered_local_state(self) -> None:
         replacement = '"$REPLACE_STALE" && replace_arg=(--replace-stale-registration)'
         self.assertIn(replacement, self.controller)
-        self.assertLess(self.controller.index(replacement), self.controller.index('if [[ -n "$runner_matches" ]]'))
+        self.assertLess(
+            self.controller.index(replacement),
+            self.controller.index('if [[ -n "$runner_matches" ]]'),
+        )
 
     def test_controller_is_fail_closed_ssh(self) -> None:
         for token in ("StrictHostKeyChecking=yes", "UserKnownHostsFile=", "BatchMode=yes"):
@@ -103,6 +109,56 @@ class KongRuntimeRunnerContractTests(unittest.TestCase):
         self.assertFalse(
             self.contract["completion"]["runner_bootstrap_is_certification"]
         )
+
+    def test_protected_workflow_is_manual_exact_job_bootstrap(self) -> None:
+        bootstrap = self.contract["bootstrap"]
+        self.assertEqual(
+            bootstrap["workflow"], ".github/workflows/kong-runtime-runner-bootstrap.yml"
+        )
+        self.assertEqual(
+            bootstrap["environment"], "kong-staging-runtime-runner-bootstrap"
+        )
+        self.assertEqual(
+            bootstrap["confirmation"], "BOOTSTRAP_KONG_STAGING_RUNTIME_RUNNER"
+        )
+        for token in (
+            "workflow_dispatch:",
+            "runtime_run_id:",
+            "BOOTSTRAP_KONG_STAGING_RUNTIME_RUNNER",
+            "environment: kong-staging-runtime-runner-bootstrap",
+            "GITHUB_REF_PROTECTED",
+            "scripts/configure_kong_runtime_runner.sh",
+        ):
+            self.assertIn(token, self.workflow)
+        self.assertNotIn("pull_request_target", self.workflow)
+        self.assertIn("permissions:\n  contents: read", self.workflow)
+
+    def test_workflow_uses_dedicated_kong_bootstrap_inputs(self) -> None:
+        for token in (
+            "CODESTRA_REPOSITORY_ADMIN_TOKEN",
+            "KONG_RUNTIME_RUNNER_SSH_PRIVATE_KEY",
+            "KONG_RUNTIME_RUNNER_KNOWN_HOSTS",
+            "KONG_RUNTIME_RUNNER_HOST",
+            "KONG_RUNTIME_RUNNER_SSH_USER",
+            "KONG_RUNTIME_RUNNER_SSH_PORT",
+        ):
+            self.assertIn(token, self.workflow)
+        self.assertNotIn("secrets.CADDY_RUNNER_SSH_PRIVATE_KEY", self.workflow)
+        self.assertNotIn("vars.CADDY_RUNNER_HOST", self.workflow)
+        self.assertNotIn("gh variable set", self.workflow)
+        self.assertNotIn("gh secret set", self.workflow)
+        self.assertNotIn("KONG_IMAGE_DIGEST", self.workflow)
+
+    def test_workflow_revalidates_contract_before_remote_bootstrap(self) -> None:
+        contract_validation = "python3 scripts/validate_kong_runtime_runner_contract.py"
+        remote_bootstrap = "bash scripts/configure_kong_runtime_runner.sh"
+        self.assertIn(contract_validation, self.workflow)
+        self.assertIn(remote_bootstrap, self.workflow)
+        self.assertLess(
+            self.workflow.index(contract_validation),
+            self.workflow.index(remote_bootstrap),
+        )
+        self.assertIn("if-no-files-found: error", self.workflow)
 
     def test_issue_closure_remains_runtime_gated(self) -> None:
         self.assertEqual(
