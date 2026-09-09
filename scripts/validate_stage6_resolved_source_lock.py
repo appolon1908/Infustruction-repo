@@ -23,6 +23,17 @@ CLASSES = {
 }
 
 
+def validate_social_runtime_artifact(artifact: dict) -> None:
+    """Keep recorded evidence consistent with the resolver's unverified verdict."""
+    if artifact.get("status") != "FAIL_ATTESTATION_VERIFICATION_REQUIRED":
+        raise ValueError("Social Runtime requires reviewed attestation verification")
+    if artifact.get("runtime_image_required") is not True:
+        raise ValueError("Social Runtime requires a runtime image")
+    crypto = artifact.get("cryptographic_verification")
+    if not isinstance(crypto, dict) or crypto.get("status") != "FAIL":
+        raise ValueError("Social Runtime cryptographic verification remains unverified")
+
+
 def main() -> None:
     source = yaml.safe_load(SOURCE.read_text())
     data = yaml.safe_load(RESOLVED.read_text())
@@ -38,6 +49,7 @@ def main() -> None:
     assert resolution["runtime_mutation_performed"] is False
 
     components = resolution["components"]
+    validate_social_runtime_artifact(components["social_runtime"]["artifact_provenance"])
     assert len(components) == len(source["repositories"]) == 23
     for name, row in components.items():
         locked = source["repositories"][name]

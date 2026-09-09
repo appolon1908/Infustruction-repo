@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import resolve_stage6_source_lock as resolver
 import validate_stage6_remediation as remediation
+import validate_stage6_resolved_source_lock as resolved_validator
 
 DIGEST = "sha256:" + "a" * 64
 REVISION = "b" * 40
@@ -85,6 +86,35 @@ class ArtifactTests(unittest.TestCase):
                     manifest.write_text(invalid)
                     result = resolver.artifact_evidence("middleware", definition, {"status": "PASS"})
                     self.assertEqual(result["status"], "FAIL_INVALID_RELEASE_MANIFEST")
+
+
+class ResolvedEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        self.evidence = yaml.safe_load((ROOT / "STAGE6-SOURCE-LOCK.RESOLVED.yaml").read_text())
+        self.artifact = self.evidence["runtime_resolution"]["components"]["social_runtime"]["artifact_provenance"]
+
+    def test_committed_social_runtime_verdict_matches_resolver(self):
+        lock = yaml.safe_load((ROOT / "STAGE6-SOURCE-LOCK.yaml").read_text())
+        with patch.object(resolver, "registry_resolution", side_effect=registry):
+            expected = resolver.artifact_evidence("social_runtime", lock["repositories"]["social_runtime"], {"status": "PASS"})
+        for key in ("status", "runtime_image_required", "cryptographic_verification"):
+            self.assertEqual(self.artifact[key], expected[key])
+        resolved_validator.validate_social_runtime_artifact(self.artifact)
+
+    def test_recorded_social_runtime_cannot_claim_unverified_success(self):
+        changes = [
+            ("status", "PASS_SOURCE_TO_IMAGE_ATTESTED_RUNTIME_AND_ROLLBACK_MISSING"),
+            ("status", "PASS"),
+            ("runtime_image_required", False),
+            ("cryptographic_verification", None),
+            ("cryptographic_verification", {"status": "PASS"}),
+        ]
+        for key, value in changes:
+            with self.subTest(key=key, value=value):
+                artifact = copy.deepcopy(self.artifact)
+                artifact[key] = value
+                with self.assertRaises(ValueError):
+                    resolved_validator.validate_social_runtime_artifact(artifact)
 
 
 class RuntimeBoundaryTests(unittest.TestCase):

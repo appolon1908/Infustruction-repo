@@ -23,8 +23,9 @@ The report path cannot overwrite the input lock.
 
 CI retains the strict nonzero authority check and copies its diagnostic report to
 the job summary even after a failure. It does not use `continue-on-error` or treat
-private repositories, transient errors, or drift as successful validation. A later
-artifact-verification step skipped because the authority gate failed is not PASS.
+private repositories, transient errors, or drift as successful validation. Artifact
+verification runs independently before the authority check, even after an earlier
+step fails, unless the job is cancelled. A skipped check is never PASS.
 
 ## Interpret failures
 

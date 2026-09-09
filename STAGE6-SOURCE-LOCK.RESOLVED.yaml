@@ -953,7 +953,11 @@ runtime_resolution:
       artifact_provenance:
         classification: custom_attested_image
         locked_digest: sha256:8576f49ae136c87efbd87827958a6b3b70e4fc597a3eedbacdaddbd7d3474e87
-        status: PASS_SOURCE_TO_IMAGE_ATTESTED_RUNTIME_AND_ROLLBACK_MISSING
+        status: FAIL_ATTESTATION_VERIFICATION_REQUIRED
+        runtime_image_required: true
+        cryptographic_verification:
+          status: FAIL
+          reason: No reviewed Social Runtime attestation verifier is configured.
       runtime_readback:
         status: NOT_OBSERVED_ON_INSPECTED_HOST
         host: 65.109.65.169
