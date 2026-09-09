@@ -4,6 +4,9 @@
   "environments": {
     "staging-readonly": {
       "protected_branches_only": true,
+      "can_admins_bypass": false,
+      "prevent_self_review": true,
+      "minimum_required_reviewers": 1,
       "required_runner_labels": [
         "self-hosted",
         "codestra-staging"
@@ -20,6 +23,9 @@
     },
     "production-readonly-canary": {
       "protected_branches_only": true,
+      "can_admins_bypass": false,
+      "prevent_self_review": true,
+      "minimum_required_reviewers": 1,
       "required_runner_labels": [
         "self-hosted",
         "codestra-production-canary"
