@@ -233,7 +233,7 @@ def test_invalid_health_target_causes_no_artifact_or_compose_operation(module, m
     monkeypatch.setattr(module.os, "geteuid", lambda: 0)
     monkeypatch.setattr(module, "validate_handoff", lambda *_: None)
     monkeypatch.setattr(module, "validate_recovery_evidence", lambda *_: None)
-    monkeypatch.setattr(module, "root_regular", lambda path: target if str(path).endswith("fixture-staging.json") else {})
+    monkeypatch.setattr(module, "root_regular", lambda path: target if str(path).endswith("fixture-staging.staging-readonly.json") else {})
     def prohibited(*_args, **_kwargs): raise AssertionError("preflight failure must precede operations")
     for name in ("verify_artifact", "docker_compose", "write_evidence", "deploy"):
         monkeypatch.setattr(module, name, prohibited)
