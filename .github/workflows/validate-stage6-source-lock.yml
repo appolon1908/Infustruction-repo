@@ -94,6 +94,12 @@ jobs:
       - run: python scripts/validate_stage6_source_lock.py
       - run: python scripts/validate_stage6_staging_plan.py
       - run: python scripts/validate_stage6_resolved_source_lock.py
+      # Artifact verification is independent of authority-head reachability.
+      # Run it before the authority gate so a failed live query cannot skip
+      # digest/signature/SPDX checks.
+      - name: Verify locked artifacts independently
+        if: ${{ !cancelled() }}
+        run: python scripts/verify_stage6_middleware_artifact.py
       # Never expose a cross-repository credential to PR-controlled code or turn
       # external-head drift into a passing source-lock result.
       - name: Validate live authority heads
@@ -110,4 +116,3 @@ jobs:
               printf '\n```\n'
             } >> "$GITHUB_STEP_SUMMARY"
           fi
-      - run: python scripts/verify_stage6_middleware_artifact.py
