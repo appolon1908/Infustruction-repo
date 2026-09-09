@@ -154,6 +154,8 @@ HTTP_MUTATION_FLAGS = {
 }
 HTTP_MUTATION_METHODS = {"delete", "patch", "post", "put"}
 NETWORK_MUTATION_METHODS = {
+    "connect",
+    "connect_ex",
     "delete",
     "endheaders",
     "patch",
@@ -161,10 +163,14 @@ NETWORK_MUTATION_METHODS = {
     "put",
     "putrequest",
     "send",
+    "sendfile",
+    "sendmsg",
     "send_message",
     "sendall",
     "sendto",
     "sendmail",
+    "write",
+    "writelines",
 }
 NETWORK_CLIENT_HINTS = {
     "aiohttp",
@@ -2309,7 +2315,13 @@ def repository_python_import_has_runtime_mutation(
     script_aliases: dict[str, str] | None,
     working_directory: Path,
 ) -> bool:
-    """Scan import-time effects without treating dormant definitions as calls."""
+    """Fail closed when a local imported module contains runtime mutation code.
+
+    Imported call targets cannot be proven from the caller alone. Scanning only
+    import-time statements lets a caller hide a write in ``helper.deploy()``.
+    The control-plane contract therefore treats any local helper body containing
+    a runtime mutation as executable by its importer.
+    """
 
     try:
         resolved = candidate.resolve(strict=True)
@@ -2325,15 +2337,7 @@ def repository_python_import_has_runtime_mutation(
         tree = ast.parse(source)
     except (OSError, UnicodeError, SyntaxError):
         return True
-    import_time_body: list[ast.stmt] = []
-    for statement in tree.body:
-        copied = deepcopy(statement)
-        if isinstance(copied, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            copied.body = [ast.Pass()]
-        import_time_body.append(copied)
-    import_time = ast.Module(body=import_time_body, type_ignores=[])
-    ast.fix_missing_locations(import_time)
-    if python_source_has_runtime_mutation(ast.unparse(import_time)):
+    if python_source_has_runtime_mutation(source):
         return True
     import_paths = repository_python_import_paths(
         source,
@@ -5842,8 +5846,9 @@ jobs:
         module_directory.mkdir()
         (module_directory / "__init__.py").write_text("", encoding="utf-8")
         (module_directory / "deploy.py").write_text(
-            "import subprocess\n"
-            "subprocess.run(['kubectl', 'apply', '-f', 'runtime.yml'], check=True)\n",
+            "import requests\n"
+            "def deploy():\n"
+            "    requests.post('https://runtime.example/deploy', data=b'x')\n",
             encoding="utf-8",
         )
         require(
@@ -5861,7 +5866,8 @@ jobs:
             "negative long-option Python module regression passed",
         )
         (working_directory / "wrapper.py").write_text(
-            "from ops import deploy\n",
+            "from ops import deploy\n"
+            "deploy.deploy()\n",
             encoding="utf-8",
         )
         require(
@@ -6530,6 +6536,9 @@ subprocess.run(["docker", "login", "ghcr.io", "--username", "test"])
         "Mail('example.invalid').send_message(message)",
         "import aiosmtplib; aiosmtplib.send(message)",
         "import socket; socket.socket().sendto(b'payload', ('runtime.example', 9))",
+        "import socket; socket.socket().makefile('wb').write(b'payload')",
+        "import socket; socket.socket().sendmsg([b'payload'])",
+        "import socket; socket.socket().sendfile(open('payload.bin', 'rb'))",
         "import requests; (session := requests.Session()).post(url, data=b'x')",
         "import os; os.system.__call__('kubectl apply -f runtime.yml')",
     ):
