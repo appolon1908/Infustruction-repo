@@ -161,7 +161,7 @@
       "/opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml",
       "/opt/codestra/middleware/deploy/internal-n8n-private/compose.internal-n8n.yaml"
     ],
-    "sentinelx_write_access": "BLOCKED_NO_WRITABLE_PATHS",
+    "sentinelx_write_access": "RESOLVED_EXACT_COMPOSE_FILES",
     "server_a_target_assignment_pr": "https://github.com/appolon1908-hue/Infustruction-repo/pull/112",
     "server_a_target_assignment_status": "AWAITING_INDEPENDENT_REVIEW"
   },
@@ -238,10 +238,12 @@
   },
   "schema": "codestra.server-a-recovery-observation.v1",
   "source_fix": {
-    "installed": false,
+    "installed": true,
     "merge_commit": "56005c75d42ef04fc5083443f1aa54c7f4b1ec9f",
     "merged_at": "2026-09-09T18:24:49Z",
-    "url": "https://github.com/appolon1908-hue/Middleware-/pull/202"
+    "url": "https://github.com/appolon1908-hue/Middleware-/pull/202",
+    "installation_verified_at": "2026-09-09T18:54:07.285730+00:00",
+    "installation_evidence": "proxy-installation.json"
   },
   "after_restore": {
     "observed_at": "2026-09-09T18:32:20.857523+00:00",
@@ -320,5 +322,141 @@
       }
     ]
   },
-  "scope": "Local recovery proof for installed protected platform tuple 8e365724d1216581471835ee05d5fdc7b13ee501 and candidate image digest bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a. This is not certification of the newer appolon Middleware integration release or of every portfolio workload."
+  "scope": "Local recovery proof for installed protected platform tuple 8e365724d1216581471835ee05d5fdc7b13ee501 and candidate image digest bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a. This is not certification of the newer appolon Middleware integration release or of every portfolio workload.",
+  "after_permanent_installation": {
+    "observed_at": "2026-09-09T18:54:07.285730+00:00",
+    "proxies": [
+      {
+        "name": "codestra-odoo-internal-proxy",
+        "id": "a4eeef18cb8286ae01251cea47ceaad8f312f4608b455156b91bdf929639ad81",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": true,
+        "pids_limit": 256,
+        "pid1": "docker-init",
+        "descendant_zombies": 0,
+        "retained_successful_healthchecks": 5,
+        "health_checks": [
+          {
+            "start": "2026-09-09T14:51:55.5868403-04:00",
+            "end": "2026-09-09T14:51:55.665553672-04:00",
+            "exit": 0
+          },
+          {
+            "start": "2026-09-09T14:52:25.666118723-04:00",
+            "end": "2026-09-09T14:52:25.745731994-04:00",
+            "exit": 0
+          },
+          {
+            "start": "2026-09-09T14:52:55.746232408-04:00",
+            "end": "2026-09-09T14:52:55.833852033-04:00",
+            "exit": 0
+          },
+          {
+            "start": "2026-09-09T14:53:25.835268102-04:00",
+            "end": "2026-09-09T14:53:25.922275371-04:00",
+            "exit": 0
+          },
+          {
+            "start": "2026-09-09T14:53:55.922856123-04:00",
+            "end": "2026-09-09T14:53:56.005967259-04:00",
+            "exit": 0
+          }
+        ]
+      },
+      {
+        "name": "codestra-n8n-internal-proxy",
+        "id": "e91bc042f5e3c05f63c58b68a28c742bf2dcc5a9ad29484332e6020860d73349",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0,
+        "init": true,
+        "pids_limit": 256,
+        "pid1": "docker-init",
+        "descendant_zombies": 0,
+        "retained_successful_healthchecks": 5,
+        "health_checks": [
+          {
+            "start": "2026-09-09T14:51:56.453578959-04:00",
+            "end": "2026-09-09T14:51:56.532304212-04:00",
+            "exit": 0
+          },
+          {
+            "start": "2026-09-09T14:52:26.533343964-04:00",
+            "end": "2026-09-09T14:52:26.611829853-04:00",
+            "exit": 0
+          },
+          {
+            "start": "2026-09-09T14:52:56.612696-04:00",
+            "end": "2026-09-09T14:52:56.692523676-04:00",
+            "exit": 0
+          },
+          {
+            "start": "2026-09-09T14:53:26.69298209-04:00",
+            "end": "2026-09-09T14:53:26.779825154-04:00",
+            "exit": 0
+          },
+          {
+            "start": "2026-09-09T14:53:56.781019842-04:00",
+            "end": "2026-09-09T14:53:56.867969833-04:00",
+            "exit": 0
+          }
+        ]
+      }
+    ],
+    "core_health": [
+      {
+        "name": "codestra-appolon-middleware-integration-api-1",
+        "id": "69acb7a68e721688c96d658d26d141fd606d11bd0d32034b69b6079a6847d406",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0
+      },
+      {
+        "name": "codestra-kong-kong-gateway-1",
+        "id": "fb2135352675d9852ebd4fc525d2525e7137897a1eecd42f6bfb3ec0d3367ab4",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0
+      },
+      {
+        "name": "codestra-caddy-upstream-gateway",
+        "id": "aa071a86edc6db8795c595a63bbce5638398bc987796e56e6ee24842aaa7cb6f",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0
+      },
+      {
+        "name": "codestra-n8n-1",
+        "id": "4dcf9f62fe5c43ea1c01842d46cddaf72b0767392d1b36a7cd8aee4640113f30",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0
+      },
+      {
+        "name": "codestra-odoo-1",
+        "id": "10ffecb3fa3fdf9126e1be69fa9fafa6a6784f7c585fea3b505260e00d0c7600",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0
+      },
+      {
+        "name": "codestra-redis-1",
+        "id": "5b74ffd735316fe1905d62a328087acc922b2417dab6c8173228d4c172ee01cc",
+        "running": true,
+        "paused": false,
+        "health": "healthy",
+        "last_health_exit": 0
+      }
+    ],
+    "host_ssl_client_zombies": 0
+  }
 }

@@ -1,0 +1,246 @@
+{
+  "authorization": "Owner approved permanent installation and repository updates in this conversation.",
+  "deployment_constraints": {
+    "daemon_restart": false,
+    "dependency_recreation": false,
+    "host_reboot": false,
+    "image_builds": false,
+    "image_pulls": false,
+    "production_database_restore": false,
+    "security_profile_changes": false
+  },
+  "execution_access": {
+    "assistant_changed_agent_policy": false,
+    "full_filesystem_write_access_required": false,
+    "method": "SentinelX structured edit after exact-file rw access became available, followed by guarded service-scoped Docker Compose recreation."
+  },
+  "file_backups": [
+    "/opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml.bak.20260909-144941-961974",
+    "/opt/codestra/middleware/deploy/internal-n8n-private/compose.internal-n8n.yaml.bak.20260909-145131-559288"
+  ],
+  "host": {
+    "hostname": "middleware",
+    "private_ip": "10.40.0.1",
+    "public_ip": "65.109.65.169"
+  },
+  "operations": [
+    {
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "codestra-odoo-internal-proxy",
+        "-f",
+        "/opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml",
+        "up",
+        "--detach",
+        "--no-deps",
+        "--no-build",
+        "--pull",
+        "never",
+        "--force-recreate",
+        "--wait",
+        "--wait-timeout",
+        "45",
+        "odoo-internal-proxy"
+      ],
+      "compose_path": "/opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml",
+      "compose_sha256": "fdadd4356476246f11a0eedae0b92c0fa8805670ea580b7b19b272d2b73517a9",
+      "finished_at": "2026-09-09T18:50:55.932819+00:00",
+      "health": "healthy",
+      "image": "codestra/caddy@sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5",
+      "image_id": "sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5",
+      "image_unchanged": true,
+      "init": true,
+      "new_id": "a4eeef18cb8286ae01251cea47ceaad8f312f4608b455156b91bdf929639ad81",
+      "old_id": "84f4b7338df34d0ee8a76b4a9ed916de5cc3756648a6053e851e97aa79beec05",
+      "pid1": "docker-init",
+      "pids_limit": 256,
+      "private_networks_and_aliases_unchanged": true,
+      "project": "codestra-odoo-internal-proxy",
+      "running": true,
+      "security_settings_unchanged": true,
+      "service": "odoo-internal-proxy",
+      "started_at": "2026-09-09T18:50:49.070357+00:00"
+    },
+    {
+      "bind_mount_order_changed": true,
+      "bind_mount_values_unchanged": true,
+      "compose_path": "/opt/codestra/middleware/deploy/internal-n8n-private/compose.internal-n8n.yaml",
+      "compose_sha256": "70496dc8ebe77032882bc7259b1f7c65bb1eefbff76baa5d517d748c7bc2829b",
+      "container_started_at": "2026-09-09T18:51:51.191960109Z",
+      "health": "healthy",
+      "image": "codestra/caddy@sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5",
+      "image_id": "sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5",
+      "image_unchanged": true,
+      "init": true,
+      "new_bind_order": [
+        "/etc/codestra/pki/internal-integration/n8n.crt:/run/secrets/n8n_internal_tls_cert:ro",
+        "/etc/codestra/pki/internal-integration/n8n.key:/run/secrets/n8n_internal_tls_key:ro",
+        "/etc/codestra/pki/internal-integration/ca.crt:/run/secrets/internal_integration_ca:ro",
+        "/opt/codestra/middleware/deploy/internal-n8n-private/Caddyfile:/etc/caddy/Caddyfile:ro"
+      ],
+      "new_id": "e91bc042f5e3c05f63c58b68a28c742bf2dcc5a9ad29484332e6020860d73349",
+      "old_bind_order": [
+        "/opt/codestra/middleware/deploy/internal-n8n-private/Caddyfile:/etc/caddy/Caddyfile:ro",
+        "/etc/codestra/pki/internal-integration/n8n.crt:/run/secrets/n8n_internal_tls_cert:ro",
+        "/etc/codestra/pki/internal-integration/n8n.key:/run/secrets/n8n_internal_tls_key:ro",
+        "/etc/codestra/pki/internal-integration/ca.crt:/run/secrets/internal_integration_ca:ro"
+      ],
+      "old_id": "2e15d59d9d9cd6eaec032b8807d87228bbfa4a10d2fb0147a1ed124d5ac46b38",
+      "pid1": "docker-init",
+      "pids_limit": 256,
+      "private_networks_and_aliases_unchanged": true,
+      "project": "codestra-internal-n8n",
+      "running": true,
+      "security_settings_unchanged": true,
+      "service": "n8n-internal-proxy",
+      "verified_at": "2026-09-09T18:52:45.128641+00:00"
+    }
+  ],
+  "previous_recovery_evidence_pr": "https://github.com/appolon1908-hue/Infustruction-repo/pull/113",
+  "readback": {
+    "core_health": [
+      {
+        "health": "healthy",
+        "id": "69acb7a68e721688c96d658d26d141fd606d11bd0d32034b69b6079a6847d406",
+        "last_health_exit": 0,
+        "name": "codestra-appolon-middleware-integration-api-1",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "id": "fb2135352675d9852ebd4fc525d2525e7137897a1eecd42f6bfb3ec0d3367ab4",
+        "last_health_exit": 0,
+        "name": "codestra-kong-kong-gateway-1",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "id": "aa071a86edc6db8795c595a63bbce5638398bc987796e56e6ee24842aaa7cb6f",
+        "last_health_exit": 0,
+        "name": "codestra-caddy-upstream-gateway",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "id": "4dcf9f62fe5c43ea1c01842d46cddaf72b0767392d1b36a7cd8aee4640113f30",
+        "last_health_exit": 0,
+        "name": "codestra-n8n-1",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "id": "10ffecb3fa3fdf9126e1be69fa9fafa6a6784f7c585fea3b505260e00d0c7600",
+        "last_health_exit": 0,
+        "name": "codestra-odoo-1",
+        "paused": false,
+        "running": true
+      },
+      {
+        "health": "healthy",
+        "id": "5b74ffd735316fe1905d62a328087acc922b2417dab6c8173228d4c172ee01cc",
+        "last_health_exit": 0,
+        "name": "codestra-redis-1",
+        "paused": false,
+        "running": true
+      }
+    ],
+    "host_ssl_client_zombies": 0,
+    "observed_at": "2026-09-09T18:54:07.285730+00:00",
+    "proxies": [
+      {
+        "descendant_zombies": 0,
+        "health": "healthy",
+        "health_checks": [
+          {
+            "end": "2026-09-09T14:51:55.665553672-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:51:55.5868403-04:00"
+          },
+          {
+            "end": "2026-09-09T14:52:25.745731994-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:52:25.666118723-04:00"
+          },
+          {
+            "end": "2026-09-09T14:52:55.833852033-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:52:55.746232408-04:00"
+          },
+          {
+            "end": "2026-09-09T14:53:25.922275371-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:53:25.835268102-04:00"
+          },
+          {
+            "end": "2026-09-09T14:53:56.005967259-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:53:55.922856123-04:00"
+          }
+        ],
+        "id": "a4eeef18cb8286ae01251cea47ceaad8f312f4608b455156b91bdf929639ad81",
+        "init": true,
+        "last_health_exit": 0,
+        "name": "codestra-odoo-internal-proxy",
+        "paused": false,
+        "pid1": "docker-init",
+        "pids_limit": 256,
+        "retained_successful_healthchecks": 5,
+        "running": true
+      },
+      {
+        "descendant_zombies": 0,
+        "health": "healthy",
+        "health_checks": [
+          {
+            "end": "2026-09-09T14:51:56.532304212-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:51:56.453578959-04:00"
+          },
+          {
+            "end": "2026-09-09T14:52:26.611829853-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:52:26.533343964-04:00"
+          },
+          {
+            "end": "2026-09-09T14:52:56.692523676-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:52:56.612696-04:00"
+          },
+          {
+            "end": "2026-09-09T14:53:26.779825154-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:53:26.69298209-04:00"
+          },
+          {
+            "end": "2026-09-09T14:53:56.867969833-04:00",
+            "exit": 0,
+            "start": "2026-09-09T14:53:56.781019842-04:00"
+          }
+        ],
+        "id": "e91bc042f5e3c05f63c58b68a28c742bf2dcc5a9ad29484332e6020860d73349",
+        "init": true,
+        "last_health_exit": 0,
+        "name": "codestra-n8n-internal-proxy",
+        "paused": false,
+        "pid1": "docker-init",
+        "pids_limit": 256,
+        "retained_successful_healthchecks": 5,
+        "running": true
+      }
+    ]
+  },
+  "result": "PASS",
+  "schema": "codestra.private-proxy-installation-observation.v1",
+  "scope": "Permanent process lifecycle settings for the two private TLS proxies only; full-stack release certification remains incomplete.",
+  "source": {
+    "merge_commit": "56005c75d42ef04fc5083443f1aa54c7f4b1ec9f",
+    "pr": 202,
+    "repository": "appolon1908-hue/Middleware-"
+  }
+}

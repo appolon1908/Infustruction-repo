@@ -23,40 +23,18 @@ The installed operator SHA-256 was `9ddaeb6df45514688f66db7ea9f8e86f93e6876b7eb9
 
 These results prove local recovery for protected platform commit `8e365724d1216581471835ee05d5fdc7b13ee501` and Middleware candidate digest `sha256:bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a`. They do not certify the newer appolon integration release, offsite restoration on an independent machine, or the full portfolio. No fresh offsite upload or independent recovery-key proof was performed in this operation.
 
-## Permanent proxy fix
+## Permanent proxy fix — installed
 
-[Middleware PR #202](https://github.com/appolon1908-hue/Middleware-/pull/202) merged at 18:24:49Z as `56005c75d42ef04fc5083443f1aa54c7f4b1ec9f`. It adds `init: true` and `pids_limit: 256` to the two private Caddy proxies.
+[Middleware PR #202](https://github.com/appolon1908-hue/Middleware-/pull/202) merged at 18:24:49Z as `56005c75d42ef04fc5083443f1aa54c7f4b1ec9f`. Its `init: true` and `pids_limit: 256` settings are now **INSTALLED AND VERIFIED** on both private proxies.
 
-The earlier targeted restarts recovered service health. The permanent settings remain **NOT INSTALLED**: SentinelX reports no writable paths, and both live proxies still report no init process or PID limit. No alternative file-writing mechanism was used to evade the rejected edit.
+SentinelX began advertising write access to the two exact Compose files before installation. Structured edits passed YAML validation and created timestamped backups. The assistant did not change its own access policy or grant server-wide write access.
 
-## Host administrator access step
+The effective Compose configuration was compared with the pre-installation configuration and differed only by the approved init and PID-limit fields. Odoo was recreated first and verified healthy, followed by n8n. Both retained the exact live image digest `sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5`. No builds, pulls, dependency recreations, daemon restart or host reboot were performed.
 
-The owner has approved these two file edits. The remaining requirement is technical access, not another chat approval.
+At 18:54:07Z, each proxy reported `docker-init` as PID 1, PID limit 256, five successful retained TLS health checks and zero descendant zombies. The host-wide `ssl_client` zombie count was zero. All six requested core services were healthy and unpaused.
 
-From an authorized Server A terminal, open the existing agent configuration:
+The n8n recreation changed the order of the bind-mount list. The first verification stopped at that difference; subsequent read-back proved exact equality of the mount values with no duplicates. The image, mounts, capabilities, read-only filesystem, no-new-privileges setting, private networks and aliases were preserved.
 
-```sh
-sudoedit /etc/sentinelx/config.yaml
-```
+Exact before/after container IDs, file hashes, backups, guarded apply details and final health observations are in [proxy-installation.json](proxy-installation.json). Earlier observations in [recovery.json](recovery.json) retain their original timestamps; the new `after_permanent_installation` observation records the installed state.
 
-Append these two entries to the existing `file_ops.paths` list, preserving every existing entry and the rest of the configuration:
-
-```yaml
-    - path: /opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml
-      access: rw
-    - path: /opt/codestra/middleware/deploy/internal-n8n-private/compose.internal-n8n.yaml
-      access: rw
-```
-
-Reload the active agent configuration by restarting its verified unit:
-
-```sh
-sudo systemctl restart sentinelx-cloud-core
-sudo systemctl is-active sentinelx-cloud-core
-```
-
-After reconnection, confirm that SentinelX advertises exactly those additional writable files. The assistant must not modify its own access policy through another execution path.
-
-The subsequent approved deployment must use the infrastructure authority, preserve local Compose changes and the exact live image digest `sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5`, validate the effective two-setting diff, and recreate only one proxy service at a time with no image build/pull or dependency recreation. Verify init, PID limit, security settings, networks, TLS health and process reaping before proceeding to the other proxy.
-
-[Infrastructure PR #112](https://github.com/appolon1908-hue/Infustruction-repo/pull/112) separately records the owner's same-Server-A staging assignment and awaits independent review. Existing release, runner identity, staging isolation and production certification gates remain applicable.
+[Infrastructure PR #112](https://github.com/appolon1908-hue/Infustruction-repo/pull/112) separately addresses the owner's same-Server-A staging assignment. Existing release, runner identity, staging isolation, offsite recovery and full production certification gates remain applicable.
