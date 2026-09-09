@@ -19,44 +19,24 @@ The machine-readable observations and hashes are in [recovery.json](recovery.jso
 | Disposable containers, volume, network and plaintext work directory | Absent in subsequent read-back |
 | Runtime safety checks | Zero active calls/channels; required delivery flags false |
 
-The installed operator SHA-256 was `9ddaeb6df45514688f66db7ea9f8e86f93e6876b7eb90e6460f9ce251bad26a0`, and its installed-file manifest verified before each operation. The operator validated the existing owner maintenance waiver; this work did not change that waiver, the release tuple or operator policy.
+The installed operator SHA-256 was `9ddaeb6df45514688f66db7ea9f8e86f93e6876b7eb90e6460f9ce251bad26a0`, and its installed-file manifest verified before each operation. The operator validated the existing maintenance waiver available to that operation; this repository evidence does not independently establish a durable authorization record for any new runtime action.
 
 These results prove local recovery for protected platform commit `8e365724d1216581471835ee05d5fdc7b13ee501` and Middleware candidate digest `sha256:bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a`. They do not certify the newer appolon integration release, offsite restoration on an independent machine, or the full portfolio. No fresh offsite upload or independent recovery-key proof was performed in this operation.
 
-## Permanent proxy fix
+## Permanent proxy fix — installed, with one invocation-evidence gap
 
-[Middleware PR #202](https://github.com/appolon1908-hue/Middleware-/pull/202) merged at 18:24:49Z as `56005c75d42ef04fc5083443f1aa54c7f4b1ec9f`. It adds `init: true` and `pids_limit: 256` to the two private Caddy proxies.
+[Middleware PR #202](https://github.com/appolon1908-hue/Middleware-/pull/202) merged at 18:24:49Z as `56005c75d42ef04fc5083443f1aa54c7f4b1ec9f`. Its `init: true` and `pids_limit: 256` settings are now **INSTALLED AND VERIFIED BY POST-STATE READ-BACK** on both private proxies.
 
-The earlier targeted restarts recovered service health. The permanent settings remain **NOT INSTALLED**: SentinelX reports no writable paths, and both live proxies still report no init process or PID limit. No alternative file-writing mechanism was used to evade the rejected edit.
+SentinelX began advertising write access to the two exact Compose files before installation. Structured edits passed YAML validation and created timestamped backups. The assistant did not change its own access policy or grant server-wide write access.
 
-## Host administrator access step
+For the Odoo private proxy, the exact guarded Compose recreation command is durably captured in [proxy-installation.json](proxy-installation.json) and includes `--no-deps`, `--no-build`, and `--pull never`. For the n8n private proxy, the exact recreation command, command result, and operation timestamps are **NOT_DURABLY_CAPTURED** in the evidence available to this PR. They are not reconstructed or inferred from post-state. Therefore this evidence does **not** claim that those three invocation guards are proven for the n8n recreation.
 
-The owner has approved these two file edits. The remaining requirement is technical access, not another chat approval.
+Post-installation read-back does prove that both proxies retained the exact live image digest `sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5`, report `docker-init` as PID 1, enforce PID limit 256, remain healthy, preserve the recorded mounts/security/private-network state, and have zero descendant zombies. At 18:54:07Z the host-wide `ssl_client` zombie count was zero and all six requested core services were healthy and unpaused.
 
-From an authorized Server A terminal, open the existing agent configuration:
+The n8n post-state also showed a changed bind-mount list order. The first verification stopped at that difference; subsequent read-back proved equality of the mount values with no duplicates. That post-state evidence does not substitute for the missing exact n8n invocation record.
 
-```sh
-sudoedit /etc/sentinelx/config.yaml
-```
+Exact before/after container IDs, file hashes, backups, the captured Odoo apply details, the explicit n8n evidence gap, and final health observations are in [proxy-installation.json](proxy-installation.json). Earlier observations in [recovery.json](recovery.json) retain their original timestamps; the new `after_permanent_installation` observation records the installed state.
 
-Append these two entries to the existing `file_ops.paths` list, preserving every existing entry and the rest of the configuration:
+**Full production certification remains BLOCKED** on the missing durable n8n recreation invocation evidence (unless a pre-existing durable record is found), or on a separately authorized fresh audited operation that produces that evidence. This PR does not authorize such an operation.
 
-```yaml
-    - path: /opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml
-      access: rw
-    - path: /opt/codestra/middleware/deploy/internal-n8n-private/compose.internal-n8n.yaml
-      access: rw
-```
-
-Reload the active agent configuration by restarting its verified unit:
-
-```sh
-sudo systemctl restart sentinelx-cloud-core
-sudo systemctl is-active sentinelx-cloud-core
-```
-
-After reconnection, confirm that SentinelX advertises exactly those additional writable files. The assistant must not modify its own access policy through another execution path.
-
-The subsequent approved deployment must use the infrastructure authority, preserve local Compose changes and the exact live image digest `sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5`, validate the effective two-setting diff, and recreate only one proxy service at a time with no image build/pull or dependency recreation. Verify init, PID limit, security settings, networks, TLS health and process reaping before proceeding to the other proxy.
-
-[Infrastructure PR #112](https://github.com/appolon1908-hue/Infustruction-repo/pull/112) separately records the owner's same-Server-A staging assignment and awaits independent review. Existing release, runner identity, staging isolation and production certification gates remain applicable.
+[Infrastructure PR #112](https://github.com/appolon1908-hue/Infustruction-repo/pull/112) separately addresses the same-Server-A staging assignment. Existing release, runner identity, staging isolation, offsite recovery and full production certification gates remain applicable.
