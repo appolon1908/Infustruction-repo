@@ -46,7 +46,8 @@ jobs:
           python3 -m unittest -v tests/test_kong_runtime_runner_contract.py
           grep -Fq 'EXACT_KONG_RUNTIME_RUN_ID: "34371180349"' "$workflow"
           grep -Fq 'ONE_SHOT_AUTHORITY: "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"' "$workflow"
-          if grep -Fq 'head_commit.message' "$workflow"; then
+          merge_message_key=head_commit'.message'
+          if grep -Fq "$merge_message_key" "$workflow"; then
             echo 'ONE_SHOT_VALIDATION=FAIL reason=merge_message_dependency' >&2
             exit 1
           fi
@@ -95,7 +96,8 @@ jobs:
           git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA" -- "$workflow" | grep -Fxq "$workflow"
           grep -Fq 'EXACT_KONG_RUNTIME_RUN_ID: "34371180349"' "$workflow"
           grep -Fq 'ONE_SHOT_AUTHORITY: "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"' "$workflow"
-          if grep -Fq 'head_commit.message' "$workflow"; then
+          merge_message_key=head_commit'.message'
+          if grep -Fq "$merge_message_key" "$workflow"; then
             echo 'ONE_SHOT_AUTHORITY=FAIL reason=merge_message_dependency' >&2
             exit 1
           fi
