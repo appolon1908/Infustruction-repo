@@ -90,7 +90,8 @@ ssh-keygen -F "$known_host_lookup" -f "$KNOWN_HOSTS_FILE" >/dev/null 2>&1 \
   || fail known_hosts_target_missing
 [[ -x "$INSTALLER" && ! -L "$INSTALLER" ]] || fail installer_unavailable
 
-for tool in awk base64 cat gh jq mkdir python3 sha256sum ssh ssh-keygen stat; do
+for tool in awk base64 cat chmod dirname gh grep jq mkdir python3 seq sha256sum \
+            sleep ssh ssh-keygen stat wc; do
   command -v "$tool" >/dev/null || fail "missing_tool:${tool}"
 done
 
