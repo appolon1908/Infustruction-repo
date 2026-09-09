@@ -13,6 +13,10 @@
 | Approved Kong snapshot retention job | PASS |
 | New Kong archive readback and ciphertext checksum comparison | PASS |
 | Protected control-plane source, schema, and worker validation | PASS |
+| Kong protected-main candidate artifact verification | PASS |
+| Kong Appolon preflight repair source checks | PASS |
+| Kong isolated restore rehearsal | BLOCKED — required image access rejected |
+| Authenticated Kong staging runtime certification | NOT RUN |
 | Appolon Kong runtime integration gate | FAIL |
 | Full production certification | INCOMPLETE |
 
@@ -23,3 +27,7 @@ At 21:49 UTC, the exact new offsite archive was read back and its ciphertext che
 Kong's source repository is [appolon1908-hue/Kong](https://github.com/appolon1908-hue/Kong). Its runtime integration check against the Appolon Middleware instance failed. Source ownership, container health, and backup success do not by themselves establish a certified production integration.
 
 A fresh protected control-plane validation passed at 2026-09-09 21:31 UTC. This validates the installed control-plane source, required mailbox tables, worker health, and disabled external-delivery state. It does not activate a release or clear the database recovery and traffic-opening gates.
+
+Kong's protected-main candidate artifact was independently retrieved and validated with the repository's canonical verifier at 22:22 UTC. The Appolon preflight repair is tracked in [Kong PR #97](https://github.com/appolon1908-hue/Kong/pull/97); its focused tests, migration manifests, and reported GitHub checks pass. This is source and artifact evidence only. A fresh read-only runtime preflight still fails.
+
+The isolated Kong restore rehearsal could not start because the registry rejected access to its required pinned PostgreSQL image. No restored database or restore PASS is claimed. Staging has no registered runtime runner or completed authenticated runtime-certification run. The coordinated Admin/operator migration and protected review remain outstanding before gateway activation.
