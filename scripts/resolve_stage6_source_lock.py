@@ -392,16 +392,19 @@ def runtime_evidence(component: str, definition: dict, runtime: list[dict], lock
                         "classification": "frozen_observed_digest",
                         "historical_digest": workload["image_digest"],
                         "historical_rollback_digest": workload["rollback_digest"],
-                        "container_id": "UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED",
+                        "container_id": "HISTORICAL_CONTAINER_ID_NOT_RECORDED",
                         "host": "65.109.65.169",
                     }
                 )
         return {
-            "status": "FAIL_FRESH_CORE_READBACK_BLOCKED",
+            "status": "FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND",
             "host": "65.109.65.169",
             "containers": historical,
             "digest_match": False,
-            "read_only_probe": "DENIED_UNSUPPORTED_FORCED_COMMAND",
+            "read_only_probe": "RECORDED_READBACK_SUCCEEDED_RUNTIME_DRIFT",
+            "evidence": "STAGE6-RUNTIME-PROVENANCE.md",
+            "observed_at": "2026-08-31T22:10:00Z",
+            "fresh_runtime_verification_performed": False,
         }
     return {
         "status": "NOT_OBSERVED_ON_INSPECTED_HOST",
@@ -529,7 +532,7 @@ def main() -> None:
             "legacy_stage6_core_runtime": {
                 "classification": "frozen_observed_digest",
                 "workloads": 22,
-                "fresh_readback": "BLOCKED",
+                "recorded_readback": "SUCCEEDED_RUNTIME_DRIFT",
             },
             "klyrow_postal": {
                 "classification": "out_of_batch",
@@ -549,10 +552,10 @@ def main() -> None:
                 "required": len(components),
             },
             "runtime_readback": {
-                "status": "FAIL_INCOMPLETE_CORE_READBACK",
+                "status": "FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND",
                 "fresh_verified_digest_matches": runtime_matches,
                 "nonzero_match_requirement": "PASS" if runtime_matches > 0 else "FAIL",
-                "core_host_readback": "BLOCKED_DENIED_UNSUPPORTED_FORCED_COMMAND",
+                "core_host_readback": "RECORDED_READBACK_SUCCEEDED_RUNTIME_DRIFT",
             },
             "activation_eligibility": {
                 "status": "FAIL",
@@ -580,13 +583,13 @@ def main() -> None:
             "minimum_required": 1,
             "result": "PASS_NONZERO_PARTIAL" if runtime_matches > 0 else "FAIL_ZERO_MATCHES",
             "core_host": "65.109.65.169",
-            "core_result": "BLOCKED",
+            "core_result": "RECORDED_READBACK_SUCCEEDED_RUNTIME_DRIFT",
         },
         "stage6_klyrow_postal_isolation": isolation,
         "components": components,
         "decision": (
             "SOURCE_LOCK remains FAIL. Repository integrity passes independently, but "
-            "artifact provenance is partial, core runtime read-back is blocked, private "
+            "artifact provenance is partial, recorded core read-back shows absent or unbound components, private "
             "Middleware staging is stale and held, Stage 7 activation is pending review, "
             "and production activation remains prohibited."
         ),

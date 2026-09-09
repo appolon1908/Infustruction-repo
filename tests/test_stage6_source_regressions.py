@@ -178,3 +178,15 @@ class RemediationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_recorded_core_readback_gate_matches_final_evidence():
+    root = Path(__file__).resolve().parents[1]
+    source = yaml.safe_load((root / "STAGE6-SOURCE-LOCK.yaml").read_text())
+    resolved = yaml.safe_load((root / "STAGE6-SOURCE-LOCK.RESOLVED.yaml").read_text())
+    gate = source["gates"]["runtime_readback"]
+    assert gate["status"] == "FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND"
+    assert gate["fresh_runtime_verification_performed"] is False
+    assert "Docker read-back now succeeds" in (root / gate["evidence"]).read_text()
+    assert resolved["gates"]["runtime_readback"] == gate
+    assert source["runtime_mutation_authorized"] is False

@@ -309,10 +309,13 @@ gates:
     custom_signed_image_components: [middleware]
     source_only_components: [marketing, ai, communication, social_control, sdk, telemetry]
   runtime_readback:
-    status: FAIL_FRESH_CORE_READBACK_BLOCKED
+    status: FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND
     bounded_inventory_required: true
     minimum_verified_digest_matches: 1
     inspected_core_host: 65.109.65.169
+    evidence: STAGE6-RUNTIME-PROVENANCE.md
+    observed_at: '2026-08-31T22:10:00Z'
+    fresh_runtime_verification_performed: false
     historical_locked_workloads: 22
   activation_eligibility:
     status: FAIL

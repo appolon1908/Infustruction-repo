@@ -126,7 +126,7 @@ def main() -> None:
     assert gates["repository_integrity"]["repositories_expected"] == 23
     assert gates["repository_integrity"]["infrastructure_evidence_base_sha"] == "244a743a771d1f93c1445392bb45f8325908ca72"
     assert gates["artifact_provenance"]["status"] == "FAIL_PARTIAL"
-    assert gates["runtime_readback"]["status"] == "FAIL_FRESH_CORE_READBACK_BLOCKED"
+    assert gates["runtime_readback"]["status"] == "FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND"
     assert gates["runtime_readback"]["minimum_verified_digest_matches"] > 0
     assert gates["activation_eligibility"] == {
         "status": "FAIL",
@@ -148,7 +148,7 @@ def main() -> None:
 
     print("REPOSITORY_INTEGRITY=PASS")
     print("ARTIFACT_PROVENANCE=FAIL_PARTIAL")
-    print("RUNTIME_READBACK=FAIL_FRESH_CORE_READBACK_BLOCKED")
+    print("RUNTIME_READBACK=FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND")
     print("ACTIVATION_ELIGIBILITY=FAIL")
     print("SOURCE_LOCK=FAIL")
     print("PRODUCTION_AUTHORIZED=NO")

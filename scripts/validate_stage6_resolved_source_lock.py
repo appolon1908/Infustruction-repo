@@ -63,7 +63,7 @@ def main() -> None:
         "required": 23,
     }
     assert gates["artifact_provenance"]["status"] == "FAIL_PARTIAL"
-    assert gates["runtime_readback"]["status"] == "FAIL_INCOMPLETE_CORE_READBACK"
+    assert gates["runtime_readback"]["status"] == "FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND"
     assert gates["runtime_readback"]["fresh_verified_digest_matches"] >= 1
     assert gates["runtime_readback"]["nonzero_match_requirement"] == "PASS"
     assert gates["activation_eligibility"]["status"] == "FAIL"
@@ -129,7 +129,7 @@ def main() -> None:
     print("RESOLVED_SOURCE_LOCK_VALIDATION=PASS")
     print("REPOSITORY_INTEGRITY=PASS")
     print("ARTIFACT_PROVENANCE=FAIL_PARTIAL")
-    print("RUNTIME_READBACK=FAIL_INCOMPLETE_CORE_READBACK")
+    print("RUNTIME_READBACK=FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND")
     print("RUNTIME_DIGEST_MATCH=NONZERO")
     print("ACTIVATION_ELIGIBILITY=FAIL")
     print("SOURCE_LOCK=FAIL")

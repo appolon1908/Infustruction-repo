@@ -7,7 +7,7 @@ runtime_preflight:
   source_lock: FAIL
   repository_integrity: PASS
   artifact_provenance: FAIL_PARTIAL
-  runtime_readback: FAIL_FRESH_CORE_READBACK_BLOCKED
+  runtime_readback: FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND
   activation_eligibility: FAIL
   stage6_preflight: FAIL_SCOPED_RUNTIME_READBACK
   stage6_path_business_writes: NOT_PROVEN_DISABLED

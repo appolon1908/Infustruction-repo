@@ -668,10 +668,13 @@ gates:
     - sdk
     - telemetry
   runtime_readback:
-    status: FAIL_FRESH_CORE_READBACK_BLOCKED
+    status: FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND
     bounded_inventory_required: true
     minimum_verified_digest_matches: 1
     inspected_core_host: 65.109.65.169
+    evidence: STAGE6-RUNTIME-PROVENANCE.md
+    observed_at: '2026-08-31T22:10:00Z'
+    fresh_runtime_verification_performed: false
     historical_locked_workloads: 22
   activation_eligibility:
     status: FAIL
@@ -691,7 +694,7 @@ runtime_resolution:
   schema: codestra.stage6.source-lock-resolution.v2
   resolved_at: '2026-08-31T18:56:22.521243+00:00'
   authoritative_lock_path: /root/codestra-infrastructure-stage6-reconcile/STAGE6-SOURCE-LOCK.yaml
-  authoritative_lock_sha256: sha256:849f8ea1c161337ba52422dcc4e3bd093483860b3a068d6810d23ae8eb6e69c9
+  authoritative_lock_sha256: sha256:f0bd34fd7d033fa1d3c4e08c4bcf872e78d0d25357167a3929cba688694a7ea0
   infrastructure_evidence_base_sha: 244a743a771d1f93c1445392bb45f8325908ca72
   runtime_mutation_performed: false
   source_lock: FAIL
@@ -716,7 +719,7 @@ runtime_resolution:
     legacy_stage6_core_runtime:
       classification: frozen_observed_digest
       workloads: 22
-      fresh_readback: BLOCKED
+      recorded_readback: SUCCEEDED_RUNTIME_DRIFT
     klyrow_postal:
       classification: out_of_batch
       host: 37.27.128.39
@@ -731,10 +734,10 @@ runtime_resolution:
       passed: 10
       required: 23
     runtime_readback:
-      status: FAIL_INCOMPLETE_CORE_READBACK
+      status: FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND
       fresh_verified_digest_matches: 1
       nonzero_match_requirement: PASS
-      core_host_readback: BLOCKED_DENIED_UNSUPPORTED_FORCED_COMMAND
+      core_host_readback: RECORDED_READBACK_SUCCEEDED_RUNTIME_DRIFT
     activation_eligibility:
       status: FAIL
       private_middleware_staging: FAIL_STALE_ARTIFACT_AND_RUNTIME_SAFETY_UNVERIFIED
@@ -762,7 +765,7 @@ runtime_resolution:
     minimum_required: 1
     result: PASS_NONZERO_PARTIAL
     core_host: 65.109.65.169
-    core_result: BLOCKED
+    core_result: RECORDED_READBACK_SUCCEEDED_RUNTIME_DRIFT
   stage6_klyrow_postal_isolation:
     status: PASS_SOURCE_ISOLATION_RUNTIME_NOT_ACTIVATED
     stage6_host: 65.109.65.169
@@ -1016,77 +1019,77 @@ runtime_resolution:
           verified_image_signatures: 2
           verified_spdx_attestations: 1
       runtime_readback:
-        status: FAIL_FRESH_CORE_READBACK_BLOCKED
+        status: FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND
         host: 65.109.65.169
         containers:
         - name: codestra-middleware-staging-callback-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:57a4a3a22278aa61bc443910927a308d594db287b8e2cd500ee12293e8a93f4d
           historical_rollback_digest: sha256:57a4a3a22278aa61bc443910927a308d594db287b8e2cd500ee12293e8a93f4d
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-middleware-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f
           historical_rollback_digest: sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-notification-worker-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:ed7accf6d1f9ad7d84f43deba8caa0d58f8c40709c7b54d622d70df56b1f2386
           historical_rollback_digest: sha256:ed7accf6d1f9ad7d84f43deba8caa0d58f8c40709c7b54d622d70df56b1f2386
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-odoo-result-worker-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f
           historical_rollback_digest: sha256:b81c125296effc17a33258212d9a71a3c427a972fa9783ec2c060109d167408f
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-postgres-1
           classification: frozen_observed_digest
           historical_digest: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
           historical_rollback_digest: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-redis-1
           classification: frozen_observed_digest
           historical_digest: sha256:bb186d083732f669da90be8b0f975a37812b15e913465bb14d845db72a4e3e08
           historical_rollback_digest: sha256:bb186d083732f669da90be8b0f975a37812b15e913465bb14d845db72a4e3e08
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-scheduler-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:ed7accf6d1f9ad7d84f43deba8caa0d58f8c40709c7b54d622d70df56b1f2386
           historical_rollback_digest: sha256:ed7accf6d1f9ad7d84f43deba8caa0d58f8c40709c7b54d622d70df56b1f2386
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-scraper-odoo-delivery-worker-1
           classification: frozen_observed_digest
           historical_digest: sha256:dc97c48f3a29690635bf28de9f3d2562fac2dadb74b8744ea6e99c1bd4ffcda1
           historical_rollback_digest: sha256:dc97c48f3a29690635bf28de9f3d2562fac2dadb74b8744ea6e99c1bd4ffcda1
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-social-dead-letter-worker-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6
           historical_rollback_digest: sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-social-delivery-worker-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6
           historical_rollback_digest: sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-middleware-staging-social-reconciliation-worker-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6
           historical_rollback_digest: sha256:8e4a1afa8ca70a6c9136530074f6f8f1257e9f9a895f705fa50acb6f64b18fe6
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         digest_match: false
-        read_only_probe: DENIED_UNSUPPORTED_FORCED_COMMAND
+        read_only_probe: RECORDED_READBACK_SUCCEEDED_RUNTIME_DRIFT
       activation_eligible: false
     odoo:
       classification: official_upstream_image_plus_codestra_config
@@ -1111,35 +1114,35 @@ runtime_resolution:
         image_not_built_from_codestra_config: true
         upstream_image_revision: null
       runtime_readback:
-        status: FAIL_FRESH_CORE_READBACK_BLOCKED
+        status: FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND
         host: 65.109.65.169
         containers:
         - name: codestra-odoo19-staging-odoo19-master-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5
           historical_rollback_digest: sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-odoo19-staging-odoo19-scraper-canary-1
           classification: frozen_observed_digest
           historical_digest: sha256:94a4f480b8039dc9ca2bca9e77e59f97d3311f66e2aad663cf2670be9c66d4ea
           historical_rollback_digest: sha256:94a4f480b8039dc9ca2bca9e77e59f97d3311f66e2aad663cf2670be9c66d4ea
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-odoo19-staging-odoo19-staging-1
           classification: frozen_observed_digest
           historical_digest: sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5
           historical_rollback_digest: sha256:f54272f31d5f77e4146b887efb3761c98480317daf687e4b4b5e76ed8bcc08c5
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-odoo19-staging-postgres-1
           classification: frozen_observed_digest
           historical_digest: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
           historical_rollback_digest: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         digest_match: false
-        read_only_probe: DENIED_UNSUPPORTED_FORCED_COMMAND
+        read_only_probe: RECORDED_READBACK_SUCCEEDED_RUNTIME_DRIFT
       activation_eligible: false
     n8n:
       classification: official_upstream_image_plus_codestra_config
@@ -1164,47 +1167,47 @@ runtime_resolution:
         image_not_built_from_codestra_config: true
         upstream_image_revision: null
       runtime_readback:
-        status: FAIL_FRESH_CORE_READBACK_BLOCKED
+        status: FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND
         host: 65.109.65.169
         containers:
         - name: codestra-n8n-staging-n8n-1
           classification: frozen_observed_digest
           historical_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
           historical_rollback_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-n8n-staging-postgres-1
           classification: frozen_observed_digest
           historical_digest: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
           historical_rollback_digest: sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-n8n-staging-redis-1
           classification: frozen_observed_digest
           historical_digest: sha256:bb186d083732f669da90be8b0f975a37812b15e913465bb14d845db72a4e3e08
           historical_rollback_digest: sha256:bb186d083732f669da90be8b0f975a37812b15e913465bb14d845db72a4e3e08
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-n8n-staging-webhook-1
           classification: frozen_observed_digest
           historical_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
           historical_rollback_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-n8n-staging-worker-1
           classification: frozen_observed_digest
           historical_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
           historical_rollback_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         - name: codestra-n8n-staging-worker-2-1
           classification: frozen_observed_digest
           historical_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
           historical_rollback_digest: sha256:cfe2704ff858395503d42548206c2c99ea351a205e941063a9d9b77b0f404478
-          container_id: UNVERIFIED_FRESH_CORE_ACCESS_BLOCKED
+          container_id: HISTORICAL_CONTAINER_ID_NOT_RECORDED
           host: 65.109.65.169
         digest_match: false
-        read_only_probe: DENIED_UNSUPPORTED_FORCED_COMMAND
+        read_only_probe: RECORDED_READBACK_SUCCEEDED_RUNTIME_DRIFT
       activation_eligible: false
     kong:
       classification: official_upstream_image_plus_codestra_config

@@ -25,7 +25,7 @@ require(PLAN["runtime_preflight"]["repository_integrity"] == "PASS", "repository
 require(PLAN["runtime_preflight"]["artifact_provenance"] == "FAIL_PARTIAL", "artifact_provenance_gate")
 require(
     PLAN["runtime_preflight"]["runtime_readback"]
-    == "FAIL_FRESH_CORE_READBACK_BLOCKED",
+    == "FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND",
     "runtime_readback_gate",
 )
 require(PLAN["runtime_preflight"]["activation_eligibility"] == "FAIL", "activation_gate")
@@ -100,7 +100,7 @@ require(PLAN["unknown_workload"]["disposition"] == "UNVERIFIED_DO_NOT_TOUCH", "u
 require(LOCK["gates"]["repository_integrity"]["status"] == "PASS", "lock_repository_integrity")
 require(LOCK["gates"]["artifact_provenance"]["status"] == "FAIL_PARTIAL", "lock_artifact_provenance")
 require(
-    LOCK["gates"]["runtime_readback"]["status"] == "FAIL_FRESH_CORE_READBACK_BLOCKED",
+    LOCK["gates"]["runtime_readback"]["status"] == "FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND",
     "lock_runtime_readback",
 )
 require(LOCK["gates"]["activation_eligibility"]["status"] == "FAIL", "lock_activation")
