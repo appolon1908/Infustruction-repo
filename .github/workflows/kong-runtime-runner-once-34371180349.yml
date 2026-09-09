@@ -1,0 +1,155 @@
+name: Kong runtime runner one-shot 34371180349
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/kong-runtime-runner-once-34371180349.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/kong-runtime-runner-once-34371180349.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kong-runtime-runner-once-34371180349
+  cancel-in-progress: false
+
+env:
+  EXACT_KONG_RUNTIME_RUN_ID: "34371180349"
+  ONE_SHOT_AUTHORITY: "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"
+
+jobs:
+  validate-one-shot:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact pull-request head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Prove exact source and bootstrap contract
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -Eeuo pipefail
+          workflow=.github/workflows/kong-runtime-runner-once-34371180349.yml
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+          bash -n scripts/install_kong_actions_runner.sh
+          bash -n scripts/configure_kong_runtime_runner.sh
+          python3 scripts/validate_kong_runtime_runner_contract.py
+          python3 -m unittest -v tests/test_kong_runtime_runner_contract.py
+          grep -Fq 'EXACT_KONG_RUNTIME_RUN_ID: "34371180349"' "$workflow"
+          grep -Fq 'ONE_SHOT_AUTHORITY: "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"' "$workflow"
+          merge_message_key=head_commit'.message'
+          if grep -Fq "$merge_message_key" "$workflow"; then
+            echo 'ONE_SHOT_VALIDATION=FAIL reason=merge_message_dependency' >&2
+            exit 1
+          fi
+          grep -Fq "github.run_attempt == 1" "$workflow"
+          grep -Fq "git log --format='%H' \"\$BEFORE_SHA\" -- \"\$workflow\"" "$workflow"
+
+  bootstrap-exact-staging-run:
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: kong-staging-runtime-runner-bootstrap
+    steps:
+      - name: Check out exact protected infrastructure source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prove protected one-shot authority
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -Eeuo pipefail
+          workflow=.github/workflows/kong-runtime-runner-once-34371180349.yml
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_REF_PROTECTED" = true
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "${EXACT_KONG_RUNTIME_RUN_ID}" = "34371180349"
+          test "${ONE_SHOT_AUTHORITY}" = "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"
+          [[ "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$BEFORE_SHA" != 0000000000000000000000000000000000000000
+          git cat-file -e "${BEFORE_SHA}^{commit}"
+          if git cat-file -e "${BEFORE_SHA}:${workflow}" 2>/dev/null; then
+            echo 'ONE_SHOT_AUTHORITY=FAIL reason=workflow_already_existed_before_push' >&2
+            exit 1
+          fi
+          if git log --format='%H' "$BEFORE_SHA" -- "$workflow" | grep -q .; then
+            echo 'ONE_SHOT_AUTHORITY=FAIL reason=workflow_existed_in_main_history' >&2
+            exit 1
+          fi
+          git cat-file -e "${GITHUB_SHA}:${workflow}"
+          git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA" -- "$workflow" | grep -Fxq "$workflow"
+          grep -Fq 'EXACT_KONG_RUNTIME_RUN_ID: "34371180349"' "$workflow"
+          grep -Fq 'ONE_SHOT_AUTHORITY: "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"' "$workflow"
+          merge_message_key=head_commit'.message'
+          if grep -Fq "$merge_message_key" "$workflow"; then
+            echo 'ONE_SHOT_AUTHORITY=FAIL reason=merge_message_dependency' >&2
+            exit 1
+          fi
+          git fetch origin main --depth=1
+          test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          bash -n scripts/install_kong_actions_runner.sh
+          bash -n scripts/configure_kong_runtime_runner.sh
+          python3 scripts/validate_kong_runtime_runner_contract.py
+          python3 -m unittest -v tests/test_kong_runtime_runner_contract.py
+          echo 'ONE_SHOT_AUTHORITY=PASS'
+
+      - name: Materialize dedicated protected bootstrap inputs
+        env:
+          ADMIN_TOKEN: ${{ secrets.CODESTRA_REPOSITORY_ADMIN_TOKEN }}
+          SSH_PRIVATE_KEY: ${{ secrets.KONG_RUNTIME_RUNNER_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.KONG_RUNTIME_RUNNER_KNOWN_HOSTS }}
+        run: |
+          set -Eeuo pipefail
+          test -n "$ADMIN_TOKEN"
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$KNOWN_HOSTS"
+          umask 077
+          printf '%s' "$ADMIN_TOKEN" > "$RUNNER_TEMP/admin-token"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$RUNNER_TEMP/ssh-key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/known-hosts"
+          chmod 0600 "$RUNNER_TEMP/admin-token" "$RUNNER_TEMP/ssh-key" "$RUNNER_TEMP/known-hosts"
+
+      - name: Register runner only for exact queued Kong job
+        env:
+          KONG_RUNTIME_RUNNER_HOST: ${{ vars.KONG_RUNTIME_RUNNER_HOST }}
+          KONG_RUNTIME_RUNNER_SSH_USER: ${{ vars.KONG_RUNTIME_RUNNER_SSH_USER }}
+          KONG_RUNTIME_RUNNER_SSH_PORT: ${{ vars.KONG_RUNTIME_RUNNER_SSH_PORT || '22' }}
+        run: |
+          set -Eeuo pipefail
+          test -n "$KONG_RUNTIME_RUNNER_HOST"
+          test -n "$KONG_RUNTIME_RUNNER_SSH_USER"
+          test -n "$KONG_RUNTIME_RUNNER_SSH_PORT"
+          bash scripts/configure_kong_runtime_runner.sh \
+            --host "$KONG_RUNTIME_RUNNER_HOST" \
+            --ssh-user "$KONG_RUNTIME_RUNNER_SSH_USER" \
+            --ssh-port "$KONG_RUNTIME_RUNNER_SSH_PORT" \
+            --ssh-key-file "$RUNNER_TEMP/ssh-key" \
+            --known-hosts-file "$RUNNER_TEMP/known-hosts" \
+            --admin-token-file "$RUNNER_TEMP/admin-token" \
+            --runtime-run-id "$EXACT_KONG_RUNTIME_RUN_ID" \
+            --evidence-file "$RUNNER_TEMP/kong-runtime-runner-once-evidence.json"
+
+      - name: Upload bounded one-shot bootstrap evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kong-runtime-runner-once-34371180349-${{ github.sha }}
+          path: ${{ runner.temp }}/kong-runtime-runner-once-evidence.json
+          if-no-files-found: error
+          retention-days: 30
