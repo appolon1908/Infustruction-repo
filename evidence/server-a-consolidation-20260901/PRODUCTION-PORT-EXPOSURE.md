@@ -4,7 +4,7 @@ codestra-agent-desktop-preview	127.0.0.1:31880->80/tcp
 codestra-agent-desktop-sipjs-staging	127.0.0.1:31881->8080/tcp
 codestra-appolon-middleware-integration-api-1	8080/tcp
 codestra-backup-1	5432/tcp
-codestra-beyvra-email-api-1
+codestra-beyvra-email-api-1	NONE
 codestra-caddy-upstream-gateway	80/tcp, 443/tcp, 2019/tcp, 443/udp, 127.0.0.1:18101-18116->18101-18116/tcp
 codestra-email-reseller-api-1	127.0.0.1:18180->8080/tcp
 codestra-identity-auth-gateway-1	4180/tcp
@@ -13,12 +13,12 @@ codestra-identity-keycloak-1	8080/tcp, 8443/tcp, 9000/tcp
 codestra-identity-staging-identity-db-staging-1	5432/tcp
 codestra-identity-staging-keycloak-staging-1	8080/tcp, 8443/tcp, 9000/tcp
 codestra-integration-control-plane-api-1	127.0.0.1:8096->8096/tcp
-codestra-integration-control-plane-worker-1
-codestra-kong-identity-certification-1
+codestra-integration-control-plane-worker-1	NONE
+codestra-kong-identity-certification-1	NONE
 codestra-kong-kong-db-1	5432/tcp
 codestra-kong-kong-gateway-1	8003-8004/tcp, 127.0.0.1:8000-8002->8000-8002/tcp, 8443-8447/tcp
 codestra-kong-kong-test-upstream-1	80/tcp
-codestra-kong-service-auth-adapter-1
+codestra-kong-service-auth-adapter-1	NONE
 codestra-mail-api-mail-api-1	8098/tcp
 codestra-mail-isolated-stalwart-1	25/tcp, 110/tcp, 143/tcp, 465/tcp, 995/tcp, 4190/tcp, 127.0.0.1:28443->443/tcp, 127.0.0.1:2587->587/tcp, 127.0.0.1:2993->993/tcp, 127.0.0.1:28080->8080/tcp
 codestra-middleware-1	8095/tcp
@@ -58,7 +58,7 @@ codestra-monitoring-blackbox-1	9115/tcp
 codestra-monitoring-cadvisor-1	8080/tcp
 codestra-monitoring-node-exporter-1	9100/tcp
 codestra-monitoring-prometheus-1	9090/tcp
-codestra-monitoring-receiver-receiver-1
+codestra-monitoring-receiver-receiver-1	NONE
 codestra-monitoring-redis-exporter-1	9121/tcp
 codestra-n8n-1	5678/tcp
 codestra-n8n-internal-proxy	80/tcp, 443/tcp, 2019/tcp, 443/udp
@@ -90,7 +90,7 @@ codestra-private-vicidial-ingress-1	80/tcp, 2019/tcp, 10.40.0.1:443->443/tcp, 44
 codestra-provisioning-jwks-relay	8443/tcp
 codestra-provisioning-service-provisioning-service-1	8443/tcp
 codestra-redis-1	6379/tcp
-codestra-reseller-portal-oidc-gateway-1
+codestra-reseller-portal-oidc-gateway-1	NONE
 codestra-reseller-portal-portal-1	127.0.0.1:18081->8080/tcp
 codestra-reseller-portal-postgres-1	5432/tcp
 codestra-reviewed-monitoring-postgres-exporter-1	9187/tcp
@@ -100,7 +100,7 @@ codestra-sms-api-postgres-1	5432/tcp
 codestra-websocket-gateway-gateway-1	8080/tcp
 codestra-websocket-gateway-postgres-1	5432/tcp
 codestra-websocket-replica-postgres-1	5432/tcp
-kong-production-standby-kong-standby-auth-1
+kong-production-standby-kong-standby-auth-1	NONE
 private-integration-gateway-1	10.40.0.1:8095->8080/tcp
 
 Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess

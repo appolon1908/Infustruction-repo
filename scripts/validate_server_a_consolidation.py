@@ -38,6 +38,8 @@ def port_range(value: str) -> tuple[int, int, str]:
 
 def parse_ports(value: str) -> tuple[list[str], list[str]]:
     """Retain Docker's complete host bindings; exposed-only entries stay separate."""
+    if value == "NONE":
+        return [], []
     published, exposed = [], []
     for item in filter(None, (part.strip() for part in value.split(','))):
         if '->' not in item:

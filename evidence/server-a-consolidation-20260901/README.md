@@ -21,3 +21,7 @@ From this directory, run `sha256sum --check SHA256SUMS`. From the repository
 root, run `python3 scripts/validate_server_a_consolidation.py` and
 `python3 -m unittest discover -s tests -p test_server_a_consolidation.py -v`.
 These commands validate source artifacts only and never contact a host.
+
+Port snapshot rows use the explicit `NONE` field for containers with no
+published or exposed ports. This replaces an empty trailing tab without changing
+the recorded port sets; the validator reconciles them with JSON and CSV.

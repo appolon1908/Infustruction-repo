@@ -31,6 +31,9 @@ class InventoryTests(unittest.TestCase):
 
     def test_empty_and_exposed_only_are_not_published(self):
         self.assertEqual(m.parse_ports(''), ([], []))
+        self.assertEqual(m.read_port_snapshot('container\tNONE\n'), {'container': ([], [])})
+        with self.assertRaises(ValueError):
+            m.read_port_snapshot('container\n')
         self.assertEqual(m.parse_ports('80/tcp, 443/udp'), ([], ['80/tcp', '443/udp']))
 
     def test_duplicate_missing_header_or_host_binding_fails(self):
