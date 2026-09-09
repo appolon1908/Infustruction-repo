@@ -15,7 +15,8 @@
 | Protected control-plane source, schema, and worker validation | PASS |
 | Kong protected-main candidate artifact verification | PASS |
 | Kong Appolon preflight repair source checks | PASS |
-| Kong isolated restore rehearsal | BLOCKED — required image access rejected |
+| Kong isolated restore and entity-count comparison | PASS |
+| Kong disposable restore resources and temporary plaintext cleanup | PASS |
 | Authenticated Kong staging runtime certification | NOT RUN |
 | Appolon Kong runtime integration gate | FAIL |
 | Full production certification | INCOMPLETE |
@@ -28,6 +29,8 @@ Kong's source repository is [appolon1908-hue/Kong](https://github.com/appolon190
 
 A fresh protected control-plane validation passed at 2026-09-09 21:31 UTC. This validates the installed control-plane source, required mailbox tables, worker health, and disabled external-delivery state. It does not activate a release or clear the database recovery and traffic-opening gates.
 
-Kong's protected-main candidate artifact was independently retrieved and validated with the repository's canonical verifier at 22:22 UTC. The Appolon preflight repair is tracked in [Kong PR #97](https://github.com/appolon1908-hue/Kong/pull/97); its focused tests, migration manifests, and reported GitHub checks pass. This is source and artifact evidence only. A fresh read-only runtime preflight still fails.
+The Appolon preflight repair in [Kong PR #97](https://github.com/appolon1908-hue/Kong/pull/97) passed its focused tests, deterministic manifests, and GitHub checks, then merged after independent approval. Its new canonical candidate build passed, and the resulting exact artifact was independently retrieved and verified. The clean staging promotion is tracked in [Kong PR #99](https://github.com/appolon1908-hue/Kong/pull/99), preserving the verified main tree. These results establish source and artifact verification; the fresh read-only runtime topology check still fails.
 
-The isolated Kong restore rehearsal could not start because the registry rejected access to its required pinned PostgreSQL image. No restored database or restore PASS is claimed. Staging has no registered runtime runner or completed authenticated runtime-certification run. The coordinated Admin/operator migration and protected review remain outstanding before gateway activation.
+At 22:33 UTC, the existing isolated Kong restore service completed successfully against the new encrypted backup. The database and isolated gateway started, existing live entity counts matched, and disposable containers, network, volume, and temporary plaintext cleanup were separately verified. The restored ciphertext matched the previously verified offsite capture. This is an isolated restore on the existing host with entity-count comparison; it is not an independent-machine recovery test, complete configuration parity, or certification of the new route inventory.
+
+Staging has no registered runtime runner or completed authenticated runtime-certification run. The coordinated Admin/operator migration, designated network alignment, staging certification, and protected release admission remain outstanding before gateway activation. The maintenance gate remains enabled and no active release has been recorded.
