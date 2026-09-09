@@ -11,12 +11,14 @@ PRODUCTION_CHANGED=NO
 LAUNCH_READY=FAIL
 ```
 
-## Current authoritative changes
+## Candidate changes observed on 2026-09-06
 
 | Scope | Repository | Branch | Exact head | PR | Source evidence | Gate |
 |---|---|---|---|---:|---|---|
 | Service catalog and provisioning foundation | `appolon1908-hue/Middleware-` | `fix/platform-service-catalog-review` | `0f42d4016140eeadfa0b47b1de902a4a81ac21bd` | [#155](https://github.com/appolon1908-hue/Middleware-/pull/155) | local locked-dependency suite: 1,995 passed, 97 skipped, 61 subtests passed; manifest and focused contract tests passed | exact-head CI and independent current-head approval required |
-| Governed Prometheus facade contract | `appolon1908-hue/Codestra-Prometheus` | `feature/observability-api-contract-v1` | `52550bb8ebac477e45179459458c6ffda71fa01c` | [#61](https://github.com/appolon1908-hue/Codestra-Prometheus/pull/61) | repository validator passed; four contract tests passed; review findings re-requested on current head | independent current-head approval required |
+| Non-authoritative Prometheus facade proposal | `appolon1908-hue/Codestra-Prometheus` | `feature/observability-api-contract-v1` | `52550bb8ebac477e45179459458c6ffda71fa01c` | [#61](https://github.com/appolon1908-hue/Codestra-Prometheus/pull/61) | repository validator passed; four contract tests passed; review findings re-requested on current head | unregistered candidate; reconcile lock, registry and release manifest before authority or promotion |
+
+Prometheus PR #61 is not the registered implementation authority. The active branch lock, repository registry and release manifest retain PR #1 (`feature/observability/authoritative-prometheus-20260829`). The release-train validator validates those registered files; its PASS does not certify PR #61.
 
 The Middleware head includes the seven-file `.codestra` contract, schema and
 fail-closed validator; it also fixes migration ancestry, declared-environment
