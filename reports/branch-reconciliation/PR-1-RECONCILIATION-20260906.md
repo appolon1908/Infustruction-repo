@@ -15,8 +15,9 @@ and the accepted collector/Prometheus wiring rather than restoring the
 obsolete assertion that the repository does not exist.
 
 Before adding this record, the resolved tree was byte-identical to accepted
-main. Both original branch histories remain ancestors; there is no reset or
-force push. Existing source validators, secret scans, deployment holds,
+main. The reconciliation commit descends from accepted main; the original
+PR 1 head is not its ancestor. This is a content reconciliation, not a merge
+preserving both histories. Existing source validators, secret scans, deployment holds,
 private-network constraints, and historical evidence remain unchanged.
 
 Merging this documentation does not deploy observability, alter DNS/firewall
