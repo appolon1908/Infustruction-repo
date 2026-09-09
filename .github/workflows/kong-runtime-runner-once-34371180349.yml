@@ -19,6 +19,7 @@ concurrency:
 
 env:
   EXACT_KONG_RUNTIME_RUN_ID: "34371180349"
+  ONE_SHOT_AUTHORITY: "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"
 
 jobs:
   validate-one-shot:
@@ -36,20 +37,24 @@ jobs:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -Eeuo pipefail
+          workflow=.github/workflows/kong-runtime-runner-once-34371180349.yml
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
           bash -n scripts/install_kong_actions_runner.sh
           bash -n scripts/configure_kong_runtime_runner.sh
           python3 scripts/validate_kong_runtime_runner_contract.py
           python3 -m unittest -v tests/test_kong_runtime_runner_contract.py
-          grep -Fq 'EXACT_KONG_RUNTIME_RUN_ID: "34371180349"' .github/workflows/kong-runtime-runner-once-34371180349.yml
-          grep -Fq "[KONG-RUNTIME-34371180349]" .github/workflows/kong-runtime-runner-once-34371180349.yml
+          grep -Fq 'EXACT_KONG_RUNTIME_RUN_ID: "34371180349"' "$workflow"
+          grep -Fq 'ONE_SHOT_AUTHORITY: "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"' "$workflow"
+          if grep -Fq 'head_commit.message' "$workflow"; then
+            echo 'ONE_SHOT_VALIDATION=FAIL reason=merge_message_dependency' >&2
+            exit 1
+          fi
 
   bootstrap-exact-staging-run:
     if: >-
       github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      contains(github.event.head_commit.message, '[KONG-RUNTIME-34371180349]')
+      github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: kong-staging-runtime-runner-bootstrap
@@ -58,15 +63,35 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Prove protected one-shot authority
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
           set -Eeuo pipefail
+          workflow=.github/workflows/kong-runtime-runner-once-34371180349.yml
           test "$GITHUB_REF" = refs/heads/main
           test "$GITHUB_REF_PROTECTED" = true
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test "${EXACT_KONG_RUNTIME_RUN_ID}" = "34371180349"
+          test "${ONE_SHOT_AUTHORITY}" = "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"
+          [[ "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$BEFORE_SHA" != 0000000000000000000000000000000000000000
+          git cat-file -e "${BEFORE_SHA}^{commit}"
+          if git cat-file -e "${BEFORE_SHA}:${workflow}" 2>/dev/null; then
+            echo 'ONE_SHOT_AUTHORITY=FAIL reason=workflow_already_existed_before_push' >&2
+            exit 1
+          fi
+          git cat-file -e "${GITHUB_SHA}:${workflow}"
+          git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA" -- "$workflow" | grep -Fxq "$workflow"
+          grep -Fq 'EXACT_KONG_RUNTIME_RUN_ID: "34371180349"' "$workflow"
+          grep -Fq 'ONE_SHOT_AUTHORITY: "KONG_RUNTIME_RUNNER_ONCE_34371180349_V1"' "$workflow"
+          if grep -Fq 'head_commit.message' "$workflow"; then
+            echo 'ONE_SHOT_AUTHORITY=FAIL reason=merge_message_dependency' >&2
+            exit 1
+          fi
           git fetch origin main --depth=1
           test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain)"
@@ -74,6 +99,7 @@ jobs:
           bash -n scripts/configure_kong_runtime_runner.sh
           python3 scripts/validate_kong_runtime_runner_contract.py
           python3 -m unittest -v tests/test_kong_runtime_runner_contract.py
+          echo 'ONE_SHOT_AUTHORITY=PASS'
 
       - name: Materialize dedicated protected bootstrap inputs
         env:
