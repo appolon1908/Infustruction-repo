@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ "$EUID" -eq 0 ]] || { echo 'root required' >&2; exit 2; }
+[[ "$#" -eq 2 && "$1" == --manifest ]] || { echo 'usage: install-codestra-deploy-package --manifest PATH' >&2; exit 2; }
+manifest="$2"; source_dir="$(cd "$(dirname "$0")" && pwd)"
+[[ -f "$manifest" && ! -L "$manifest" ]] || { echo 'manifest unavailable' >&2; exit 1; }
+controller_sha="$(jq -er '.controller_sha256' "$manifest")"
+adapter_sha="$(jq -er '.adapter_sha256' "$manifest")"
+[[ "$(sha256sum "$source_dir/codestra-deploy" | awk '{print $1}')" == "$controller_sha" ]] || { echo 'controller digest mismatch' >&2; exit 1; }
+[[ "$(sha256sum "$source_dir/codestra-deploy-odoo" | awk '{print $1}')" == "$adapter_sha" ]] || { echo 'adapter digest mismatch' >&2; exit 1; }
+install -d -o root -g root -m 0755 /usr/local/bin /usr/local/libexec
+stage="$(mktemp -d /usr/local/libexec/.codestra-deploy-install.XXXXXX)"
+trap 'rm -rf --one-file-system "$stage"' EXIT
+install -o root -g root -m 0755 "$source_dir/codestra-deploy" "$stage/codestra-deploy"
+install -o root -g root -m 0755 "$source_dir/codestra-deploy-odoo" "$stage/codestra-deploy-odoo"
+python3 -m py_compile "$stage/codestra-deploy" "$stage/codestra-deploy-odoo"
+printf '%s  %s\n%s  %s\n' "$controller_sha" "$stage/codestra-deploy" "$adapter_sha" "$stage/codestra-deploy-odoo" | sha256sum --check --strict
+printf 'BOOTSTRAP_PREFLIGHT=PASS\n'
+printf 'Installation requires a separately approved atomic activation and rollback record.\n'

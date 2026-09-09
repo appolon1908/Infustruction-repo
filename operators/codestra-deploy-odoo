@@ -1,0 +1,241 @@
+#!/usr/bin/env python3
+"""Exact-artifact Odoo deployment adapter invoked only by codestra-deploy."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import shutil
+import socket
+import stat
+import subprocess
+import tarfile
+import tempfile
+import urllib.parse
+import urllib.request
+from pathlib import Path
+
+
+SHA256 = "sha256:"
+CONFIG_ROOT = Path("/etc/codestra/odoo-deploy-targets")
+EVIDENCE_ROOT = Path("/etc/codestra/deployment-evidence/sha256")
+MAX_ARCHIVE_BYTES = 64 * 1024 * 1024
+MAX_MEMBER_BYTES = 32 * 1024 * 1024
+NO_SEND_KEYS = {
+    "ENABLE_EXTERNAL_DELIVERY": "false",
+    "EMAIL_DELIVERY": "false",
+    "LIVE_EMAIL_DELIVERY": "false",
+}
+
+
+class Blocked(RuntimeError):
+    pass
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def root_regular(path: Path) -> dict:
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_gid != 0 or info.st_nlink != 1 or info.st_mode & 0o022:
+        raise Blocked(f"unsafe protected file: {path}")
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise Blocked(f"malformed protected JSON: {path}") from exc
+    if not isinstance(value, dict):
+        raise Blocked(f"protected JSON is not an object: {path}")
+    return value
+
+
+def validate_handoff(args: argparse.Namespace, authorization: dict) -> None:
+    expected = {
+        "repository": args.repository,
+        "source_sha": args.source_sha,
+        "artifact_kind": args.artifact_kind,
+        "artifact_reference": args.artifact_reference,
+        "artifact_digest": args.artifact_digest,
+        "environment": args.environment,
+        "action": args.action,
+        "target_host": args.validated_target_host,
+        "evidence_output": args.evidence_output,
+    }
+    for key, value in expected.items():
+        if authorization.get(key) != value:
+            raise Blocked(f"dispatcher handoff mismatch: {key}")
+    if args.validated_target_host not in {socket.gethostname(), socket.getfqdn()}:
+        raise Blocked("adapter is not executing on the validated target")
+    if not args.read_only or not args.deny_external_effects:
+        raise Blocked("no-send controls are mandatory")
+    if args.artifact_kind != "source-bundle":
+        raise Blocked("Odoo adapter accepts only source-bundle artifacts")
+
+
+def validate_recovery_evidence(authorization: dict, evidence_root: Path = EVIDENCE_ROOT) -> None:
+    recovery = authorization.get("recovery", {})
+    for name in ("database", "filestore", "configuration", "isolated_restore", "rollback_rehearsal"):
+        record = recovery.get(name, {})
+        digest = str(record.get("evidence_sha256", ""))
+        if record.get("status") != "PASS" or not digest.startswith(SHA256):
+            raise Blocked(f"recovery evidence is incomplete: {name}")
+        evidence = evidence_root / f"{digest.removeprefix(SHA256)}.json"
+        if not evidence.is_file() or evidence.is_symlink() or sha256(evidence) != digest.removeprefix(SHA256):
+            raise Blocked(f"recovery evidence bytes unavailable: {name}")
+        body = root_regular(evidence)
+        if body.get("status") != "PASS" or body.get("scope") != name:
+            raise Blocked(f"recovery evidence content mismatch: {name}")
+
+
+def acquire_artifact(reference: str, destination: Path) -> None:
+    parsed = urllib.parse.urlparse(reference)
+    if parsed.scheme == "file":
+        source = Path(urllib.request.url2pathname(parsed.path))
+        if source.is_symlink() or not source.is_file():
+            raise Blocked("local artifact is unavailable or unsafe")
+        shutil.copyfile(source, destination)
+    elif parsed.scheme == "https" and parsed.hostname == "github.com" and parsed.path.startswith("/appolon1908-hue/Odoo/releases/download/"):
+        request = urllib.request.Request(reference, headers={"User-Agent": "codestra-deploy-odoo/1"})
+        with urllib.request.urlopen(request, timeout=30) as response, destination.open("wb") as output:
+            if response.status != 200:
+                raise Blocked("artifact download failed")
+            shutil.copyfileobj(response, output, MAX_ARCHIVE_BYTES + 1)
+    else:
+        raise Blocked("artifact reference is not an approved Odoo release location")
+    if destination.stat().st_size > MAX_ARCHIVE_BYTES:
+        raise Blocked("artifact exceeds the maximum size")
+
+
+def extract_verified(archive: Path, destination: Path) -> None:
+    with tarfile.open(archive, "r:gz") as bundle:
+        members = bundle.getmembers()
+        if not members:
+            raise Blocked("artifact is empty")
+        for member in members:
+            path = Path(member.name)
+            if path.is_absolute() or ".." in path.parts or member.issym() or member.islnk() or not (member.isfile() or member.isdir()):
+                raise Blocked("artifact contains an unsafe member")
+            if member.size > MAX_MEMBER_BYTES:
+                raise Blocked("artifact member exceeds the maximum size")
+        bundle.extractall(destination, filter="data")
+
+
+def load_target(path: Path, expected_host: str) -> dict:
+    value = root_regular(path)
+    required = {"schema", "target_host", "release_root", "current_link", "compose_directory", "compose_files", "service", "database", "modules", "addon_mount", "no_send_env"}
+    if set(value) != required or value.get("schema") != "codestra.odoo-deploy-target.v1" or value.get("target_host") != expected_host:
+        raise Blocked("Odoo target configuration mismatch")
+    for key in ("release_root", "current_link", "compose_directory"):
+        path_value = Path(str(value[key]))
+        if not path_value.is_absolute() or ".." in path_value.parts:
+            raise Blocked(f"unsafe target path: {key}")
+    if value.get("no_send_env") != NO_SEND_KEYS:
+        raise Blocked("target no-send policy mismatch")
+    return value
+
+
+def docker_compose(target: dict, *command: str, check: bool = True) -> subprocess.CompletedProcess:
+    argv = ["docker", "compose"]
+    for compose_file in target["compose_files"]:
+        argv.extend(["-f", compose_file])
+    argv.extend(command)
+    return subprocess.run(argv, cwd=target["compose_directory"], check=check, text=True, capture_output=True)
+
+
+def readback(target: dict, release_dir: Path, source_sha: str) -> dict:
+    container = docker_compose(target, "ps", "-q", target["service"]).stdout.strip()
+    if not container:
+        raise Blocked("Odoo container is absent")
+    inspection = subprocess.run(["docker", "inspect", container, "--format", "{{json .Mounts}}"], check=True, text=True, capture_output=True)
+    mounts = json.loads(inspection.stdout)
+    expected_source = str(release_dir / "custom-addons")
+    matching = [item for item in mounts if item.get("Destination") == target["addon_mount"]]
+    if len(matching) != 1 or matching[0].get("Source") != expected_source or matching[0].get("RW") is not False:
+        raise Blocked("running Odoo addon mount does not match the exact release")
+    environment_result = subprocess.run(["docker", "inspect", container, "--format", "{{json .Config.Env}}"], check=True, text=True, capture_output=True)
+    environment = dict(item.split("=", 1) for item in json.loads(environment_result.stdout) if "=" in item)
+    for key, expected in NO_SEND_KEYS.items():
+        if environment.get(key, "").lower() != expected:
+            raise Blocked(f"running Odoo no-send control mismatch: {key}")
+    importer = release_dir / "custom-addons/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"
+    if not importer.is_file() or importer.is_symlink():
+        raise Blocked("released Odoo importer is absent or unsafe")
+    return {"source_sha": source_sha, "release_dir": str(release_dir), "container": container, "importer_sha256": sha256(importer), "no_send": True}
+
+
+def deploy(args: argparse.Namespace, authorization: dict, target: dict) -> dict:
+    release_root = Path(target["release_root"]); release_dir = release_root / args.source_sha
+    current = Path(target["current_link"])
+    if release_dir.exists():
+        raise Blocked("immutable release directory already exists")
+    previous = current.resolve(strict=True) if current.is_symlink() else None
+    if current.exists() and not current.is_symlink():
+        raise Blocked("current release pointer must be a symlink")
+    with tempfile.TemporaryDirectory(prefix="codestra-odoo-artifact-") as temporary:
+        archive = Path(temporary) / "source.tar.gz"; extracted = Path(temporary) / "release"; extracted.mkdir()
+        acquire_artifact(args.artifact_reference, archive)
+        if SHA256 + sha256(archive) != args.artifact_digest:
+            raise Blocked("artifact digest mismatch")
+        extract_verified(archive, extracted)
+        (extracted / "SOURCE_SHA").write_text(args.source_sha + "\n", encoding="utf-8")
+        release_root.mkdir(mode=0o750, parents=True, exist_ok=True)
+        shutil.move(str(extracted), release_dir)
+    next_link = current.with_name(current.name + ".next")
+    next_link.symlink_to(release_dir)
+    try:
+        docker_compose(target, "config", "--quiet")
+        docker_compose(target, "stop", target["service"])
+        next_link.replace(current)
+        docker_compose(target, "run", "--rm", "--no-deps", target["service"], "odoo", "-d", target["database"], "-u", target["modules"], "--stop-after-init", "--no-http")
+        docker_compose(target, "up", "-d", target["service"])
+        return readback(target, release_dir, args.source_sha)
+    except Exception:
+        if previous is not None:
+            rollback = current.with_name(current.name + ".rollback")
+            rollback.symlink_to(previous); rollback.replace(current)
+        elif current.is_symlink():
+            current.unlink()
+        docker_compose(target, "up", "-d", target["service"], check=False)
+        raise
+
+
+def parser() -> argparse.ArgumentParser:
+    value = argparse.ArgumentParser()
+    value.add_argument("action", choices=("deploy-staging-readonly", "certify-staging-readonly", "promote-production-readonly"))
+    for name in ("repository", "source-sha", "artifact-kind", "artifact-reference", "artifact-digest", "environment", "health-paths", "evidence-output", "authorization", "validated-target-host"):
+        value.add_argument(f"--{name}", required=True)
+    for flag in ("read-only", "deny-external-effects", "require-staging-certification", "require-backup", "require-isolated-restore", "require-rollback-rehearsal"):
+        value.add_argument(f"--{flag}", action="store_true")
+    value.add_argument("--canary-percent"); value.add_argument("--allowed-methods")
+    return value
+
+
+def main(argv=None) -> int:
+    args = parser().parse_args(argv)
+    try:
+        if os.geteuid() != 0:
+            raise Blocked("adapter requires root dispatcher execution")
+        authorization = root_regular(Path(args.authorization))
+        validate_handoff(args, authorization)
+        validate_recovery_evidence(authorization)
+        target = load_target(CONFIG_ROOT / f"{args.validated_target_host}.json", args.validated_target_host)
+        if args.action == "certify-staging-readonly":
+            result = readback(target, Path(target["release_root"]) / args.source_sha, args.source_sha)
+        else:
+            result = deploy(args, authorization, target)
+        output = Path(args.evidence_output)
+        output.write_text(json.dumps({"status": "PASS", **result}, sort_keys=True) + "\n", encoding="utf-8")
+        return 0
+    except (Blocked, OSError, subprocess.SubprocessError, tarfile.TarError, json.JSONDecodeError) as exc:
+        print(f"ODOO_DEPLOYMENT_BLOCKED={exc}", file=os.sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

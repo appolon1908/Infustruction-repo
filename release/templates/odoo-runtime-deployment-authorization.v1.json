@@ -4,7 +4,7 @@
   "repository": "appolon1908-hue/Odoo",
   "source_sha": "a7a9364925c7182098cbda234f3fddc13c594c71",
   "artifact_kind": "source-bundle",
-  "artifact_reference": "PENDING_IMMUTABLE_ARTIFACT_REFERENCE",
+  "artifact_reference": "https://github.com/appolon1908-hue/Odoo/releases/download/deploy-ready-a7a9364925c7182098cbda234f3fddc13c594c71/source.tar.gz",
   "artifact_digest": "sha256:5584e92342cd70371eed6ad3bdc8bb24325405f43b3e3f446b9e4905d5de7882",
   "environment": "PENDING_EXACT_ENVIRONMENT",
   "action": "PENDING_EXACT_ACTION",
