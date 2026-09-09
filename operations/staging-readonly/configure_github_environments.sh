@@ -18,6 +18,7 @@ STAGING_RESTIC_PASSWORD_PATH_FILE=""
 PRODUCTION_BEARER_FILE=""
 PRODUCTION_METRICS_FILE=""
 PRODUCTION_GHCR_FILE=""
+REVIEWER_USER=""
 
 usage() {
   cat <<'EOF'
@@ -34,6 +35,7 @@ Usage:
     --production-bearer-file FILE \
     --production-metrics-file FILE \
     --production-ghcr-file FILE \
+    --reviewer-user LOGIN \
     [--repository OWNER/REPO]
 
 Credential values are never accepted inline. Each FILE must be a regular,
@@ -55,10 +57,16 @@ while (($#)); do
     --production-bearer-file) PRODUCTION_BEARER_FILE="${2:?}"; shift 2 ;;
     --production-metrics-file) PRODUCTION_METRICS_FILE="${2:?}"; shift 2 ;;
     --production-ghcr-file) PRODUCTION_GHCR_FILE="${2:?}"; shift 2 ;;
+    --reviewer-user) REVIEWER_USER="${2:?}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) printf 'ERROR=unknown argument: %s\n' "$1" >&2; usage >&2; exit 2 ;;
   esac
 done
+
+[[ "$REVIEWER_USER" =~ ^[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?$ ]] || {
+  echo "ERROR=a valid independent environment reviewer login is required" >&2
+  exit 2
+}
 
 for value in \
   "$CANDIDATE" \
@@ -90,6 +98,11 @@ done
 gh auth status --hostname github.com >/dev/null
 [[ "$(gh api "repos/$REPOSITORY" --jq '.permissions.admin // false')" == "true" ]] || {
   echo "ERROR=current GitHub identity lacks repository administration permission" >&2
+  exit 1
+}
+REVIEWER_ID="$(gh api "users/$REVIEWER_USER" --jq '.id')"
+[[ "$REVIEWER_ID" =~ ^[1-9][0-9]*$ ]] || {
+  echo "ERROR=environment reviewer identity is invalid" >&2
   exit 1
 }
 
@@ -201,21 +214,23 @@ base64 -w0 -- "$PRODUCTION_ENDPOINTS" >"$WORK/production-endpoints.b64"
 
 create_environment() {
   local environment="$1"
-  gh api \
+  jq -n --argjson reviewer_id "$REVIEWER_ID" '
+    {
+      wait_timer: 0,
+      reviewers: [{type: "User", id: $reviewer_id}],
+      prevent_self_review: true,
+      can_admins_bypass: false,
+      deployment_branch_policy: {
+        protected_branches: true,
+        custom_branch_policies: false
+      }
+    }
+  ' | gh api \
     --method PUT \
     -H 'Accept: application/vnd.github+json' \
     -H 'X-GitHub-Api-Version: 2022-11-28' \
     "repos/$REPOSITORY/environments/$environment" \
-    --input - >/dev/null <<'JSON'
-{
-  "wait_timer": 0,
-  "prevent_self_review": false,
-  "deployment_branch_policy": {
-    "protected_branches": true,
-    "custom_branch_policies": false
-  }
-}
-JSON
+    --input - >/dev/null
 }
 
 set_environment_secret() {
@@ -273,12 +288,19 @@ verify_secret_names production-readonly-canary \
   PRODUCTION_GHCR_READ_TOKEN
 
 for environment in staging-readonly production-readonly-canary; do
-  protected="$(gh api "repos/$REPOSITORY/environments/$environment" --jq '.deployment_branch_policy.protected_branches')"
-  custom="$(gh api "repos/$REPOSITORY/environments/$environment" --jq '.deployment_branch_policy.custom_branch_policies')"
-  [[ "$protected" == "true" && "$custom" == "false" ]] || {
-    echo "ERROR=$environment branch policy is not protected-branches-only" >&2
+  if ! gh api "repos/$REPOSITORY/environments/$environment" | jq -e \
+    --argjson reviewer_id "$REVIEWER_ID" '
+      .can_admins_bypass == false
+      and .deployment_branch_policy.protected_branches == true
+      and .deployment_branch_policy.custom_branch_policies == false
+      and ([.protection_rules[] | select(.type == "required_reviewers")] | length) == 1
+      and (.protection_rules[] | select(.type == "required_reviewers") | .prevent_self_review) == true
+      and ([.protection_rules[] | select(.type == "required_reviewers") | .reviewers[]
+            | select(.type == "User" and .reviewer.id == $reviewer_id)] | length) == 1
+    ' >/dev/null; then
+    echo "ERROR=$environment protection policy or reviewer binding is invalid" >&2
     exit 1
-  }
+  fi
 done
 
 printf 'GITHUB_RELEASE_ENVIRONMENTS=PASS\n'
