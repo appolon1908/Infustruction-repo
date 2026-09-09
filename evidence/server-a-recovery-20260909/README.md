@@ -19,22 +19,24 @@ The machine-readable observations and hashes are in [recovery.json](recovery.jso
 | Disposable containers, volume, network and plaintext work directory | Absent in subsequent read-back |
 | Runtime safety checks | Zero active calls/channels; required delivery flags false |
 
-The installed operator SHA-256 was `9ddaeb6df45514688f66db7ea9f8e86f93e6876b7eb90e6460f9ce251bad26a0`, and its installed-file manifest verified before each operation. The operator validated the existing owner maintenance waiver; this work did not change that waiver, the release tuple or operator policy.
+The installed operator SHA-256 was `9ddaeb6df45514688f66db7ea9f8e86f93e6876b7eb90e6460f9ce251bad26a0`, and its installed-file manifest verified before each operation. The operator validated the existing maintenance waiver available to that operation; this repository evidence does not independently establish a durable authorization record for any new runtime action.
 
 These results prove local recovery for protected platform commit `8e365724d1216581471835ee05d5fdc7b13ee501` and Middleware candidate digest `sha256:bca7a220b9ce50411ae67e2115507329656c4ee351333d14568af3695e3c347a`. They do not certify the newer appolon integration release, offsite restoration on an independent machine, or the full portfolio. No fresh offsite upload or independent recovery-key proof was performed in this operation.
 
-## Permanent proxy fix — installed
+## Permanent proxy fix — installed, with one invocation-evidence gap
 
-[Middleware PR #202](https://github.com/appolon1908-hue/Middleware-/pull/202) merged at 18:24:49Z as `56005c75d42ef04fc5083443f1aa54c7f4b1ec9f`. Its `init: true` and `pids_limit: 256` settings are now **INSTALLED AND VERIFIED** on both private proxies.
+[Middleware PR #202](https://github.com/appolon1908-hue/Middleware-/pull/202) merged at 18:24:49Z as `56005c75d42ef04fc5083443f1aa54c7f4b1ec9f`. Its `init: true` and `pids_limit: 256` settings are now **INSTALLED AND VERIFIED BY POST-STATE READ-BACK** on both private proxies.
 
 SentinelX began advertising write access to the two exact Compose files before installation. Structured edits passed YAML validation and created timestamped backups. The assistant did not change its own access policy or grant server-wide write access.
 
-The effective Compose configuration was compared with the pre-installation configuration and differed only by the approved init and PID-limit fields. Odoo was recreated first and verified healthy, followed by n8n. Both retained the exact live image digest `sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5`. No builds, pulls, dependency recreations, daemon restart or host reboot were performed.
+For the Odoo private proxy, the exact guarded Compose recreation command is durably captured in [proxy-installation.json](proxy-installation.json) and includes `--no-deps`, `--no-build`, and `--pull never`. For the n8n private proxy, the exact recreation command, command result, and operation timestamps are **NOT_DURABLY_CAPTURED** in the evidence available to this PR. They are not reconstructed or inferred from post-state. Therefore this evidence does **not** claim that those three invocation guards are proven for the n8n recreation.
 
-At 18:54:07Z, each proxy reported `docker-init` as PID 1, PID limit 256, five successful retained TLS health checks and zero descendant zombies. The host-wide `ssl_client` zombie count was zero. All six requested core services were healthy and unpaused.
+Post-installation read-back does prove that both proxies retained the exact live image digest `sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5`, report `docker-init` as PID 1, enforce PID limit 256, remain healthy, preserve the recorded mounts/security/private-network state, and have zero descendant zombies. At 18:54:07Z the host-wide `ssl_client` zombie count was zero and all six requested core services were healthy and unpaused.
 
-The n8n recreation changed the order of the bind-mount list. The first verification stopped at that difference; subsequent read-back proved exact equality of the mount values with no duplicates. The image, mounts, capabilities, read-only filesystem, no-new-privileges setting, private networks and aliases were preserved.
+The n8n post-state also showed a changed bind-mount list order. The first verification stopped at that difference; subsequent read-back proved equality of the mount values with no duplicates. That post-state evidence does not substitute for the missing exact n8n invocation record.
 
-Exact before/after container IDs, file hashes, backups, guarded apply details and final health observations are in [proxy-installation.json](proxy-installation.json). Earlier observations in [recovery.json](recovery.json) retain their original timestamps; the new `after_permanent_installation` observation records the installed state.
+Exact before/after container IDs, file hashes, backups, the captured Odoo apply details, the explicit n8n evidence gap, and final health observations are in [proxy-installation.json](proxy-installation.json). Earlier observations in [recovery.json](recovery.json) retain their original timestamps; the new `after_permanent_installation` observation records the installed state.
 
-[Infrastructure PR #112](https://github.com/appolon1908-hue/Infustruction-repo/pull/112) separately addresses the owner's same-Server-A staging assignment. Existing release, runner identity, staging isolation, offsite recovery and full production certification gates remain applicable.
+**Full production certification remains BLOCKED** on the missing durable n8n recreation invocation evidence (unless a pre-existing durable record is found), or on a separately authorized fresh audited operation that produces that evidence. This PR does not authorize such an operation.
+
+[Infrastructure PR #112](https://github.com/appolon1908-hue/Infustruction-repo/pull/112) separately addresses the same-Server-A staging assignment. Existing release, runner identity, staging isolation, offsite recovery and full production certification gates remain applicable.
