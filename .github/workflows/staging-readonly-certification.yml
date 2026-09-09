@@ -179,7 +179,7 @@ jobs:
             --evidence "${{ steps.materialize.outputs.evidence }}"
       - name: Upload sanitized staging evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: codestra-staging-readonly-${{ inputs.confirm_candidate_id }}
           path: ${{ steps.materialize.outputs.evidence }}
@@ -252,7 +252,7 @@ jobs:
             --evidence "${{ steps.materialize.outputs.evidence }}"
       - name: Upload sanitized rollback evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: codestra-rollback-rehearsal-${{ inputs.confirm_candidate_id }}
           path: ${{ steps.materialize.outputs.evidence }}
@@ -352,7 +352,7 @@ jobs:
             --evidence "${{ steps.materialize.outputs.evidence }}"
       - name: Upload sanitized canary evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: codestra-production-readonly-canary-${{ inputs.confirm_candidate_id }}
           path: ${{ steps.materialize.outputs.evidence }}
