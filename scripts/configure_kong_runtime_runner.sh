@@ -177,8 +177,8 @@ remote_installer_sha256="$(ssh "${ssh_options[@]}" "$remote" \
 [[ "$remote_installer_sha256" == "$installer_sha256" ]] || fail remote_installer_checksum
 
 # Host preflight is deliberately before registration-token creation. It may
-# create the dedicated locked service identity, but it performs no runtime or
-# network mutation and refuses to grant Docker authorization.
+# requires the dedicated locked service identity and its Docker authorization
+# to exist already; it performs no identity, runtime, or network mutation.
 ssh "${ssh_options[@]}" "$remote" "sudo -n '$REMOTE_INSTALLER' --preflight-only"
 
 registration_token="$(gh api --method POST -H "X-GitHub-Api-Version: $API_VERSION" \

@@ -55,26 +55,17 @@ done
 [[ "$(uname -s)" == Linux ]] || fail unsupported_os
 [[ "$(uname -m)" == x86_64 ]] || fail unsupported_architecture
 
-for tool in /usr/bin/curl /usr/bin/docker /usr/bin/find /usr/bin/passwd \
-            /usr/bin/pgrep /usr/bin/runuser /usr/bin/sha256sum \
-            /usr/bin/systemctl /usr/bin/tar /usr/sbin/useradd; do
+for tool in /usr/bin/curl /usr/bin/docker /usr/bin/find /usr/bin/pgrep \
+            /usr/bin/runuser /usr/bin/sha256sum /usr/bin/systemctl /usr/bin/tar; do
   [[ -x "$tool" && ! -L "$tool" ]] || fail "trusted_binary:${tool##*/}"
 done
 
-if ! id "$RUNNER_USER" >/dev/null 2>&1; then
-  /usr/sbin/useradd \
-    --system \
-    --create-home \
-    --home-dir "/var/lib/${RUNNER_USER}" \
-    --shell /bin/bash \
-    "$RUNNER_USER"
-  /usr/bin/passwd --lock "$RUNNER_USER" >/dev/null
-fi
+id "$RUNNER_USER" >/dev/null 2>&1 || fail "runner_identity_missing:${RUNNER_USER}"
 
 # release.yml executes scripts/verify_runtime_integration.py directly as the
 # runner identity, and that script talks to unix:///var/run/docker.sock.
-# Therefore direct Docker readback must already be explicitly authorized for
-# this dedicated runner identity. This installer deliberately does not grant it.
+# Therefore direct Docker readback and the locked service identity must already
+# be explicitly provisioned. This installer deliberately creates neither one.
 /usr/bin/runuser -u "$RUNNER_USER" -- /usr/bin/docker info >/dev/null 2>&1 \
   || fail "docker_authorization_missing:${RUNNER_USER}"
 

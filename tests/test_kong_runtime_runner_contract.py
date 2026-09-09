@@ -52,6 +52,8 @@ class KongRuntimeRunnerContractTests(unittest.TestCase):
 
     def test_bootstrap_never_grants_docker_or_root_runner_access(self) -> None:
         self.assertIn("docker_authorization_missing", self.installer)
+        self.assertIn("runner_identity_missing", self.installer)
+        self.assertNotIn("useradd", self.installer)
         self.assertNotIn("usermod -aG docker", self.installer)
         self.assertNotIn("RUNNER_ALLOW_RUNASROOT=1", self.installer)
         self.assertNotIn("NOPASSWD: /usr/bin/docker", self.installer)

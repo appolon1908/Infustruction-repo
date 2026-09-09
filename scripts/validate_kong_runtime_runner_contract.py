@@ -63,6 +63,7 @@ def main() -> int:
         "codestra-middleware-integration-api-1",
         "codestra-redis-1",
         "docker_authorization_missing",
+        "runner_identity_missing",
         "RUNTIME_MUTATION=NONE",
     ):
         require(token in installer, f"installer_runtime_token:{token}")
@@ -97,6 +98,7 @@ def main() -> int:
     )
     require("gh variable set" not in controller, "no_release_variable_write")
     require("gh secret set" not in controller, "no_secret_write")
+    require("useradd" not in installer, "no_runner_identity_creation")
     require('(.status == "queued" or .status == "in_progress")' in controller,
             "active_run_states")
     replace_forward = '"$REPLACE_STALE" && replace_arg=(--replace-stale-registration)'
