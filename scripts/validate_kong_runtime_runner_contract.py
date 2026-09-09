@@ -84,14 +84,13 @@ def main() -> int:
     ):
         require(token in controller, f"controller_token:{token}")
 
+    job_gate = controller.index("runtime_job_not_waiting_for_exact_runner")
     require(
-        controller.index("runtime_job_not_waiting_for_exact_runner")
-        < controller.index("actions/runners/registration-token"),
+        job_gate < controller.index("actions/runners/registration-token"),
         "job_identity_before_token",
     )
     require(
-        controller.index("runtime_job_not_waiting_for_exact_runner")
-        < controller.index("REMOTE_INSTALLER"),
+        job_gate < controller.index('installer_sha256="$(sha256sum'),
         "job_identity_before_remote_install",
     )
     require("gh variable set" not in controller, "no_release_variable_write")
