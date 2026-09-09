@@ -7,6 +7,7 @@ does not contact services and must never read runtime credentials.
 
 from __future__ import annotations
 
+from certification_evidence import running_services, rollback_gate
 import datetime as dt
 import hashlib
 from pathlib import Path
@@ -117,7 +118,7 @@ def main() -> None:
             row["service"] == service and row["classification"] == "REQUIRED_LIVE"
             for row in classified_required
         )
-        for service in ("KLYROW", "TELNEXA")
+        for service in {row["service"] for row in classified_required}
     }
 
     live_groups = [
@@ -167,7 +168,7 @@ def main() -> None:
             "service": "NGINX_HEALTH",
             "authority": "RUNNING_NGINX",
             "operation_count": 2,
-            "classification": "REQUIRED_LIVE",
+            "classification": "OPTIONAL_LIVE",
             "notes": "sms.telnexa.co and status.telnexa.co health responders.",
         },
         {
@@ -217,7 +218,7 @@ def main() -> None:
         {
             "service": "PRIVATE_INTEGRATION_GATEWAY",
             "authority": "RUNNING_PROTECTED_SOURCE_OPENAPI",
-            "operation_count": 20,
+            "operation_count": 20 - required_by_service.get("PRIVATE_GATEWAY", 0),
             "classification": "INTERNAL_ONLY",
             "notes": "Signed shared-mode protected release is deployed; the separately governed middleware-mode ingress contract is not deployed.",
         },
@@ -280,6 +281,7 @@ def main() -> None:
             "notes": "Explicitly blocked at the public edge.",
         },
     ]
+    live_groups.append({"service": "PRIVATE_INTEGRATION_GATEWAY", "authority": "RUNNING_PROTECTED_SOURCE_OPENAPI", "operation_count": required_by_service.get("PRIVATE_GATEWAY", 0), "classification": "REQUIRED_LIVE"})
     live_counts: dict[str, int] = {name: 0 for name in ALLOWED_CLASSIFICATIONS}
     for group in live_groups:
         live_counts[group["classification"]] += group["operation_count"]
@@ -308,6 +310,10 @@ def main() -> None:
     if sum(row["operation_count"] for row in source_only_groups) != 32:
         raise RuntimeError("source-only classification does not reconcile to 32")
 
+    excluded_source_groups = source_only_groups
+    source_only_groups = [{"service": service, "operation_count": sum(row["service"] == service and row["classification"] == "MISSING_REQUIRED" and row["source_implemented"] for row in classified_required), "classification": "MISSING_REQUIRED"} for service in sorted({row["service"] for row in classified_required})]
+    source_only_groups = [row for row in source_only_groups if row["operation_count"]]
+    inventory = load_yaml(ROOT / "PRODUCTION-RUNTIME-INVENTORY.yaml")
     documented_not_implemented = [
         {
             "service": "MAUTIC_GENERATED_METADATA",
@@ -396,10 +402,12 @@ def main() -> None:
         "server": "37.27.128.39",
         "scope": "THIS_SERVER_ONLY",
         "authoritative_baseline": {
-            "total_running_services": 72,
+            "total_running_services": running_services(inventory),
+            "running_service_definition": "Container or host service with health RUNNING, HEALTHY or ACTIVE",
+            "runtime_inventory_sha256": hashlib.sha256((ROOT / "PRODUCTION-RUNTIME-INVENTORY.yaml").read_bytes()).hexdigest(),
             "total_live_api_endpoints": 3120,
-            "total_internal_api_endpoints": 1582,
-            "total_source_implemented_not_deployed": 32,
+            "total_internal_api_endpoints": sum(row["operation_count"] for row in live_groups if row["classification"] == "INTERNAL_ONLY" or row["service"] == "POSTAL_LEGACY_API"),
+            "total_source_implemented_not_deployed": sum(row["operation_count"] for row in source_only_groups),
             "api_inventory_complete": True,
             "source_matrix": SOURCE_MATRIX.name,
             "source_matrix_sha256": source_sha256,
@@ -432,6 +440,7 @@ def main() -> None:
         "live_runtime_groups": live_groups,
         "baseline_source_implemented_not_deployed_groups": source_only_groups,
         "documented_not_implemented": documented_not_implemented,
+        "excluded_source_groups": excluded_source_groups,
         "canonical_custom_contract": {
             "total_operations": len(classified_required),
             "required_live": required_live,
@@ -629,6 +638,29 @@ def main() -> None:
           'evidence_sha256': '0c9df7c43e2eb2d2fd7d62ac6bee0c1fb0443f56ad367ba9569d904a003a3c78'}]
     )
     rollback["reason"] = 'Historical image rollback controls do not certify later configuration changes. The private Nginx edge rollback rehearsal is not evidenced; Telnexa and Kyqra remain review-gated. Platform rollback remains FAIL.'
+    for row in rollback["production_configuration_changes"]:
+        if row["service"] == "TELNEXA_ADMIN_DENY_EDGE":
+            row["rollback_status"] = "FAIL"
+            row["reason"] = "Bundle creation is recorded; a bound rollback/forward rehearsal receipt is absent."
+    for row in rollback["candidate_promotions"]:
+        service = row["service"]
+        owner = "TELNEXA" if service.startswith("TELNEXA") else "KYQRA" if service.startswith("KYQRA") else "PRIVATE_GATEWAY" if service == "PRIVATE_INTEGRATION_GATEWAY" else "KLYROW"
+        expected = matrix["candidate_source_authority"][owner]["source_sha"]
+        row["authority_service"] = owner
+        if row["after_source_sha"] != expected:
+            row["historical_artifact"] = {"source_sha": row["after_source_sha"], "image_digest": row["after_image_digest"]}
+            row["after_source_sha"] = expected
+            row["after_image_digest"] = None
+            row["artifact_binding"] = "FAIL"
+            row["status"] = "NOT_DEPLOYED_EXACT_ARTIFACT_REQUIRED"
+    previous = load_yaml(OUTPUT_ROLLBACK) if OUTPUT_ROLLBACK.exists() else {}
+    receipts = {row["service"]: row.get("rehearsal_receipt") for group in ("candidate_promotions", "production_configuration_changes") for row in previous.get(group, [])}
+    for group in ("candidate_promotions", "production_configuration_changes"):
+        for row in rollback[group]:
+            if receipts.get(row["service"]):
+                row["rehearsal_receipt"] = receipts[row["service"]]
+            row["rollback_status"] = rollback_gate({"candidate_promotions": [row]}, ROOT)
+    rollback["rollback_gate"] = rollback_gate(rollback, ROOT)
     OUTPUT_ROLLBACK.write_text(yaml.safe_dump(rollback, sort_keys=False, width=120))
 
     print(

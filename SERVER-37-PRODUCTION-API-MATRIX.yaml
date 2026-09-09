@@ -1,13 +1,15 @@
 schema_version: 1
-generated_at: '2026-09-03T00:17:19.437477+00:00'
+generated_at: '2026-09-09T01:47:18.201189+00:00'
 phase: SERVER_37_PRODUCTION_REMEDIATION_AND_CERTIFICATION
 server: 37.27.128.39
 scope: THIS_SERVER_ONLY
 authoritative_baseline:
-  total_running_services: 72
+  total_running_services: 49
+  running_service_definition: Container or host service with health RUNNING, HEALTHY or ACTIVE
+  runtime_inventory_sha256: 987a720beb690beb7c4d0b5c6d4b62e1934c5ab49d1181eccb04fbc30d72f14f
   total_live_api_endpoints: 3120
-  total_internal_api_endpoints: 1582
-  total_source_implemented_not_deployed: 32
+  total_internal_api_endpoints: 1568
+  total_source_implemented_not_deployed: 53
   api_inventory_complete: true
   source_matrix: PRODUCTION-API-MATRIX.yaml
   source_matrix_sha256: 0b50e4064e8ecb4c0c1777aff5a5142f5cf1852f99c24206f3b12ba21f8c8312
@@ -32,11 +34,11 @@ classification_definitions:
   N/A: Explicitly not required by the approved architecture.
   MISSING_REQUIRED: Required canonical operation or integration capability is not live.
 live_runtime_classification_counts:
-  UPSTREAM_PRODUCT_API: 1163
-  OPTIONAL_LIVE: 281
+  REQUIRED_LIVE: 96
   LEGACY_COMPATIBILITY: 26
-  INTERNAL_ONLY: 1566
-  REQUIRED_LIVE: 84
+  UPSTREAM_PRODUCT_API: 1163
+  OPTIONAL_LIVE: 283
+  INTERNAL_ONLY: 1552
 live_runtime_groups:
 - service: KLYROW_GATEWAY
   authority: RUNNING_OPENAPI_AND_NGINX
@@ -71,7 +73,7 @@ live_runtime_groups:
 - service: NGINX_HEALTH
   authority: RUNNING_NGINX
   operation_count: 2
-  classification: REQUIRED_LIVE
+  classification: OPTIONAL_LIVE
   notes: sms.telnexa.co and status.telnexa.co health responders.
 - service: JASMIN_HTTP
   authority: RUNNING_JASMIN_CONFIGURATION
@@ -105,7 +107,7 @@ live_runtime_groups:
   classification: INTERNAL_ONLY
 - service: PRIVATE_INTEGRATION_GATEWAY
   authority: RUNNING_PROTECTED_SOURCE_OPENAPI
-  operation_count: 20
+  operation_count: 6
   classification: INTERNAL_ONLY
   notes: Signed shared-mode protected release is deployed; the separately governed middleware-mode ingress contract is not
     deployed.
@@ -149,7 +151,26 @@ live_runtime_groups:
   operation_count: 7
   classification: INTERNAL_ONLY
   notes: Explicitly blocked at the public edge.
+- service: PRIVATE_INTEGRATION_GATEWAY
+  authority: RUNNING_PROTECTED_SOURCE_OPENAPI
+  operation_count: 14
+  classification: REQUIRED_LIVE
 baseline_source_implemented_not_deployed_groups:
+- service: KYQRA
+  operation_count: 18
+  classification: MISSING_REQUIRED
+- service: PRIVATE_GATEWAY
+  operation_count: 8
+  classification: MISSING_REQUIRED
+- service: TELNEXA
+  operation_count: 27
+  classification: MISSING_REQUIRED
+documented_not_implemented:
+- service: MAUTIC_GENERATED_METADATA
+  operation_count: 4
+  classification: N/A
+  notes: Upstream explicitly marks these generated metadata operations non-exposed.
+excluded_source_groups:
 - service: KEYCLOAK_EXPERIMENTAL_EXTENSIONS
   operation_count: 26
   classification: DISABLED_BY_DESIGN
@@ -161,11 +182,6 @@ baseline_source_implemented_not_deployed_groups:
   operation_count: 1
   classification: N/A
   notes: Dead/deprecated route; canonical crawler command intake is a separate missing requirement.
-documented_not_implemented:
-- service: MAUTIC_GENERATED_METADATA
-  operation_count: 4
-  classification: N/A
-  notes: Upstream explicitly marks these generated metadata operations non-exposed.
 canonical_custom_contract:
   total_operations: 149
   required_live: 96

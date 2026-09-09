@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - "SERVER-37-*.md"
+      - "operations/server37/klyrow/**"
+      - "scripts/certification_evidence.py"
+      - "tests/test_certification_reconciliation.py"
       - "PRODUCTION-API-MATRIX.yaml"
       - "SERVER-37-PRODUCTION-API-MATRIX.yaml"
       - "SERVER-37-PRODUCTION-ROLLBACK.yaml"
@@ -48,6 +51,7 @@ jobs:
         run: |
           python -m py_compile scripts/generate_full_platform_certification.py scripts/generate_server37_api_matrix.py scripts/validate_full_platform_certification.py scripts/validate_server37_api_matrix.py
           python scripts/test_full_platform_certification_helpers.py
+          python -m unittest discover -s tests -p test_certification_reconciliation.py
           python scripts/validate_full_platform_certification.py
           python scripts/validate_server37_api_matrix.py
       - name: Scan exact tracked source for secrets
@@ -87,5 +91,6 @@ jobs:
         run: |
           python -m py_compile scripts/generate_full_platform_certification.py scripts/generate_server37_api_matrix.py scripts/validate_full_platform_certification.py scripts/validate_server37_api_matrix.py
           python scripts/test_full_platform_certification_helpers.py
+          python -m unittest discover -s tests -p test_certification_reconciliation.py
           python scripts/validate_full_platform_certification.py
           python scripts/validate_server37_api_matrix.py

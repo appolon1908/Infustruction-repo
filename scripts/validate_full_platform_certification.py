@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from certification_evidence import gate_bindings, digest
 import re
 import hashlib
 from pathlib import Path
@@ -253,6 +254,12 @@ def validate_certification(
     endpoint_total: int,
     api_counts: dict[str, int],
 ) -> None:
+    gate_document = load(GATE_EVIDENCE_PATH)
+    for field, gate in {"RESTORE": "ISOLATED_RESTORE", "BACKUPS": "OFF_HOST_BACKUP", "MTLS": "POSITIVE_AND_NEGATIVE_MTLS_E2E", "KLYROW_EMAIL_E2E": "CONTROLLED_EMAIL_E2E", "TELNEXA_SMS_E2E": "CONTROLLED_SMS_E2E", "KYQRA_E2E": "CONTROLLED_KYQRA_E2E", "PRIVATE_INTEGRATION_E2E": "CONTROLLED_PRIVATE_INTEGRATION_E2E"}.items():
+        assert certification[field] == gate_document["gates"][gate]["status"], f"{field}: stale gate result"
+    assert certification["ROLLBACK"] == load(ROOT / "SERVER-37-PRODUCTION-ROLLBACK.yaml")["rollback_gate"]
+    assert certification["EVIDENCE_BINDINGS"] == gate_bindings(load(GATE_EVIDENCE_PATH), ROOT)
+    assert certification["RECORDED_INPUTS"] == {name: {"sha256": digest(ROOT / name)} for name in ("PRODUCTION-RUNTIME-INVENTORY.yaml", "PRODUCTION-API-MATRIX.yaml", "SERVER-37-PRODUCTION-GATE-EVIDENCE.yaml", "SERVER-37-PRODUCTION-ROLLBACK.yaml")}
     assert certification["PHASE"] == "FULL_PLATFORM_API_INTEGRATION_AND_PRODUCTION_CERTIFICATION"
     assert certification["PRODUCTION_SERVICES"] == production_services
     assert summary["production_services"] == production_services

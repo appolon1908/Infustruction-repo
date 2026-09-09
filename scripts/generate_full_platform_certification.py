@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import argparse
 import datetime as dt
+from certification_evidence import gate_bindings, digest
 import json
 import re
 import subprocess
@@ -493,10 +495,10 @@ def provider_endpoints() -> list[dict[str, Any]]:
                 "authentication": "ROUTE_DEPENDENT", "authorization": "ROUTE_DEPENDENT",
                 "tenant_model": "N/A", "idempotency": "N/A", "request_model": "N/A",
                 "response_model": "N/A", "external_effect": "ROUTE_DEPENDENT",
-                "implementation_status": "N/A" if host == "admin.telnexa.co" else ("IMPLEMENTED" if expected else "PARTIAL"),
+                "implementation_status": "N/A" if host == "admin.telnexa.co" and expected else ("IMPLEMENTED" if expected else "PARTIAL"),
                 "runtime_verification": (
                     "INTENTIONAL_HTTPS_403"
-                    if host == "admin.telnexa.co"
+                    if host == "admin.telnexa.co" and status_code == 403
                     else (f"LIVE_HTTPS_{status_code}" if status_code is not None else "LIVE_HTTPS_UNREACHABLE")
                 ),
                 "stage": "PRODUCTION" if host != "admin.telnexa.co" else "LEGACY",
@@ -1012,7 +1014,7 @@ def integration_matrix() -> dict[str, Any]:
     return value
 
 
-def certification_report(inventory: dict[str, Any], api: dict[str, Any]) -> dict[str, Any]:
+def certification_report(inventory: dict[str, Any], api: dict[str, Any], recorded_sources=None) -> dict[str, Any]:
     required = api["required_contracts"]
     endpoint_counts = {
         service: sum(
@@ -1021,7 +1023,7 @@ def certification_report(inventory: dict[str, Any], api: dict[str, Any]) -> dict
         )
         for service in ("KLYROW", "TELNEXA", "KYQRA", "PRIVATE_GATEWAY")
     }
-    source_revisions = {
+    source_revisions = recorded_sources if recorded_sources is not None else {
         service: repository_head(directory)
         for service, directory in SOURCE_DIRECTORIES.items()
     }
@@ -1079,6 +1081,8 @@ def certification_report(inventory: dict[str, Any], api: dict[str, Any]) -> dict
     gate_document = yaml.safe_load(GATE_EVIDENCE_PATH.read_text())
     if gate_document.get("server") != inventory["public_ipv4"]:
         raise RuntimeError("production gate evidence is for a different server")
+
+    bindings = gate_bindings(gate_document, ROOT)
 
     def external_gate(name: str) -> str:
         record = gate_document.get("gates", {}).get(name)
@@ -1265,15 +1269,29 @@ def certification_report(inventory: dict[str, Any], api: dict[str, Any]) -> dict
     ):
         report["OVERALL_VERDICT"] = "PRODUCTION_CERTIFIED"
         report["BLOCKERS"] = []
+    report["OBSERVATION_MODE"] = "RECORDED_EVIDENCE_NO_RUNTIME_PROBE" if recorded_sources is not None else "LIVE_PROBE"
+    report["EVIDENCE_BINDINGS"] = bindings
+    report["RECORDED_INPUTS"] = {name: {"sha256": digest(ROOT / name)} for name in ("PRODUCTION-RUNTIME-INVENTORY.yaml", "PRODUCTION-API-MATRIX.yaml", "SERVER-37-PRODUCTION-GATE-EVIDENCE.yaml", "SERVER-37-PRODUCTION-ROLLBACK.yaml")}
     (ROOT / "FULL-PLATFORM-PRODUCTION-CERTIFICATION.yaml").write_text(yaml.safe_dump(report, sort_keys=False, width=120))
     return report
 
 
 def main() -> None:
-    inventory = runtime_inventory()
-    api = api_matrix()
-    integration_matrix()
-    certification_report(inventory, api)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--from-recorded', action='store_true', help='Reconcile committed observations without runtime access')
+    args = parser.parse_args()
+    if args.from_recorded:
+        inventory = yaml.safe_load((ROOT / "PRODUCTION-RUNTIME-INVENTORY.yaml").read_text())
+        api = yaml.safe_load((ROOT / "PRODUCTION-API-MATRIX.yaml").read_text())
+    else:
+        inventory = runtime_inventory()
+        api = api_matrix()
+        integration_matrix()
+    recorded_sources = None
+    if args.from_recorded:
+        previous = yaml.safe_load((ROOT / "FULL-PLATFORM-PRODUCTION-CERTIFICATION.yaml").read_text())
+        recorded_sources = {service: previous[service + "_SOURCE_SHA"] for service in SOURCE_DIRECTORIES}
+    certification_report(inventory, api, recorded_sources)
     required = api["required_contracts"]
     summary = {
         "generated_at": GENERATED_AT,

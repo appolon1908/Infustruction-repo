@@ -3,8 +3,7 @@
 
 from __future__ import annotations
 
-import hashlib
-
+from certification_evidence import running_services, rollback_gate
 import hashlib
 import re
 from pathlib import Path
@@ -45,7 +44,8 @@ def main() -> None:
     assert baseline["source_matrix_sha256"] == hashlib.sha256(
         (ROOT / "PRODUCTION-API-MATRIX.yaml").read_bytes()
     ).hexdigest()
-    assert baseline["total_running_services"] > 0
+    assert baseline["total_running_services"] == running_services(load(ROOT / "PRODUCTION-RUNTIME-INVENTORY.yaml"))
+    assert baseline["runtime_inventory_sha256"] == hashlib.sha256((ROOT / "PRODUCTION-RUNTIME-INVENTORY.yaml").read_bytes()).hexdigest()
     assert baseline["total_live_api_endpoints"] > 0
     assert baseline["total_internal_api_endpoints"] > 0
     assert baseline["total_source_implemented_not_deployed"] > 0
@@ -76,7 +76,8 @@ def main() -> None:
     assert all(row["classification"] in ALLOWED_CLASSIFICATIONS for row in operations)
     live = sum(row["classification"] == "REQUIRED_LIVE" for row in operations)
     missing = sum(row["classification"] == "MISSING_REQUIRED" for row in operations)
-    assert live == contract["required_live"]
+    assert live == contract["required_live"] == classifications["REQUIRED_LIVE"]
+    assert baseline["total_source_implemented_not_deployed"] == sum(row["classification"] == "MISSING_REQUIRED" and row["source_implemented"] for row in operations)
     assert missing == contract["missing_required"] == matrix["missing_required_endpoints"]
 
     for service, row in matrix["candidate_source_authority"].items():
@@ -89,7 +90,7 @@ def main() -> None:
             assert "REVIEW_REQUIRED" in row["review"]
 
     assert rollback["production_changed"] is True
-    assert rollback["rollback_gate"] == "FAIL"
+    assert rollback["rollback_gate"] == rollback_gate(rollback, ROOT)
     configuration_changes = {
         row["service"]: row for row in rollback["production_configuration_changes"]
     }
@@ -102,18 +103,18 @@ def main() -> None:
     )
     assert configuration_change["after_state"] == "OAUTH2_API_ENABLED_PRIVATE_EDGE_DENIED"
     assert configuration_change["rollback_procedure"]
-    assert configuration_change["rollback_status"] == "PASS"
+    assert configuration_change["rollback_status"] == rollback_gate({"candidate_promotions": [configuration_change]}, ROOT)
     admin_deny = configuration_changes["TELNEXA_ADMIN_DENY_EDGE"]
     assert admin_deny["before_state"] == "HTTP_403_VHOST_WITH_DNS_ABSENT"
     assert admin_deny["after_state"] == "DNS_AND_DEDICATED_TLS_PRESENT_HTTPS_403"
     assert admin_deny["rollback_procedure"]
-    assert admin_deny["rollback_status"] == "PASS"
+    assert admin_deny["rollback_status"] == rollback_gate({"candidate_promotions": [admin_deny]}, ROOT)
     for service in ("PRIVATE_GATEWAY_NGINX_EDGE", "KLYROW_EVENT_CONFIGURATION_BRIDGE"):
         row = configuration_changes[service]
         assert row["before_state"] and row["after_state"] and row["rollback_bundle"]
         assert row["rollback_procedure"]
         assert hashlib.sha256((ROOT / row["evidence"]).read_bytes()).hexdigest() == row["evidence_sha256"]
-    assert configuration_changes["PRIVATE_GATEWAY_NGINX_EDGE"]["rollback_status"] == "FAIL"
+    assert all(row["rollback_status"] == rollback_gate({"candidate_promotions": [row]}, ROOT) for row in configuration_changes.values())
     assert rollback["candidate_promotions"]
     deployed = {
         "KLYROW_GATEWAY_AND_WORKER",
@@ -126,12 +127,17 @@ def main() -> None:
         if "before_image_digest" in row:
             digests.append(row["before_image_digest"])
         digests.extend(row.get("before_image_digests", []))
-        digests.append(row["after_image_digest"])
+        assert row["after_source_sha"] == matrix["candidate_source_authority"][row["authority_service"]]["source_sha"]
+        if row["after_image_digest"] is None:
+            assert row["artifact_binding"] == "FAIL"
+            assert row["status"] == "NOT_DEPLOYED_EXACT_ARTIFACT_REQUIRED"
+        else:
+            digests.append(row["after_image_digest"])
         assert all(IMAGE_DIGEST.fullmatch(value) for value in digests)
         if row["service"] in deployed:
             assert row["status"] == "DEPLOYED_PASS"
         else:
-            assert row["status"] == "NOT_DEPLOYED_REVIEW_REQUIRED"
+            assert row["status"] in {"NOT_DEPLOYED_REVIEW_REQUIRED", "NOT_DEPLOYED_EXACT_ARTIFACT_REQUIRED"}
         assert row["rollback_procedure"]
 
     print(
