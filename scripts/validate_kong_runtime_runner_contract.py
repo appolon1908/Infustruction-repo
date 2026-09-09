@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +46,7 @@ def main() -> int:
     require("--ephemeral" in installer, "installer_ephemeral")
     require("--disableupdate" in installer, "installer_disableupdate")
     require("--registration-token-stdin" in installer, "installer_token_stdin")
+    require(os.access(INSTALLER_PATH, os.X_OK), "installer_executable")
 
     for source, label in ((installer, "installer"), (controller, "controller")):
         require("set -Eeuo pipefail" in source, f"{label}_strict_shell")
@@ -95,6 +97,12 @@ def main() -> int:
     )
     require("gh variable set" not in controller, "no_release_variable_write")
     require("gh secret set" not in controller, "no_secret_write")
+    require('(.status == "queued" or .status == "in_progress")' in controller,
+            "active_run_states")
+    replace_forward = '"$REPLACE_STALE" && replace_arg=(--replace-stale-registration)'
+    require(replace_forward in controller, "explicit_local_stale_replacement")
+    require(controller.index(replace_forward) < controller.index('if [[ -n "$runner_matches" ]]'),
+            "replacement_forwarded_without_registration")
 
     security = contract["security_invariants"]
     for key in (

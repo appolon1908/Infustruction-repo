@@ -133,7 +133,7 @@ jq -e \
     .head_branch == "staging" and
     .head_sha == $sha and
     .event == "push" and
-    .status == "queued" and
+    (.status == "queued" or .status == "in_progress") and
     .conclusion == null
   ' <<<"$run_json" >/dev/null || fail runtime_run_identity
 
@@ -155,6 +155,7 @@ runner_matches="$(gh api --paginate -H "X-GitHub-Api-Version: $API_VERSION" \
   "repos/$REPOSITORY/actions/runners?per_page=100" \
   --jq ".runners[] | select(.name == \"$RUNNER_NAME\") | @base64")"
 replace_arg=()
+"$REPLACE_STALE" && replace_arg=(--replace-stale-registration)
 if [[ -n "$runner_matches" ]]; then
   [[ "$(wc -l <<<"$runner_matches")" -eq 1 ]] || fail duplicate_exact_runner_names
   decoded="$(base64 --decode <<<"$runner_matches")"
@@ -165,7 +166,6 @@ if [[ -n "$runner_matches" ]]; then
   [[ "$runner_busy" == false && "$runner_status" == offline ]] || fail stale_runner_not_safe_to_replace
   gh api --method DELETE -H "X-GitHub-Api-Version: $API_VERSION" \
     "repos/$REPOSITORY/actions/runners/$runner_id" >/dev/null
-  replace_arg=(--replace-stale-registration)
 fi
 
 installer_sha256="$(sha256sum "$INSTALLER" | awk '{print $1}')"

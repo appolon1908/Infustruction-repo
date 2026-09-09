@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import unittest
 from pathlib import Path
 
@@ -32,6 +33,7 @@ class KongRuntimeRunnerContractTests(unittest.TestCase):
         self.assertIn(app["sha256"], self.installer)
         self.assertIn("--disableupdate", self.installer)
         self.assertIn("--ephemeral", self.installer)
+        self.assertTrue(os.access(ROOT / "scripts/install_kong_actions_runner.sh", os.X_OK))
 
     def test_bootstrap_is_staging_only_and_job_bound(self) -> None:
         target = self.contract["target"]
@@ -42,6 +44,7 @@ class KongRuntimeRunnerContractTests(unittest.TestCase):
         self.assertIn("branches/staging", self.controller)
         self.assertIn('head_branch == "staging"', self.controller)
         self.assertIn("runtime_job_not_waiting_for_exact_runner", self.controller)
+        self.assertIn('(.status == "queued" or .status == "in_progress")', self.controller)
         self.assertLess(
             self.controller.index("runtime_job_not_waiting_for_exact_runner"),
             self.controller.index("actions/runners/registration-token"),
@@ -79,6 +82,11 @@ class KongRuntimeRunnerContractTests(unittest.TestCase):
         self.assertFalse(
             self.contract["security_invariants"]["registration_token_persisted"]
         )
+
+    def test_explicit_stale_replacement_reaches_unregistered_local_state(self) -> None:
+        replacement = '"$REPLACE_STALE" && replace_arg=(--replace-stale-registration)'
+        self.assertIn(replacement, self.controller)
+        self.assertLess(self.controller.index(replacement), self.controller.index('if [[ -n "$runner_matches" ]]'))
 
     def test_controller_is_fail_closed_ssh(self) -> None:
         for token in ("StrictHostKeyChecking=yes", "UserKnownHostsFile=", "BatchMode=yes"):
