@@ -26,7 +26,12 @@ disabled. Matching infrastructure runners, protected deployment inputs, an
 installed controller/adapter and complete recovery evidence remain outstanding.
 
 The controller's target-map validator accepts explicit environment-to-host
-bindings; it does not require distinct physical hostnames. The separate
+bindings; it does not require distinct physical hostnames. The adapter resolves
+an environment-scoped protected configuration named
+`<validated-host>.<environment>.json`; staging and production therefore cannot
+silently share a compose directory, service, database, release pointer, or
+health endpoint through one host-scoped file. Each configuration must bind its
+own environment and isolated resources. The separate
 `config/stage6-staging-host-provisioning-request.v1.json` still forbids reusing
 the production host for its isolated-host provisioning operation. This target
 assignment does not change that request or claim its provisioning checks passed.

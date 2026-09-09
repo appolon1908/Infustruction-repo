@@ -158,9 +158,11 @@ def verify_artifact(args,temporary):
     if not importer.is_file() or importer.is_symlink(): raise Blocked("verified artifact lacks importer")
     return release,sha256(importer)
 
-def load_target(path,host):
-    v=root_regular(path); required={"schema","target_host","release_root","current_link","compose_directory","compose_files","service","database","modules","addon_mount","no_send_env","service_image","internal_networks","health_base_url","health"}
-    if set(v)!=required or v.get("schema")!="codestra.odoo-deploy-target.v2" or v.get("target_host")!=host: raise Blocked("Odoo target configuration mismatch")
+def load_target(path,host,environment):
+    v=root_regular(path); required={"schema","target_host","environment","release_root","current_link","compose_directory","compose_files","service","database","modules","addon_mount","no_send_env","service_image","internal_networks","health_base_url","health"}
+    if (set(v)!=required or v.get("schema")!="codestra.odoo-deploy-target.v3"
+            or v.get("target_host")!=host or v.get("environment")!=environment):
+        raise Blocked("Odoo target configuration mismatch")
     for k in ("release_root","current_link","compose_directory"):
         p=Path(str(v[k]));
         if not p.is_absolute() or ".." in p.parts: raise Blocked(f"unsafe target path: {k}")
@@ -393,7 +395,9 @@ def _main(argv=None):
         if os.geteuid()!=0: raise Blocked("adapter requires root dispatcher execution")
         auth=root_regular(Path(args.authorization)); validate_handoff(args,auth)
         if args.action=="promote-production-readonly": raise Blocked("production traffic canary is not implemented")
-        validate_recovery_evidence(auth); target=load_target(CONFIG_ROOT/f"{args.validated_target_host}.json",args.validated_target_host)
+        validate_recovery_evidence(auth)
+        config_name=f"{args.validated_target_host}.{args.environment}.json"
+        target=load_target(CONFIG_ROOT/config_name,args.validated_target_host,args.environment)
         if args.action=="certify-staging-readonly":
             with tempfile.TemporaryDirectory(prefix="codestra-odoo-verify-") as d: _,expected=verify_artifact(args,Path(d))
             runtime_networks=validate_effective_compose(target)
