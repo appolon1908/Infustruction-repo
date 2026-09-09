@@ -9,6 +9,18 @@
     "workflow_name": "Generate immutable Kong release evidence",
     "job_name": "runtime-topology"
   },
+  "bootstrap": {
+    "workflow": ".github/workflows/kong-runtime-runner-bootstrap.yml",
+    "environment": "kong-staging-runtime-runner-bootstrap",
+    "confirmation": "BOOTSTRAP_KONG_STAGING_RUNTIME_RUNNER",
+    "admin_secret": "CODESTRA_REPOSITORY_ADMIN_TOKEN",
+    "ssh_secret": "KONG_RUNTIME_RUNNER_SSH_PRIVATE_KEY",
+    "known_hosts_secret": "KONG_RUNTIME_RUNNER_KNOWN_HOSTS",
+    "host_variable": "KONG_RUNTIME_RUNNER_HOST",
+    "ssh_user_variable": "KONG_RUNTIME_RUNNER_SSH_USER",
+    "ssh_port_variable": "KONG_RUNTIME_RUNNER_SSH_PORT",
+    "job_binding": "exact-current-staging-release-runtime-topology-job"
+  },
   "runner_application": {
     "version": "2.337.0",
     "download_url": "https://github.com/actions/runner/releases/download/v2.337.0/actions-runner-linux-x64-2.337.0.tar.gz",
@@ -40,6 +52,9 @@
     "queued_job_identity_verified_before_registration": true,
     "docker_authorization_must_preexist": true,
     "docker_authorization_created_by_bootstrap": false,
+    "strict_ssh_host_key_checking": true,
+    "bootstrap_manual_confirmation_required": true,
+    "bootstrap_exact_protected_main_required": true,
     "runtime_container_mutation_allowed": false,
     "runtime_network_mutation_allowed": false,
     "kong_admin_mutation_allowed": false,
