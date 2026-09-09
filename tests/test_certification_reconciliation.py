@@ -72,6 +72,8 @@ class EvidenceTests(unittest.TestCase):
             admin = next(row for row in rows if row['path'] == 'https://admin.telnexa.co/*')
             self.assertEqual(admin['runtime_verification'] == 'INTENTIONAL_HTTPS_403', status == 403)
             self.assertEqual(admin['implementation_status'], 'N/A' if status == 403 else 'PARTIAL')
+            if status != 403:
+                self.assertFalse(full.live_https_without_server_error(admin['runtime_verification']))
 
     def test_recorded_regeneration_never_calls_runtime(self):
         with tempfile.TemporaryDirectory() as tmp:

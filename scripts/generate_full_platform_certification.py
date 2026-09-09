@@ -499,7 +499,7 @@ def provider_endpoints() -> list[dict[str, Any]]:
                 "runtime_verification": (
                     "INTENTIONAL_HTTPS_403"
                     if host == "admin.telnexa.co" and status_code == 403
-                    else (f"LIVE_HTTPS_{status_code}" if status_code is not None else "LIVE_HTTPS_UNREACHABLE")
+                    else ((f"ADMIN_DENIAL_FAILED_HTTP_{status_code}" if status_code is not None else "ADMIN_DENIAL_FAILED_UNREACHABLE") if host == "admin.telnexa.co" else (f"LIVE_HTTPS_{status_code}" if status_code is not None else "LIVE_HTTPS_UNREACHABLE"))
                 ),
                 "stage": "PRODUCTION" if host != "admin.telnexa.co" else "LEGACY",
             }
