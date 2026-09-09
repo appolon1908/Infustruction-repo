@@ -1,241 +1,423 @@
 #!/usr/bin/env python3
-"""Exact-artifact Odoo deployment adapter invoked only by codestra-deploy."""
-
+"""Fail-closed exact-artifact Odoo deployment adapter."""
 from __future__ import annotations
 
-import argparse
-import hashlib
-import json
-import os
-import shutil
-import socket
-import stat
-import subprocess
-import tarfile
-import tempfile
-import urllib.parse
-import urllib.request
+import argparse, gzip, hashlib, ipaddress, json, math, os, re, shutil, socket, stat, subprocess, tarfile, tempfile, time
+import urllib.parse, urllib.request
+import signal
+from contextlib import contextmanager
 from pathlib import Path
 
+SHA256="sha256:"; CONFIG_ROOT=Path("/etc/codestra/odoo-deploy-targets"); EVIDENCE_ROOT=Path("/etc/codestra/deployment-evidence/sha256")
+MAX_ARCHIVE_BYTES=64*1024*1024; MAX_EXPANDED_BYTES=128*1024*1024; MAX_MEMBER_BYTES=32*1024*1024; MAX_EXTENSION_BYTES=64*1024; MAX_MEMBERS=4096; MAX_OPERATION_SECONDS=300; MAX_HEALTH_BYTES=64*1024
+NO_SEND_KEYS={"ENABLE_EXTERNAL_DELIVERY":"false","EMAIL_DELIVERY":"false","LIVE_EMAIL_DELIVERY":"false"}
+IMPORTER="custom-addons/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"
 
-SHA256 = "sha256:"
-CONFIG_ROOT = Path("/etc/codestra/odoo-deploy-targets")
-EVIDENCE_ROOT = Path("/etc/codestra/deployment-evidence/sha256")
-MAX_ARCHIVE_BYTES = 64 * 1024 * 1024
-MAX_MEMBER_BYTES = 32 * 1024 * 1024
-NO_SEND_KEYS = {
-    "ENABLE_EXTERNAL_DELIVERY": "false",
-    "EMAIL_DELIVERY": "false",
-    "LIVE_EMAIL_DELIVERY": "false",
-}
+class Blocked(RuntimeError): pass
+class NeedsRecovery(RuntimeError): pass
+class Terminated(BaseException): pass
 
-
-class Blocked(RuntimeError):
-    pass
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-def root_regular(path: Path) -> dict:
-    info = path.lstat()
-    if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_gid != 0 or info.st_nlink != 1 or info.st_mode & 0o022:
-        raise Blocked(f"unsafe protected file: {path}")
+@contextmanager
+def termination_cleanup():
+    signals = (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)
+    previous = {sig: signal.getsignal(sig) for sig in signals}
+    def terminate(signum, _frame):
+        # Preserve the cleanup/evidence window if cancellation is repeated.
+        for sig in signals:
+            signal.signal(sig, signal.SIG_IGN)
+        raise Terminated(f"termination signal {signum}")
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (UnicodeError, json.JSONDecodeError) as exc:
-        raise Blocked(f"malformed protected JSON: {path}") from exc
-    if not isinstance(value, dict):
-        raise Blocked(f"protected JSON is not an object: {path}")
+        for sig in signals:
+            signal.signal(sig, terminate)
+        yield
+    finally:
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
+
+
+def sha256(path):
+    h=hashlib.sha256()
+    with Path(path).open("rb") as f:
+        for b in iter(lambda:f.read(1024*1024),b""): h.update(b)
+    return h.hexdigest()
+
+def root_regular(path):
+    i=path.lstat()
+    if not stat.S_ISREG(i.st_mode) or i.st_uid or i.st_gid or i.st_nlink!=1 or i.st_mode&0o022: raise Blocked(f"unsafe protected file: {path}")
+    try: value=json.loads(path.read_text())
+    except (UnicodeError,json.JSONDecodeError) as e: raise Blocked(f"malformed protected JSON: {path}") from e
+    if not isinstance(value,dict): raise Blocked(f"protected JSON is not an object: {path}")
     return value
 
+def validate_handoff(args,auth):
+    expected={k:getattr(args,k) for k in ("repository","source_sha","artifact_kind","artifact_reference","artifact_digest","environment","action","evidence_output")}|{"target_host":args.validated_target_host}
+    for k,v in expected.items():
+        if auth.get(k)!=v: raise Blocked(f"dispatcher handoff mismatch: {k}")
+    if args.validated_target_host not in {socket.gethostname(),socket.getfqdn()}: raise Blocked("adapter is not executing on the validated target")
+    if not args.read_only or not args.deny_external_effects: raise Blocked("no-send controls are mandatory")
+    if args.artifact_kind!="source-bundle": raise Blocked("Odoo adapter accepts only source-bundle artifacts")
 
-def validate_handoff(args: argparse.Namespace, authorization: dict) -> None:
-    expected = {
-        "repository": args.repository,
-        "source_sha": args.source_sha,
-        "artifact_kind": args.artifact_kind,
-        "artifact_reference": args.artifact_reference,
-        "artifact_digest": args.artifact_digest,
-        "environment": args.environment,
-        "action": args.action,
-        "target_host": args.validated_target_host,
-        "evidence_output": args.evidence_output,
-    }
-    for key, value in expected.items():
-        if authorization.get(key) != value:
-            raise Blocked(f"dispatcher handoff mismatch: {key}")
-    if args.validated_target_host not in {socket.gethostname(), socket.getfqdn()}:
-        raise Blocked("adapter is not executing on the validated target")
-    if not args.read_only or not args.deny_external_effects:
-        raise Blocked("no-send controls are mandatory")
-    if args.artifact_kind != "source-bundle":
-        raise Blocked("Odoo adapter accepts only source-bundle artifacts")
+def validate_recovery_evidence(auth,evidence_root=EVIDENCE_ROOT):
+    binding={k:auth.get(k) for k in ("source_sha","artifact_digest","target_host","recovery_set_id")}
+    rollback=auth.get("rollback_target",{}); binding|={"rollback_source_sha":rollback.get("source_sha"),"rollback_artifact_digest":rollback.get("artifact_digest")}
+    if not isinstance(auth.get("recovery_set_id"),str) or auth["recovery_set_id"].startswith("PENDING"): raise Blocked("recovery set is unbound")
+    for name in ("database","filestore","configuration","isolated_restore","rollback_rehearsal"):
+        record=auth.get("recovery",{}).get(name,{}); digest=str(record.get("evidence_sha256",""))
+        if record.get("status")!="PASS" or not digest.startswith(SHA256): raise Blocked(f"recovery evidence is incomplete: {name}")
+        p=evidence_root/f"{digest.removeprefix(SHA256)}.json"
+        if not p.is_file() or p.is_symlink() or sha256(p)!=digest.removeprefix(SHA256): raise Blocked(f"recovery evidence bytes unavailable: {name}")
+        body=root_regular(p)
+        if body.get("status")!="PASS" or body.get("scope")!=name or any(body.get(k)!=v for k,v in binding.items()): raise Blocked(f"recovery evidence content mismatch: {name}")
 
-
-def validate_recovery_evidence(authorization: dict, evidence_root: Path = EVIDENCE_ROOT) -> None:
-    recovery = authorization.get("recovery", {})
-    for name in ("database", "filestore", "configuration", "isolated_restore", "rollback_rehearsal"):
-        record = recovery.get(name, {})
-        digest = str(record.get("evidence_sha256", ""))
-        if record.get("status") != "PASS" or not digest.startswith(SHA256):
-            raise Blocked(f"recovery evidence is incomplete: {name}")
-        evidence = evidence_root / f"{digest.removeprefix(SHA256)}.json"
-        if not evidence.is_file() or evidence.is_symlink() or sha256(evidence) != digest.removeprefix(SHA256):
-            raise Blocked(f"recovery evidence bytes unavailable: {name}")
-        body = root_regular(evidence)
-        if body.get("status") != "PASS" or body.get("scope") != name:
-            raise Blocked(f"recovery evidence content mismatch: {name}")
-
-
-def acquire_artifact(reference: str, destination: Path) -> None:
-    parsed = urllib.parse.urlparse(reference)
-    if parsed.scheme == "file":
-        source = Path(urllib.request.url2pathname(parsed.path))
-        if source.is_symlink() or not source.is_file():
-            raise Blocked("local artifact is unavailable or unsafe")
-        shutil.copyfile(source, destination)
-    elif parsed.scheme == "https" and parsed.hostname == "github.com" and parsed.path.startswith("/appolon1908-hue/Odoo/releases/download/"):
-        request = urllib.request.Request(reference, headers={"User-Agent": "codestra-deploy-odoo/1"})
-        with urllib.request.urlopen(request, timeout=30) as response, destination.open("wb") as output:
-            if response.status != 200:
-                raise Blocked("artifact download failed")
-            shutil.copyfileobj(response, output, MAX_ARCHIVE_BYTES + 1)
-    else:
-        raise Blocked("artifact reference is not an approved Odoo release location")
-    if destination.stat().st_size > MAX_ARCHIVE_BYTES:
-        raise Blocked("artifact exceeds the maximum size")
-
-
-def extract_verified(archive: Path, destination: Path) -> None:
-    with tarfile.open(archive, "r:gz") as bundle:
-        members = bundle.getmembers()
-        if not members:
-            raise Blocked("artifact is empty")
-        for member in members:
-            path = Path(member.name)
-            if path.is_absolute() or ".." in path.parts or member.issym() or member.islnk() or not (member.isfile() or member.isdir()):
-                raise Blocked("artifact contains an unsafe member")
-            if member.size > MAX_MEMBER_BYTES:
-                raise Blocked("artifact member exceeds the maximum size")
-        bundle.extractall(destination, filter="data")
-
-
-def load_target(path: Path, expected_host: str) -> dict:
-    value = root_regular(path)
-    required = {"schema", "target_host", "release_root", "current_link", "compose_directory", "compose_files", "service", "database", "modules", "addon_mount", "no_send_env"}
-    if set(value) != required or value.get("schema") != "codestra.odoo-deploy-target.v1" or value.get("target_host") != expected_host:
-        raise Blocked("Odoo target configuration mismatch")
-    for key in ("release_root", "current_link", "compose_directory"):
-        path_value = Path(str(value[key]))
-        if not path_value.is_absolute() or ".." in path_value.parts:
-            raise Blocked(f"unsafe target path: {key}")
-    if value.get("no_send_env") != NO_SEND_KEYS:
-        raise Blocked("target no-send policy mismatch")
-    return value
-
-
-def docker_compose(target: dict, *command: str, check: bool = True) -> subprocess.CompletedProcess:
-    argv = ["docker", "compose"]
-    for compose_file in target["compose_files"]:
-        argv.extend(["-f", compose_file])
-    argv.extend(command)
-    return subprocess.run(argv, cwd=target["compose_directory"], check=check, text=True, capture_output=True)
-
-
-def readback(target: dict, release_dir: Path, source_sha: str) -> dict:
-    container = docker_compose(target, "ps", "-q", target["service"]).stdout.strip()
-    if not container:
-        raise Blocked("Odoo container is absent")
-    inspection = subprocess.run(["docker", "inspect", container, "--format", "{{json .Mounts}}"], check=True, text=True, capture_output=True)
-    mounts = json.loads(inspection.stdout)
-    expected_source = str(release_dir / "custom-addons")
-    matching = [item for item in mounts if item.get("Destination") == target["addon_mount"]]
-    if len(matching) != 1 or matching[0].get("Source") != expected_source or matching[0].get("RW") is not False:
-        raise Blocked("running Odoo addon mount does not match the exact release")
-    environment_result = subprocess.run(["docker", "inspect", container, "--format", "{{json .Config.Env}}"], check=True, text=True, capture_output=True)
-    environment = dict(item.split("=", 1) for item in json.loads(environment_result.stdout) if "=" in item)
-    for key, expected in NO_SEND_KEYS.items():
-        if environment.get(key, "").lower() != expected:
-            raise Blocked(f"running Odoo no-send control mismatch: {key}")
-    importer = release_dir / "custom-addons/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"
-    if not importer.is_file() or importer.is_symlink():
-        raise Blocked("released Odoo importer is absent or unsafe")
-    return {"source_sha": source_sha, "release_dir": str(release_dir), "container": container, "importer_sha256": sha256(importer), "no_send": True}
-
-
-def deploy(args: argparse.Namespace, authorization: dict, target: dict) -> dict:
-    release_root = Path(target["release_root"]); release_dir = release_root / args.source_sha
-    current = Path(target["current_link"])
-    if release_dir.exists():
-        raise Blocked("immutable release directory already exists")
-    previous = current.resolve(strict=True) if current.is_symlink() else None
-    if current.exists() and not current.is_symlink():
-        raise Blocked("current release pointer must be a symlink")
-    with tempfile.TemporaryDirectory(prefix="codestra-odoo-artifact-") as temporary:
-        archive = Path(temporary) / "source.tar.gz"; extracted = Path(temporary) / "release"; extracted.mkdir()
-        acquire_artifact(args.artifact_reference, archive)
-        if SHA256 + sha256(archive) != args.artifact_digest:
-            raise Blocked("artifact digest mismatch")
-        extract_verified(archive, extracted)
-        (extracted / "SOURCE_SHA").write_text(args.source_sha + "\n", encoding="utf-8")
-        release_root.mkdir(mode=0o750, parents=True, exist_ok=True)
-        shutil.move(str(extracted), release_dir)
-    next_link = current.with_name(current.name + ".next")
-    next_link.symlink_to(release_dir)
+def acquire_artifact(reference,destination,deadline=None):
+    deadline=deadline or time.monotonic()+MAX_OPERATION_SECONDS; parsed=urllib.parse.urlparse(reference)
+    if parsed.scheme=="file": source=Path(urllib.request.url2pathname(parsed.path)); stream=source.open("rb") if source.is_file() and not source.is_symlink() else None
+    elif parsed.scheme=="https" and parsed.hostname=="github.com" and parsed.path.startswith("/appolon1908-hue/Odoo/releases/download/"):
+        stream=urllib.request.urlopen(urllib.request.Request(reference,headers={"User-Agent":"codestra-deploy-odoo/2"}),timeout=30)
+        if stream.status!=200: stream.close(); raise Blocked("artifact download failed")
+    else: raise Blocked("artifact reference is not an approved Odoo release location")
+    if stream is None: raise Blocked("local artifact is unavailable or unsafe")
+    total=0
     try:
-        docker_compose(target, "config", "--quiet")
-        docker_compose(target, "stop", target["service"])
-        next_link.replace(current)
-        docker_compose(target, "run", "--rm", "--no-deps", target["service"], "odoo", "-d", target["database"], "-u", target["modules"], "--stop-after-init", "--no-http")
-        docker_compose(target, "up", "-d", target["service"])
-        return readback(target, release_dir, args.source_sha)
+        with stream, destination.open("xb") as out:
+            while True:
+                if time.monotonic()>deadline: raise Blocked("artifact acquisition deadline exceeded")
+                block=stream.read(1024*1024)
+                if not block: break
+                total+=len(block)
+                if total>MAX_ARCHIVE_BYTES: raise Blocked("artifact exceeds the maximum size")
+                out.write(block)
     except Exception:
+        destination.unlink(missing_ok=True); raise
+
+def extract_verified(archive,destination,deadline=None):
+    deadline=deadline or time.monotonic()+MAX_OPERATION_SECONDS; total=0
+    try:
+        # Bound the complete stream and extension metadata before TarFile can
+        # amplify many tiny PAX records into an unbounded in-memory mapping.
+        expanded=0; extension_bytes=0
+        with gzip.open(archive,"rb") as stream:
+            while True:
+                if time.monotonic()>deadline: raise Blocked("archive expansion deadline exceeded")
+                header=stream.read(512)
+                if not header: break
+                expanded+=len(header)
+                if len(header)!=512 or expanded>MAX_EXPANDED_BYTES: raise Blocked("artifact expansion exceeds limits")
+                if header==b"\0"*512: continue
+                try: size=tarfile.nti(header[124:136])
+                except ValueError as e: raise Blocked("artifact contains a malformed size") from e
+                if not isinstance(size,int) or size<0: raise Blocked("artifact contains a malformed size")
+                padded=((size+511)//512)*512
+                if header[156:157] in {tarfile.XHDTYPE,tarfile.XGLTYPE,tarfile.SOLARIS_XHDTYPE,tarfile.GNUTYPE_LONGNAME,tarfile.GNUTYPE_LONGLINK}:
+                    extension_bytes+=size
+                    if extension_bytes>MAX_EXTENSION_BYTES: raise Blocked("artifact extension metadata exceeds limits")
+                if header[156:157] == tarfile.GNUTYPE_SPARSE:
+                    raise Blocked("sparse archive members are prohibited")
+                if header[156:157] in {tarfile.XHDTYPE, tarfile.XGLTYPE, tarfile.SOLARIS_XHDTYPE}:
+                    metadata=stream.read(padded)
+                    if len(metadata)!=padded: raise Blocked("artifact is truncated")
+                    expanded+=len(metadata)
+                    if expanded>MAX_EXPANDED_BYTES: raise Blocked("artifact expansion exceeds limits")
+                    # Sparse 1.0 maps live in the next payload, outside PAX limits.
+                    if b"GNU.sparse" in metadata:
+                        raise Blocked("sparse archive members are prohibited")
+                    continue
+                remaining=padded
+                while remaining:
+                    if time.monotonic()>deadline: raise Blocked("archive expansion deadline exceeded")
+                    block=stream.read(min(1024*1024,remaining))
+                    if not block: raise Blocked("artifact is truncated")
+                    remaining-=len(block); expanded+=len(block)
+                    if expanded>MAX_EXPANDED_BYTES: raise Blocked("artifact expansion exceeds limits")
+        with tarfile.open(archive,"r:gz") as bundle:
+            count=0
+            for m in bundle:
+                count+=1
+                if time.monotonic()>deadline: raise Blocked("archive expansion deadline exceeded")
+                if count>MAX_MEMBERS: raise Blocked("artifact member count is invalid")
+                p=Path(m.name)
+                if p.is_absolute() or ".." in p.parts or m.issym() or m.islnk() or not(m.isfile() or m.isdir()): raise Blocked("artifact contains an unsafe member")
+                total+=m.size
+                if m.size>MAX_MEMBER_BYTES or total>MAX_EXPANDED_BYTES: raise Blocked("artifact expansion exceeds limits")
+                out=destination/p; out.resolve().relative_to(destination.resolve())
+                if m.isdir(): out.mkdir(parents=True,exist_ok=True)
+                else:
+                    out.parent.mkdir(parents=True,exist_ok=True); src=bundle.extractfile(m)
+                    if src is None: raise Blocked("artifact member is unreadable")
+                    with src,out.open("xb") as dst: shutil.copyfileobj(src,dst,1024*1024)
+            if count==0: raise Blocked("artifact member count is invalid")
+    except Exception:
+        shutil.rmtree(destination,ignore_errors=True); raise
+
+def verify_artifact(args,temporary):
+    archive=temporary/"source.tar.gz"; release=temporary/"release"; release.mkdir()
+    deadline=time.monotonic()+MAX_OPERATION_SECONDS; acquire_artifact(args.artifact_reference,archive,deadline)
+    if SHA256+sha256(archive)!=args.artifact_digest: raise Blocked("artifact digest mismatch")
+    extract_verified(archive,release,deadline)
+    importer=release/IMPORTER
+    if not importer.is_file() or importer.is_symlink(): raise Blocked("verified artifact lacks importer")
+    return release,sha256(importer)
+
+def load_target(path,host):
+    v=root_regular(path); required={"schema","target_host","release_root","current_link","compose_directory","compose_files","service","database","modules","addon_mount","no_send_env","service_image","internal_networks","health_base_url","health"}
+    if set(v)!=required or v.get("schema")!="codestra.odoo-deploy-target.v2" or v.get("target_host")!=host: raise Blocked("Odoo target configuration mismatch")
+    for k in ("release_root","current_link","compose_directory"):
+        p=Path(str(v[k]));
+        if not p.is_absolute() or ".." in p.parts: raise Blocked(f"unsafe target path: {k}")
+    if v.get("no_send_env")!=NO_SEND_KEYS: raise Blocked("target no-send policy mismatch")
+    if "@sha256:" not in str(v["service_image"]) or not v["internal_networks"]: raise Blocked("target image/network policy incomplete")
+    validated_health_requests(v)
+    return v
+
+def docker_compose(target,*cmd,check=True):
+    argv=["docker","compose"]
+    for f in target["compose_files"]: argv += ["-f",f]
+    return subprocess.run([*argv,*cmd],cwd=target["compose_directory"],check=check,text=True,capture_output=True)
+
+def validate_effective_compose(target):
+    doc=json.loads(docker_compose(target,"config","--format","json").stdout); svc=doc.get("services",{}).get(target["service"],{})
+    env=svc.get("environment",{}); env=dict(x.split("=",1) for x in env if "=" in x) if isinstance(env,list) else env
+    if svc.get("image")!=target["service_image"] or any(str(env.get(k,"")).lower()!=v for k,v in NO_SEND_KEYS.items()): raise Blocked("effective service image or no-send policy mismatch")
+    runtime_networks = effective_network_mapping(target, doc, svc)
+    expected=f"{Path(target['current_link'])/'custom-addons'}:{target['addon_mount']}:ro"; volumes=svc.get("volumes",[])
+    normalized=[f"{x.get('source')}:{x.get('target')}:{'ro' if x.get('read_only') else 'rw'}" if isinstance(x,dict) else x for x in volumes]
+    if normalized.count(expected)!=1: raise Blocked("effective addon mount mismatch or shadowing")
+    return runtime_networks
+
+def effective_network_mapping(target, document, service):
+    """Resolve approved Compose logical keys using the rendered network names."""
+    attached = service.get("networks")
+    approved = target.get("internal_networks")
+    definitions = document.get("networks")
+    if (not isinstance(attached, (dict, list)) or not attached
+            or not isinstance(approved, list) or not approved
+            or any(not isinstance(key, str) or not key for key in [*attached, *approved])
+            or len(set(approved)) != len(approved)
+            or not set(attached) <= set(approved)
+            or not isinstance(definitions, dict) or service.get("network_mode")):
+        raise Blocked("effective service network is not egress-isolated")
+    resolved = {}
+    for logical in attached:
+        definition = definitions.get(logical)
+        if (not isinstance(definition, dict) or definition.get("internal") is not True
+                or definition.get("external", False) is not False):
+            raise Blocked("effective service network is not egress-isolated")
+        # `docker compose config --format json` resolves both project-scoped
+        # and explicitly named networks. Never guess from cwd or the alias.
+        name = definition.get("name")
+        if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", name):
+            raise Blocked("effective Compose network lacks a resolved runtime name")
+        if name in resolved.values():
+            raise Blocked("effective Compose network names are ambiguous")
+        resolved[logical] = name
+    return resolved
+
+
+def validate_runtime_networks(attached, resolved):
+    """Compare physical names and IDs, and verify Docker's actual isolation."""
+    names = set(resolved.values())
+    if not isinstance(attached, dict) or set(attached) != names:
+        raise Blocked("running container network is not approved")
+    result = subprocess.run(["docker", "network", "inspect", *sorted(names)],
+                            check=True, text=True, capture_output=True, timeout=30)
+    inspected = json.loads(result.stdout)
+    if not isinstance(inspected, list) or len(inspected) != len(names):
+        raise Blocked("running network inspection is malformed")
+    seen = set()
+    for network in inspected:
+        if not isinstance(network, dict):
+            raise Blocked("running network inspection is malformed")
+        name = network.get("Name")
+        if not isinstance(name, str) or name not in names or name in seen:
+            raise Blocked("running network identity differs from effective Compose")
+        endpoint = attached[name]
+        if (network.get("Internal") is not True or not isinstance(endpoint, dict)
+                or not isinstance(network.get("Id"), str) or not network["Id"]
+                or endpoint.get("NetworkID") != network["Id"]):
+            raise Blocked("running network identity or isolation differs from approved policy")
+        seen.add(name)
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self,*_): return None
+
+
+def validated_health_requests(target, health_paths=None):
+    """Validate the complete local-only contract before creating an HTTP client."""
+    base = target.get("health_base_url")
+    try:
+        if (not isinstance(base, str) or not base
+                or any(ord(char) <= 32 or ord(char) >= 127 for char in base)
+                or "\\" in base or "%" in base):
+            raise ValueError("invalid origin")
+        origin = urllib.parse.urlsplit(base)
+        address = ipaddress.ip_address(origin.hostname or "")
+        if (origin.scheme not in {"http", "https"} or not address.is_loopback
+                or origin.username is not None or origin.password is not None
+                or origin.query or origin.fragment or origin.path not in {"", "/"}
+                or (origin.port is not None and not 1 <= origin.port <= 65535)):
+            raise ValueError("invalid origin")
+    except ValueError as exc:
+        raise Blocked("health base URL must be an origin on a literal loopback address") from exc
+    health = target.get("health")
+    if not isinstance(health, dict) or not 1 <= len(health) <= 16:
+        raise Blocked("at least one approved health endpoint is required (maximum 16)")
+    if health_paths is None:
+        paths = list(health)
+    elif isinstance(health_paths, str):
+        paths = health_paths.split(",")
+    else:
+        raise Blocked("health endpoint list is malformed")
+    if not paths or len(paths) != len(set(paths)) or set(paths) != set(health):
+        raise Blocked("health endpoint set differs from approved target")
+    requests = []
+    for path in paths:
+        # This contract uses plain origin-relative paths, not URL references,
+        # queries, encodings or userinfo. Reject rather than normalize them.
+        if (not isinstance(path, str) or not re.fullmatch(r"/(?:[A-Za-z0-9._~/-]*)", path)
+                or "//" in path or any(part in {".", ".."} for part in path.split("/"))):
+            raise Blocked("health endpoint must be a plain origin-relative path")
+        url = urllib.parse.urlunsplit((origin.scheme, origin.netloc, path, "", ""))
+        final = urllib.parse.urlsplit(url)
+        if (final.scheme, final.netloc, final.hostname, final.port) != (
+                origin.scheme, origin.netloc, origin.hostname, origin.port):
+            raise Blocked("health endpoint escaped the approved origin")
+        rule = health[path]
+        if (not isinstance(rule, dict)
+                or not {"status", "json_field", "json_value"} <= set(rule)
+                or set(rule) - {"status", "json_field", "json_value", "timeout_seconds"}
+                or type(rule.get("status")) is not int or not 200 <= rule["status"] < 300
+                or not isinstance(rule.get("json_field"), str) or not rule["json_field"]
+                or rule.get("json_value") is None):
+            raise Blocked("health response policy is incomplete")
+        timeout = rule.get("timeout_seconds", 5)
+        if (type(timeout) not in (int, float) or not math.isfinite(timeout)
+                or not 0 < timeout <= 30):
+            raise Blocked("health request timeout must be finite and within 30 seconds")
+        requests.append((path, url, rule, timeout))
+    return requests
+
+
+def check_health(target,health_paths):
+    requests = validated_health_requests(target, health_paths)
+    # Ignore proxy environment variables; even a loopback URL must not be sent
+    # to an external HTTP proxy. Redirects remain prohibited.
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect)
+    results = {}
+    deadline = time.monotonic() + MAX_OPERATION_SECONDS
+    for path, url, rule, timeout in requests:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise Blocked("health verification deadline exceeded")
+        try:
+            with opener.open(url, timeout=min(timeout, remaining)) as response:
+                body = response.read(MAX_HEALTH_BYTES + 1)
+                if (time.monotonic() > deadline or response.status != rule["status"]
+                        or len(body) > MAX_HEALTH_BYTES):
+                    raise Blocked(f"unhealthy endpoint: {path}")
+                value = json.loads(body)
+                if (not isinstance(value, dict) or rule["json_field"] not in value
+                        or value[rule["json_field"]] != rule["json_value"]):
+                    raise Blocked(f"incorrect health response: {path}")
+        except (OSError, ValueError) as exc:
+            raise Blocked(f"health endpoint failed: {path}") from exc
+        results[path] = "PASS"
+    return results
+
+def readback(target,release_dir,source_sha,expected_importer,args,runtime_networks=None):
+    container=docker_compose(target,"ps","-q",target["service"]).stdout.strip()
+    if not container: raise Blocked("Odoo container is absent")
+    inspected=json.loads(subprocess.run(["docker","inspect",container],check=True,text=True,capture_output=True).stdout)
+    if not isinstance(inspected,list) or len(inspected)!=1: raise Blocked("running container inspection is malformed")
+    inspected=inspected[0]; mounts=inspected.get("Mounts",[])
+    matches=[m for m in mounts if m.get("Destination")==target["addon_mount"]]
+    if len(matches)!=1 or matches[0].get("Source")!=str(release_dir/"custom-addons") or matches[0].get("RW") is not False: raise Blocked("running addon mount is altered or shadowed")
+    config=inspected.get("Config",{}); environment=dict(item.split("=",1) for item in config.get("Env",[]) if "=" in item)
+    networks=inspected.get("NetworkSettings",{}).get("Networks",{})
+    if config.get("Image")!=target["service_image"] or any(environment.get(k,"").lower()!=v for k,v in NO_SEND_KEYS.items()): raise Blocked("running image or no-send policy mismatch")
+    resolved_networks = validate_effective_compose(target)
+    if runtime_networks is not None and runtime_networks != resolved_networks:
+        raise Blocked("effective network mapping changed since preflight")
+    validate_runtime_networks(networks, resolved_networks)
+    observed=subprocess.run(["docker","exec",container,"sha256sum",f"{target['addon_mount']}/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"],check=True,text=True,capture_output=True).stdout.split()[0]
+    if observed!=expected_importer: raise Blocked("in-container importer differs from verified artifact")
+    return {"source_sha":source_sha,"release_dir":str(release_dir),"container":container,"expected_importer_sha256":expected_importer,"observed_importer_sha256":observed,"health":check_health(target,args.health_paths),"runtime_networks":resolved_networks,"no_send":True}
+
+def deploy(args,auth,target):
+    if args.action=="promote-production-readonly": raise Blocked("production promotion requires an independently verified traffic canary implementation")
+    root=Path(target["release_root"]); release_dir=root/args.source_sha; current=Path(target["current_link"]); previous=current.resolve(strict=True) if current.is_symlink() else None
+    if release_dir.exists() or (current.exists() and not current.is_symlink()): raise Blocked("immutable release or current pointer is unsafe")
+    with tempfile.TemporaryDirectory(prefix="codestra-odoo-artifact-") as d:
+        extracted,expected=verify_artifact(args,Path(d)); validate_effective_compose(target)
+        root.mkdir(mode=0o750,parents=True,exist_ok=True); shutil.move(str(extracted),release_dir)
+    runtime_networks=validate_effective_compose(target)
+    nxt=current.with_name(current.name+".next"); nxt.symlink_to(release_dir); upgrade_started=False; replacement_started=False
+    try:
+        docker_compose(target,"stop",target["service"]); nxt.replace(current)
+        upgrade_started=True; docker_compose(target,"run","--rm","--no-deps",target["service"],"odoo","-d",target["database"],"-u",target["modules"],"--stop-after-init","--no-http")
+        replacement_started=True
+        docker_compose(target,"up","-d",target["service"])
+        return readback(target,release_dir,args.source_sha,expected,args,runtime_networks)
+    except BaseException as e:
+        if upgrade_started:
+            stop_failed=False
+            if replacement_started:
+                try:
+                    stopped=docker_compose(target,"stop",target["service"],check=False)
+                    stop_failed=stopped.returncode != 0
+                except BaseException:
+                    stop_failed=True
+            detail="; replacement service stop failed" if stop_failed else ""
+            raise NeedsRecovery("upgrade may have changed database; old code was not restarted"+detail) from e
         if previous is not None:
-            rollback = current.with_name(current.name + ".rollback")
-            rollback.symlink_to(previous); rollback.replace(current)
-        elif current.is_symlink():
-            current.unlink()
-        docker_compose(target, "up", "-d", target["service"], check=False)
+            rb=current.with_name(current.name+".rollback"); rb.symlink_to(previous); rb.replace(current); docker_compose(target,"up","-d",target["service"],check=False)
         raise
 
-
-def parser() -> argparse.ArgumentParser:
-    value = argparse.ArgumentParser()
-    value.add_argument("action", choices=("deploy-staging-readonly", "certify-staging-readonly", "promote-production-readonly"))
-    for name in ("repository", "source-sha", "artifact-kind", "artifact-reference", "artifact-digest", "environment", "health-paths", "evidence-output", "authorization", "validated-target-host"):
-        value.add_argument(f"--{name}", required=True)
-    for flag in ("read-only", "deny-external-effects", "require-staging-certification", "require-backup", "require-isolated-restore", "require-rollback-rehearsal"):
-        value.add_argument(f"--{flag}", action="store_true")
-    value.add_argument("--canary-percent"); value.add_argument("--allowed-methods")
-    return value
-
-
-def main(argv=None) -> int:
-    args = parser().parse_args(argv)
+def write_evidence(path,body):
+    path=Path(path); path.parent.mkdir(parents=True,exist_ok=True)
+    fd,tmp=tempfile.mkstemp(prefix=".codestra-evidence-",dir=path.parent)
     try:
-        if os.geteuid() != 0:
-            raise Blocked("adapter requires root dispatcher execution")
-        authorization = root_regular(Path(args.authorization))
-        validate_handoff(args, authorization)
-        validate_recovery_evidence(authorization)
-        target = load_target(CONFIG_ROOT / f"{args.validated_target_host}.json", args.validated_target_host)
-        if args.action == "certify-staging-readonly":
-            result = readback(target, Path(target["release_root"]) / args.source_sha, args.source_sha)
+        with os.fdopen(fd,"w") as f: json.dump(body,f,sort_keys=True); f.write("\n"); f.flush(); os.fsync(f.fileno())
+        os.replace(tmp,path)
+    finally: Path(tmp).unlink(missing_ok=True)
+
+def parser():
+    p=argparse.ArgumentParser(); p.add_argument("action",choices=("deploy-staging-readonly","certify-staging-readonly","promote-production-readonly"))
+    for n in ("repository","source-sha","artifact-kind","artifact-reference","artifact-digest","environment","health-paths","evidence-output","authorization","validated-target-host"): p.add_argument(f"--{n}",required=True)
+    for f in ("read-only","deny-external-effects","require-staging-certification","require-backup","require-isolated-restore","require-rollback-rehearsal"): p.add_argument(f"--{f}",action="store_true")
+    p.add_argument("--canary-percent"); p.add_argument("--allowed-methods"); return p
+
+def _main(argv=None):
+    args=parser().parse_args(argv)
+    try:
+        if os.geteuid()!=0: raise Blocked("adapter requires root dispatcher execution")
+        auth=root_regular(Path(args.authorization)); validate_handoff(args,auth)
+        if args.action=="promote-production-readonly": raise Blocked("production traffic canary is not implemented")
+        validate_recovery_evidence(auth); target=load_target(CONFIG_ROOT/f"{args.validated_target_host}.json",args.validated_target_host)
+        if args.action=="certify-staging-readonly":
+            with tempfile.TemporaryDirectory(prefix="codestra-odoo-verify-") as d: _,expected=verify_artifact(args,Path(d))
+            runtime_networks=validate_effective_compose(target)
+            result=readback(target,Path(target["release_root"])/args.source_sha,args.source_sha,expected,args,runtime_networks)
+            write_evidence(args.evidence_output,{"status":"PASS",**result})
         else:
-            result = deploy(args, authorization, target)
-        output = Path(args.evidence_output)
-        output.write_text(json.dumps({"status": "PASS", **result}, sort_keys=True) + "\n", encoding="utf-8")
+            write_evidence(args.evidence_output,{"status":"PREFLIGHT","source_sha":args.source_sha,"artifact_digest":args.artifact_digest})
+            result=deploy(args,auth,target)
+            try: write_evidence(args.evidence_output,{"status":"PASS",**result})
+            except OSError as e: raise NeedsRecovery("deployment completed but durable PASS evidence could not be recorded") from e
         return 0
-    except (Blocked, OSError, subprocess.SubprocessError, tarfile.TarError, json.JSONDecodeError) as exc:
-        print(f"ODOO_DEPLOYMENT_BLOCKED={exc}", file=os.sys.stderr)
-        return 1
+    except NeedsRecovery as e:
+        try: write_evidence(args.evidence_output,{"status":"NEEDS_RECOVERY","reason":str(e),"source_sha":args.source_sha,"artifact_digest":args.artifact_digest})
+        except OSError: pass
+        print(f"ODOO_DEPLOYMENT_NEEDS_RECOVERY={e}",file=os.sys.stderr); return 2
+    except (Blocked,OSError,subprocess.SubprocessError,tarfile.TarError,json.JSONDecodeError) as e:
+        print(f"ODOO_DEPLOYMENT_BLOCKED={e}",file=os.sys.stderr); return 1
 
+def main(argv=None):
+    with termination_cleanup():
+        try:
+            return _main(argv)
+        except Terminated as exc:
+            print(f"ODOO_DEPLOYMENT_BLOCKED={exc}", file=os.sys.stderr)
+            return 1
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__=="__main__": raise SystemExit(main())
