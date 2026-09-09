@@ -1,6 +1,6 @@
 {
-  "authorization": "Owner approved permanent installation and repository updates in this conversation.",
-  "deployment_constraints": {
+  "authorization": "NOT_DURABLY_CAPTURED_IN_REPOSITORY_EVIDENCE; this observation does not authorize any new runtime operation.",
+  "intended_deployment_constraints": {
     "daemon_restart": false,
     "dependency_recreation": false,
     "host_reboot": false,
@@ -12,7 +12,17 @@
   "execution_access": {
     "assistant_changed_agent_policy": false,
     "full_filesystem_write_access_required": false,
-    "method": "SentinelX structured edit after exact-file rw access became available, followed by guarded service-scoped Docker Compose recreation."
+    "method": "SentinelX structured edit after exact-file rw access became available. The exact guarded Odoo Compose recreation is durably captured below; the n8n recreation invocation is not durably captured."
+  },
+  "evidence_gaps": {
+    "full_production_certification": "BLOCKED",
+    "n8n_recreation_command": "NOT_DURABLY_CAPTURED",
+    "n8n_recreation_exit_result": "NOT_DURABLY_CAPTURED",
+    "n8n_recreation_operation_timestamps": "NOT_DURABLY_CAPTURED",
+    "n8n_recreation_no_build_proof": "NOT_DURABLY_CAPTURED",
+    "n8n_recreation_no_dependency_recreation_proof": "NOT_DURABLY_CAPTURED",
+    "n8n_recreation_no_pull_proof": "NOT_DURABLY_CAPTURED",
+    "resolution": "Provide a pre-existing durable record if one is found, or perform a separately authorized fresh audited recreation through protected runtime authority. Do not infer or reconstruct the missing command from post-state."
   },
   "file_backups": [
     "/opt/codestra/middleware/deploy/internal-odoo/compose.internal-odoo.yaml.bak.20260909-144941-961974",
@@ -66,9 +76,16 @@
     {
       "bind_mount_order_changed": true,
       "bind_mount_values_unchanged": true,
+      "command": "NOT_DURABLY_CAPTURED",
+      "command_result": "NOT_DURABLY_CAPTURED",
       "compose_path": "/opt/codestra/middleware/deploy/internal-n8n-private/compose.internal-n8n.yaml",
       "compose_sha256": "70496dc8ebe77032882bc7259b1f7c65bb1eefbff76baa5d517d748c7bc2829b",
       "container_started_at": "2026-09-09T18:51:51.191960109Z",
+      "guard_flags_proven": {
+        "--no-build": "NOT_DURABLY_CAPTURED",
+        "--no-deps": "NOT_DURABLY_CAPTURED",
+        "--pull never": "NOT_DURABLY_CAPTURED"
+      },
       "health": "healthy",
       "image": "codestra/caddy@sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5",
       "image_id": "sha256:269c6bd9b2713a27f8dc34a19a904bb0ba9d8f0f1564913576becd24779674d5",
@@ -88,6 +105,8 @@
         "/etc/codestra/pki/internal-integration/ca.crt:/run/secrets/internal_integration_ca:ro"
       ],
       "old_id": "2e15d59d9d9cd6eaec032b8807d87228bbfa4a10d2fb0147a1ed124d5ac46b38",
+      "operation_finished_at": "NOT_DURABLY_CAPTURED",
+      "operation_started_at": "NOT_DURABLY_CAPTURED",
       "pid1": "docker-init",
       "pids_limit": 256,
       "private_networks_and_aliases_unchanged": true,
@@ -236,8 +255,9 @@
     ]
   },
   "result": "PASS",
+  "result_scope": "Post-installation runtime read-back only. The n8n recreation invocation is not durably captured and full production certification remains blocked.",
   "schema": "codestra.private-proxy-installation-observation.v1",
-  "scope": "Permanent process lifecycle settings for the two private TLS proxies only; full-stack release certification remains incomplete.",
+  "scope": "Permanent process lifecycle settings for the two private TLS proxies are installed and verified by post-state read-back. The exact Odoo recreation is captured. The n8n recreation command/result/timestamps are not durably captured; this evidence must not be used to claim those invocation guards or full-stack release certification.",
   "source": {
     "merge_commit": "56005c75d42ef04fc5083443f1aa54c7f4b1ec9f",
     "pr": 202,
