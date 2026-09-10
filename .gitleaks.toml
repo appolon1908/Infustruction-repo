@@ -27,7 +27,7 @@ targetRules = ["generic-api-key"]
 condition = "AND"
 paths = ['''^STAGE6-SOURCE-LOCK(?:\.RESOLVED)?\.yaml$''']
 regexTarget = "line"
-regexes = ['''^\s*(?:keycloak|keycloak_locked_sha):\s*(?:6ce1806c5d3ba63fd89c3b0168181f944c0d7c4f|7aef62a020c87ffcbf0fbb2f8c4890a8e9d13098)\s*$''']
+regexes = ['''^\s*(?:keycloak|keycloak_locked_sha):\s*(?:6ce1806c5d3ba63fd89c3b0168181f944c0d7c4f|7aef62a020c87ffcbf0fbb2f8c4890a8e9d13098|27e754ba8f56eaa279cde82ffe1bbc63c9fa0bcc)\s*$''']
 
 # Match the exact non-secret Podman process identity and command, not all
 # numeric credentials or every finding in this historical evidence file.

@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "reports/runtime-reconciliation/STAGE6-EVIDENCE-SHA256SUMS"
 FILES = (
+    ".gitleaks.toml",
     ".github/workflows/validate-stage6-source-lock.yml",
     ".github/workflows/stage6-source-regressions.yml",
     "STAGE6-SOURCE-LOCK.yaml",
@@ -32,6 +33,7 @@ FILES = (
     "scripts/build_stage6_reconciliation_matrix.py",
     "scripts/generate_stage6_evidence_checksums.py",
     "scripts/prepare_stage6_locked_checkouts.py",
+    "scripts/test_gitleaks_policy.py",
     "scripts/resolve_stage6_source_lock.py",
     "scripts/validate_stage6_authority_heads.py",
     "scripts/validate_stage6_remediation.py",

@@ -77,6 +77,8 @@ def main() -> None:
     resolved_path = "STAGE6-SOURCE-LOCK.RESOLVED.yaml"
     reviewed_revision = "7aef62a020c87ffcbf0fb" + "b2f8c4890a8e9d13098"
     refreshed = "    keycloak: " + reviewed_revision + "\n"
+    september_revision = "27e754ba8f56eaa279cd" + "e82ffe1bbc63c9fa0bcc"
+    september_refresh = "    keycloak: " + september_revision + "\n"
     cases = [
         ("reproduce original false positive", ARCHIVED, EVIDENCE, False, True),
         ("allow only archived Podman context", ARCHIVED, EVIDENCE, True, False),
@@ -95,6 +97,12 @@ def main() -> None:
         ("do not allow refreshed SHA in other files", refreshed, "other-lock.yaml", True, True),
         ("keep tokens detectable in resolved lock", token_field, resolved_path, True, True),
         ("keep generic keys detectable in resolved lock", generic_field, resolved_path, True, True),
+        ("reproduce September SHA false positive", september_refresh, lock_path, False, True),
+        ("allow exact September source SHA", september_refresh, lock_path, True, False),
+        ("allow exact September resolved SHA", september_refresh, resolved_path, True, False),
+        ("allow exact September resolved conflict SHA", "  keycloak_locked_sha: " + september_revision + "\n", resolved_path, True, False),
+        ("keep September SHA detectable outside lock files", september_refresh, "other-lock.yaml", True, True),
+        ("keep September SHA detectable in credential fields", "api_key: " + september_revision + "\n", resolved_path, True, True),
     ]
     for name, content, path, configured, expected in cases:
         findings, reasons = scan(binary, content, path, configured)

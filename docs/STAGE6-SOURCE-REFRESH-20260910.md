@@ -45,3 +45,14 @@ Recheck live authority immediately before any later promotion: a subsequent
 merge in any component repository will correctly make the strict head check
 fail again. Historical August 31 reports and their signed artifacts remain
 available as historical evidence.
+
+The exact verified Keycloak Git revision is also added to the existing narrow
+Gitleaks exception for two SHA fields in the source and resolved lock files.
+Regression controls reproduce the false positive and verify that the same value
+in other files or credential fields remains detectable. Other token detectors
+and the repository-wide secret scan remain enabled.
+
+Validation passed: 56 source/authority regression tests under both normal and
+optimized Python; 23 native Gitleaks 8.30.1 policy controls; and a complete
+repository secret scan with zero findings. The evidence package contains 36
+verified file checksums, including the scanner policy and its regression tests.
