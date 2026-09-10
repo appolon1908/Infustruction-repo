@@ -1,0 +1,85 @@
+schema: codestra.stage6.safety-capability-matrix.v1
+captured_at: '2026-08-31T22:10:00Z'
+environment: staging
+runtime_mutation: false
+result: FAIL
+production_business_writes: NOT_PROVEN_DISABLED
+controls:
+  - service: marketing
+    capability: [advertising_campaign_activation, advertising_budget_mutation, meta_writes, google_ads_writes]
+    canonical_control: LIVE_ADVERTISING_ENABLED
+    required_safe_value: 'false'
+    source_evidence: app/main.py@460ff98f64ef9f0724fe4d2afc51a1a6c5b053dd
+    runtime_observed_value: NOT_OBSERVED_NO_STAGE6_CONTAINER
+    classification: SAFETY_CONTROL_MISSING
+    result: FAIL
+  - service: ai
+    capability: [external_ai_effects]
+    canonical_control: EXTERNAL_MODEL_CALLS_ENABLED
+    required_safe_value: 'false'
+    source_evidence: app/main.py@94d990e269b3a8cdc8176088be65dd02fdac37ea
+    runtime_observed_value: NOT_OBSERVED_NO_STAGE6_CONTAINER
+    classification: SAFETY_CONTROL_MISSING
+    result: FAIL
+  - service: communication
+    capability: [email_delivery, sms_delivery, whatsapp_delivery]
+    canonical_control: EXTERNAL_DELIVERY_ENABLED
+    required_safe_value: 'false'
+    source_evidence: app/main.py@0ee0dcbd3d4a9405ffc7d14019bf4a1105f91113
+    runtime_observed_value: NOT_OBSERVED_NO_STAGE6_CONTAINER
+    classification: SAFETY_CONTROL_MISSING
+    result: FAIL
+  - service: social_control
+    capability: [social_publishing]
+    canonical_control: SOCIAL_PUBLISHING_ENABLED
+    required_safe_value: 'false'
+    source_evidence: app/main.py@7bc0dd9ee8a13abbd1463ca106629ad63d957145
+    runtime_observed_value: NOT_OBSERVED_NO_STAGE6_CONTAINER
+    classification: SAFETY_CONTROL_MISSING
+    result: FAIL
+  - service: social_runtime
+    capability: [social_publishing]
+    canonical_control: PUBLISHING_KILL_SWITCH
+    required_safe_value: 'true'
+    source_evidence: apps/orchestrator/src/activities/post.activity.ts@4f7817f6c6d1bb38fa7d85bb1656eb41865283d5
+    candidate_config_value: 'true'
+    runtime_observed_value: NOT_OBSERVED_NO_STAGE6_CONTAINER
+    classification: SAFETY_CONTROL_MISSING
+    result: FAIL
+  - service: social_runtime
+    capability: [webhook_delivery]
+    canonical_control: WEBHOOK_DELIVERY_ENABLED
+    required_safe_value: 'false'
+    source_evidence: deploy/compose.candidate.yaml@4f7817f6c6d1bb38fa7d85bb1656eb41865283d5
+    candidate_config_value: 'false'
+    runtime_observed_value: NOT_OBSERVED_NO_STAGE6_CONTAINER
+    classification: SAFETY_CONTROL_MISSING
+    result: FAIL
+  - service: middleware_current_reviewed_runtime
+    capability: [email_delivery, sms_delivery, pstn_dialing, vicidial_dialing, n8n_direct_provider_effects, odoo_triggered_external_effects]
+    canonical_controls: [LIVE_EMAIL_DELIVERY, LIVE_SMS_DELIVERY, LIVE_PSTN_DIALING, PRODUCTION_DIALING, N8N_DELIVERY_ENABLED, ENABLE_VICIDIAL_WRITES, ODOO_DELIVERY_ENABLED]
+    required_safe_values: ['false', 'false', 'false', DISABLED, 'false', 'false', 'false']
+    runtime_observed_values: ['false', 'false', 'false', DISABLED, 'false', 'false', 'false']
+    classification: DISABLED_BY_FLAG
+    independent_controls: [BLOCKED_BY_IDENTITY, BLOCKED_BY_NETWORK_NOT_PROVEN]
+    result: FAIL_NETWORK_AND_COMPLETE_CAPABILITY_PROOF_MISSING
+  - service: n8n
+    capability: [campaign_activation, email_delivery, sms_delivery, pstn_dialing, direct_provider_effects]
+    canonical_controls: [ALLOW_CAMPAIGN_ACTIVATION, ALLOW_LIVE_EMAIL, ALLOW_LIVE_SMS, ALLOW_LIVE_CALLS, ENABLE_EXTERNAL_DELIVERY]
+    required_safe_values: ['false', 'false', 'false', 'false', 'false']
+    runtime_observed_values: ['false', 'false', 'false', 'false', 'false']
+    classification: DISABLED_BY_FLAG
+    independent_controls: [BLOCKED_BY_NETWORK_NOT_PROVEN, BLOCKED_BY_IDENTITY_NOT_PROVEN]
+    result: FAIL_COMPLETE_POLICY_BINDING_MISSING
+  - service: odoo
+    capability: [pstn_dialing, vicidial_dialing, production_callbacks]
+    canonical_controls: [EXTERNAL_DIAL_ENABLED, VICIDIAL_WRITES_ENABLED, PRODUCTION_CALLBACKS_ENABLED]
+    required_safe_values: ['false', 'false', 'false']
+    runtime_observed_values: ['false', 'false', 'false']
+    classification: DISABLED_BY_FLAG
+    result: FAIL_ADDON_AUTHORITY_BINDING_UNPROVEN
+notes:
+  - Missing runtime controls are never interpreted as false.
+  - Internal staging writes such as ODOO_STAGING_WRITES_ENABLED do not establish external-effect safety.
+  - No provider credential absence is used as the sole safety control.
+  - Two credential values were exposed to transient command output by an overbroad sanitizer and must be rotated before certification; they are not recorded here.

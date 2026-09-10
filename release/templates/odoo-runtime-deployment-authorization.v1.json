@@ -14,6 +14,7 @@
   "target_host": "middleware",
   "evidence_output": "PENDING_EXACT_EVIDENCE_OUTPUT_PATH",
   "window": {"starts_at": null, "ends_at": null},
+  "recovery_set_id": "PENDING_EXACT_RECOVERY_SET_ID",
   "recovery": {
     "database": {"status": "PENDING", "evidence_sha256": null},
     "filestore": {"status": "PENDING", "evidence_sha256": null},

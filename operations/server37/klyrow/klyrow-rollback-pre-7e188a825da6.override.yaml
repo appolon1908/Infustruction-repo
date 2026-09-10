@@ -1,0 +1,19 @@
+services:
+  gateway:
+    image: codestra/klyrow-gateway@sha256:7cb3769eceb3339dbbd4392580fceaa4ff285dbec3721fbb4dd2763a00e27d7f
+  worker:
+    image: codestra/klyrow-gateway@sha256:7cb3769eceb3339dbbd4392580fceaa4ff285dbec3721fbb4dd2763a00e27d7f
+  scheduler:
+    image: codestra/klyrow-gateway@sha256:b64e9364400e0ce2b63929802afe864cfaaf8be466f3f6077e042dc7c463793c
+  billing-api:
+    image: codestra/klyrow-gateway@sha256:b64e9364400e0ce2b63929802afe864cfaaf8be466f3f6077e042dc7c463793c
+  billing-worker:
+    image: codestra/klyrow-gateway@sha256:b64e9364400e0ce2b63929802afe864cfaaf8be466f3f6077e042dc7c463793c
+  smtp-relay:
+    image: codestra/klyrow-gateway@sha256:102d79b3ce37fe2bcbcdd033c2960e6a2dc17cddde980731212957a2ef01980a
+  gateway-migrate:
+    image: codestra/klyrow-migrate@sha256:40b5ab536c79fe27cd55038332417e917b10f6fbe2fb2b0f169a57dc5d9724b8
+  postal-provisioner:
+    image: codestra/klyrow-postal-provisioner@sha256:82910d20b3cabd293d2bd896ee4b32cb5edf8c45412f44fd7800d86e18aefeb8
+  web:
+    image: codestra/klyrow-web@sha256:dd4a20b1c80f206ffb471bffaff5024f426e03f47ba9787e060933d65fb27019

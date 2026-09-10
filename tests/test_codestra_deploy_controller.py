@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 import importlib.machinery
 import importlib.util
 import json
@@ -8,6 +9,23 @@ import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(autouse=True)
+def protected_fixture_ownership(monkeypatch):
+    """Model root-owned protected fixture files on an unprivileged CI runner."""
+    if os.geteuid() == 0 and os.environ.get("CODESTRA_TEST_UNPRIVILEGED") != "1":
+        return
+    original = Path.lstat
+    original_fstat = os.fstat
+    def root_lstat(path):
+        values=list(original(path)); values[4]=values[5]=0
+        return os.stat_result(values)
+    monkeypatch.setattr(Path,"lstat",root_lstat)
+    def root_fstat(descriptor):
+        values=list(original_fstat(descriptor)); values[4]=values[5]=0
+        return os.stat_result(values)
+    monkeypatch.setattr(os,"fstat",root_fstat)
 
 
 def controller():
@@ -55,6 +73,7 @@ def approved(module, arguments, now):
             "starts_at": (now - dt.timedelta(minutes=5)).isoformat(),
             "ends_at": (now + dt.timedelta(minutes=5)).isoformat(),
         },
+        "recovery_set_id": "recovery-set-20260907-001",
         "recovery": {
             name: {"status": "PASS", "evidence_sha256": evidence}
             for name in ("database", "filestore", "configuration", "isolated_restore", "rollback_rehearsal")

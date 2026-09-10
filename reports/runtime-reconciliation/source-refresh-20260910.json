@@ -1,0 +1,712 @@
+{
+  "schema": "codestra.stage6.source-refresh.v1",
+  "captured_at": "2026-09-10T00:32:27.374094+00:00",
+  "base_pr_head": "cea93a0909c27d06d03bb0c632dcbb560412a90e",
+  "runtime_mutation_performed": false,
+  "main_heads": [
+    {
+      "name": "ai",
+      "observed": "7d31ef8de1c15bcc71b61de50917c81e3bcf557d",
+      "old": "94d990e269b3a8cdc8176088be65dd02fdac37ea",
+      "repository": "appolon1908-hue/Codestra-AI"
+    },
+    {
+      "name": "alloy",
+      "observed": "104966b2cac822d2cc61f058e53a9dff4a10e03e",
+      "old": "104966b2cac822d2cc61f058e53a9dff4a10e03e",
+      "repository": "appolon1908-hue/Codestra-Alloy"
+    },
+    {
+      "name": "blackbox_exporter",
+      "observed": "acfe1e83dd05a7d8a45cd70f7661fe414fae39b1",
+      "old": "acfe1e83dd05a7d8a45cd70f7661fe414fae39b1",
+      "repository": "appolon1908-hue/Codestra-Blackbox-Exporter"
+    },
+    {
+      "name": "cadvisor",
+      "observed": "add839da944d1f213e978b862f22e856008cf52d",
+      "old": "add839da944d1f213e978b862f22e856008cf52d",
+      "repository": "appolon1908-hue/Codestra-cAdvisor"
+    },
+    {
+      "name": "communication",
+      "observed": "cceb1fd7462f765e6ac36db154086d56a88ba712",
+      "old": "0ee0dcbd3d4a9405ffc7d14019bf4a1105f91113",
+      "repository": "appolon1908-hue/Codestra-Communication-CC"
+    },
+    {
+      "name": "grafana",
+      "observed": "97b7efd9c0e80e7dfd9e01db977bb34f4d0dec5b",
+      "old": "ab06c5c42352a2d14f6b54fe6bf13b6cebdfaca6",
+      "repository": "appolon1908-hue/Codestra-Grafana-"
+    },
+    {
+      "name": "keycloak",
+      "observed": "27e754ba8f56eaa279cde82ffe1bbc63c9fa0bcc",
+      "old": "7aef62a020c87ffcbf0fbb2f8c4890a8e9d13098",
+      "repository": "appolon1908-hue/Keycloak"
+    },
+    {
+      "name": "kong",
+      "observed": "76323c8c182a98a24a2e7d76bedc41509c416273",
+      "old": "961edbf56e29ce78f305273c3efeec386a2bba62",
+      "repository": "appolon1908-hue/Kong"
+    },
+    {
+      "name": "loki",
+      "observed": "75a5deb555547b557466c418af18c99f3cef5556",
+      "old": "75a5deb555547b557466c418af18c99f3cef5556",
+      "repository": "appolon1908-hue/Codestra-Loki"
+    },
+    {
+      "name": "marketing",
+      "observed": "722f2d8c4a066dc0795439ba0504d1882f28cf6e",
+      "old": "460ff98f64ef9f0724fe4d2afc51a1a6c5b053dd",
+      "repository": "appolon1908-hue/Codestra-Marketing-"
+    },
+    {
+      "name": "middleware",
+      "observed": "ab6e28769815f2bc60ca5bb52a4f3aa5818f89a5",
+      "old": "9152a04ed8df52269b30d7a9c6b18ef00a0caf75",
+      "repository": "appolon1908-hue/Middleware-"
+    },
+    {
+      "name": "n8n",
+      "observed": "ca54f1e9238e83eef065f2b99b1f7396e45527b5",
+      "old": "b620860c04bf0fe6998c5fc25857262aa5c89d74",
+      "repository": "appolon1908-hue/N8N"
+    },
+    {
+      "name": "node_exporter",
+      "observed": "c18166741f36fc05193187dfd614fbde7f8f9253",
+      "old": "c18166741f36fc05193187dfd614fbde7f8f9253",
+      "repository": "appolon1908-hue/Codestra-Node-Exporter"
+    },
+    {
+      "name": "odoo",
+      "observed": "b7afcd6f18969ec55c7323ce285c6b2121386e7a",
+      "old": "3eeb17f8b7efcd9bd90487e5e8e9888717f51138",
+      "repository": "appolon1908-hue/Odoo"
+    },
+    {
+      "name": "openbao",
+      "observed": "5f5e3583585081e450f945440a1fab503bfa8399",
+      "old": "5f5e3583585081e450f945440a1fab503bfa8399",
+      "repository": "appolon1908-hue/Codestra-OpenBao"
+    },
+    {
+      "name": "prometheus",
+      "observed": "81f21999441eb7dc545fccb7bea7290d5b42cb37",
+      "old": "12b79875cf01033d1a5bd29462fc70bed0e4bbfb",
+      "repository": "appolon1908-hue/Codestra-Prometheus"
+    },
+    {
+      "name": "redis_exporter",
+      "observed": "784e03d8151136195b3b23c58fe50b68b12cf94f",
+      "old": "784e03d8151136195b3b23c58fe50b68b12cf94f",
+      "repository": "appolon1908-hue/Codestra-Redis-Exporter"
+    },
+    {
+      "name": "sdk",
+      "observed": "a194b5154a5b313c8fc4b9150abd17a4cc6612ae",
+      "old": "833b79207b59a8451ea6e7dbfafe8fb64cdb33c0",
+      "repository": "appolon1908-hue/SDK-repository"
+    },
+    {
+      "name": "social_control",
+      "observed": "bfb654b0cff3416b6f6abd79687d8d33698aab41",
+      "old": "7bc0dd9ee8a13abbd1463ca106629ad63d957145",
+      "repository": "appolon1908-hue/Codesrea-Social-"
+    },
+    {
+      "name": "social_runtime",
+      "observed": "4f7817f6c6d1bb38fa7d85bb1656eb41865283d5",
+      "old": "4f7817f6c6d1bb38fa7d85bb1656eb41865283d5",
+      "repository": "appolon1908-hue/social.codestra.co"
+    },
+    {
+      "name": "superset",
+      "observed": "6cb1498b1aaeb5e8ba7ca0d101070659ce04223a",
+      "old": "9e9b5a347e1a52cf43f8c6ec2a967379e723d31a",
+      "repository": "appolon1908-hue/Superset"
+    },
+    {
+      "name": "telemetry",
+      "observed": "d42d866072ce86175ca03209bd866b3452d606fe",
+      "old": "d42d866072ce86175ca03209bd866b3452d606fe",
+      "repository": "appolon1908-hue/Codestra-Telemetry"
+    },
+    {
+      "name": "tempo",
+      "observed": "3993d606e1a2f82b5ac58f2923f2f666d00ed92d",
+      "old": "4d91ab83d702c5892a8521804abfe32a57a6825f",
+      "repository": "appolon1908-hue/Codestra-Tempo"
+    }
+  ],
+  "ancestry": [
+    {
+      "ahead_by": 3,
+      "behind_by": 0,
+      "component": "ai",
+      "expected_base": "94d990e269b3a8cdc8176088be65dd02fdac37ea",
+      "merge_base": "94d990e269b3a8cdc8176088be65dd02fdac37ea",
+      "source_url": "https://github.com/appolon1908-hue/Codestra-AI/compare/94d990e269b3a8cdc8176088be65dd02fdac37ea...7d31ef8de1c15bcc71b61de50917c81e3bcf557d",
+      "status": "ahead",
+      "total_files": 27
+    },
+    {
+      "ahead_by": 1,
+      "behind_by": 0,
+      "component": "communication",
+      "expected_base": "0ee0dcbd3d4a9405ffc7d14019bf4a1105f91113",
+      "merge_base": "0ee0dcbd3d4a9405ffc7d14019bf4a1105f91113",
+      "source_url": "https://github.com/appolon1908-hue/Codestra-Communication-CC/compare/0ee0dcbd3d4a9405ffc7d14019bf4a1105f91113...cceb1fd7462f765e6ac36db154086d56a88ba712",
+      "status": "ahead",
+      "total_files": 4
+    },
+    {
+      "ahead_by": 2,
+      "behind_by": 0,
+      "component": "grafana",
+      "expected_base": "ab06c5c42352a2d14f6b54fe6bf13b6cebdfaca6",
+      "merge_base": "ab06c5c42352a2d14f6b54fe6bf13b6cebdfaca6",
+      "source_url": "https://github.com/appolon1908-hue/Codestra-Grafana-/compare/ab06c5c42352a2d14f6b54fe6bf13b6cebdfaca6...97b7efd9c0e80e7dfd9e01db977bb34f4d0dec5b",
+      "status": "ahead",
+      "total_files": 10
+    },
+    {
+      "ahead_by": 25,
+      "behind_by": 0,
+      "component": "keycloak",
+      "expected_base": "7aef62a020c87ffcbf0fbb2f8c4890a8e9d13098",
+      "merge_base": "7aef62a020c87ffcbf0fbb2f8c4890a8e9d13098",
+      "source_url": "https://github.com/appolon1908-hue/Keycloak/compare/7aef62a020c87ffcbf0fbb2f8c4890a8e9d13098...27e754ba8f56eaa279cde82ffe1bbc63c9fa0bcc",
+      "status": "ahead",
+      "total_files": 215
+    },
+    {
+      "ahead_by": 20,
+      "behind_by": 0,
+      "component": "kong",
+      "expected_base": "961edbf56e29ce78f305273c3efeec386a2bba62",
+      "merge_base": "961edbf56e29ce78f305273c3efeec386a2bba62",
+      "source_url": "https://github.com/appolon1908-hue/Kong/compare/961edbf56e29ce78f305273c3efeec386a2bba62...76323c8c182a98a24a2e7d76bedc41509c416273",
+      "status": "ahead",
+      "total_files": 144
+    },
+    {
+      "ahead_by": 7,
+      "behind_by": 0,
+      "component": "marketing",
+      "expected_base": "460ff98f64ef9f0724fe4d2afc51a1a6c5b053dd",
+      "merge_base": "460ff98f64ef9f0724fe4d2afc51a1a6c5b053dd",
+      "source_url": "https://github.com/appolon1908-hue/Codestra-Marketing-/compare/460ff98f64ef9f0724fe4d2afc51a1a6c5b053dd...722f2d8c4a066dc0795439ba0504d1882f28cf6e",
+      "status": "ahead",
+      "total_files": 39
+    },
+    {
+      "ahead_by": 132,
+      "behind_by": 0,
+      "component": "middleware",
+      "expected_base": "9152a04ed8df52269b30d7a9c6b18ef00a0caf75",
+      "merge_base": "9152a04ed8df52269b30d7a9c6b18ef00a0caf75",
+      "source_url": "https://github.com/appolon1908-hue/Middleware-/compare/9152a04ed8df52269b30d7a9c6b18ef00a0caf75...ab6e28769815f2bc60ca5bb52a4f3aa5818f89a5",
+      "status": "ahead",
+      "total_files": 300
+    },
+    {
+      "ahead_by": 25,
+      "behind_by": 0,
+      "component": "n8n",
+      "expected_base": "b620860c04bf0fe6998c5fc25857262aa5c89d74",
+      "merge_base": "b620860c04bf0fe6998c5fc25857262aa5c89d74",
+      "source_url": "https://github.com/appolon1908-hue/N8N/compare/b620860c04bf0fe6998c5fc25857262aa5c89d74...ca54f1e9238e83eef065f2b99b1f7396e45527b5",
+      "status": "ahead",
+      "total_files": 104
+    },
+    {
+      "ahead_by": 35,
+      "behind_by": 0,
+      "component": "odoo",
+      "expected_base": "3eeb17f8b7efcd9bd90487e5e8e9888717f51138",
+      "merge_base": "3eeb17f8b7efcd9bd90487e5e8e9888717f51138",
+      "source_url": "https://github.com/appolon1908-hue/Odoo/compare/3eeb17f8b7efcd9bd90487e5e8e9888717f51138...b7afcd6f18969ec55c7323ce285c6b2121386e7a",
+      "status": "ahead",
+      "total_files": 232
+    },
+    {
+      "ahead_by": 1,
+      "behind_by": 0,
+      "component": "prometheus",
+      "expected_base": "12b79875cf01033d1a5bd29462fc70bed0e4bbfb",
+      "merge_base": "12b79875cf01033d1a5bd29462fc70bed0e4bbfb",
+      "source_url": "https://github.com/appolon1908-hue/Codestra-Prometheus/compare/12b79875cf01033d1a5bd29462fc70bed0e4bbfb...81f21999441eb7dc545fccb7bea7290d5b42cb37",
+      "status": "ahead",
+      "total_files": 6
+    },
+    {
+      "ahead_by": 30,
+      "behind_by": 0,
+      "component": "sdk",
+      "expected_base": "833b79207b59a8451ea6e7dbfafe8fb64cdb33c0",
+      "merge_base": "833b79207b59a8451ea6e7dbfafe8fb64cdb33c0",
+      "source_url": "https://github.com/appolon1908-hue/SDK-repository/compare/833b79207b59a8451ea6e7dbfafe8fb64cdb33c0...a194b5154a5b313c8fc4b9150abd17a4cc6612ae",
+      "status": "ahead",
+      "total_files": 196
+    },
+    {
+      "ahead_by": 2,
+      "behind_by": 0,
+      "component": "social_control",
+      "expected_base": "7bc0dd9ee8a13abbd1463ca106629ad63d957145",
+      "merge_base": "7bc0dd9ee8a13abbd1463ca106629ad63d957145",
+      "source_url": "https://github.com/appolon1908-hue/Codesrea-Social-/compare/7bc0dd9ee8a13abbd1463ca106629ad63d957145...bfb654b0cff3416b6f6abd79687d8d33698aab41",
+      "status": "ahead",
+      "total_files": 8
+    },
+    {
+      "ahead_by": 129,
+      "behind_by": 0,
+      "component": "superset",
+      "expected_base": "9e9b5a347e1a52cf43f8c6ec2a967379e723d31a",
+      "merge_base": "9e9b5a347e1a52cf43f8c6ec2a967379e723d31a",
+      "source_url": "https://github.com/appolon1908-hue/Superset/compare/9e9b5a347e1a52cf43f8c6ec2a967379e723d31a...6cb1498b1aaeb5e8ba7ca0d101070659ce04223a",
+      "status": "ahead",
+      "total_files": 300
+    },
+    {
+      "ahead_by": 1,
+      "behind_by": 0,
+      "component": "tempo",
+      "expected_base": "4d91ab83d702c5892a8521804abfe32a57a6825f",
+      "merge_base": "4d91ab83d702c5892a8521804abfe32a57a6825f",
+      "source_url": "https://github.com/appolon1908-hue/Codestra-Tempo/compare/4d91ab83d702c5892a8521804abfe32a57a6825f...3993d606e1a2f82b5ac58f2923f2f666d00ed92d",
+      "status": "ahead",
+      "total_files": 46
+    }
+  ],
+  "middleware_release": {
+    "run_id": 34412423980,
+    "artifact_id": 10127811516,
+    "archive_sha256": "sha256:f411640153a9563f844e3aa013349e235e3bfdb5ad117f116cd693a9605ed393",
+    "source_sha": "ab6e28769815f2bc60ca5bb52a4f3aa5818f89a5",
+    "image_digest": "sha256:d899b182a414eef7c59e66c7fecb38b1161851b66c43d95e19e890a53f8caf58",
+    "archive_checksum_verified": true,
+    "verification": {
+      "certificate_identity": "https://github.com/appolon1908-hue/Middleware-/.github/workflows/release.yml@refs/heads/main",
+      "checks": {
+        "certificate_identity_match": true,
+        "cosign_version_match": true,
+        "image_digest_match": true,
+        "image_reference_match": true,
+        "image_signature_verified": true,
+        "oidc_issuer_match": true,
+        "release_manifest_bundle_verified": true,
+        "repository_match": true,
+        "source_ref_match": true,
+        "source_sha_match": true,
+        "spdx_attestation_verified": true,
+        "workflow_identity_match": true
+      },
+      "cosign_version": {
+        "buildDate": "2026-04-06T21:39:58Z",
+        "compiler": "gc",
+        "gitCommit": "f1ad3ee952313be5d74a49d67ba0aa8d0d5e351f",
+        "gitTreeState": "clean",
+        "gitVersion": "v3.0.6",
+        "goVersion": "go1.25.7",
+        "platform": "linux/amd64"
+      },
+      "digest": "sha256:d899b182a414eef7c59e66c7fecb38b1161851b66c43d95e19e890a53f8caf58",
+      "oidc_issuer": "https://token.actions.githubusercontent.com",
+      "reference": "ghcr.io/appolon1908-hue/codestra-middleware@sha256:d899b182a414eef7c59e66c7fecb38b1161851b66c43d95e19e890a53f8caf58",
+      "release_manifest_bundle_sha256": "sha256:901aca643b322409717d6897cd0d701d41d83330d733fcc452b8d19dd72eb1c4",
+      "release_manifest_sha256": "sha256:2d9d2dc4d864ceff90216fa405800628c35c276d8a438e0317714cf069a8bc36",
+      "source_sha": "ab6e28769815f2bc60ca5bb52a4f3aa5818f89a5",
+      "status": "PASS",
+      "verified_image_signatures": 3,
+      "verified_spdx_attestations": 1
+    },
+    "checkout_tree_matches_signed_manifest": true,
+    "config_and_migration_authority": "signed manifest artifacts and exact Git tree; runtime application remains unverified"
+  },
+  "locked_checkouts": {
+    "authoritative_lock": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/evidence/STAGE6-SOURCE-LOCK.yaml",
+    "captured_at": "2026-09-10T00:33:54.903252+00:00",
+    "results": [
+      {
+        "authority_branch": "main",
+        "authority_head": "722f2d8c4a066dc0795439ba0504d1882f28cf6e",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/marketing",
+        "checkout_head": "722f2d8c4a066dc0795439ba0504d1882f28cf6e",
+        "clean_worktree": true,
+        "component": "marketing",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "722f2d8c4a066dc0795439ba0504d1882f28cf6e",
+        "repository": "appolon1908-hue/Codestra-Marketing-",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "7d31ef8de1c15bcc71b61de50917c81e3bcf557d",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/ai",
+        "checkout_head": "7d31ef8de1c15bcc71b61de50917c81e3bcf557d",
+        "clean_worktree": true,
+        "component": "ai",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "7d31ef8de1c15bcc71b61de50917c81e3bcf557d",
+        "repository": "appolon1908-hue/Codestra-AI",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "cceb1fd7462f765e6ac36db154086d56a88ba712",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/communication",
+        "checkout_head": "cceb1fd7462f765e6ac36db154086d56a88ba712",
+        "clean_worktree": true,
+        "component": "communication",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "cceb1fd7462f765e6ac36db154086d56a88ba712",
+        "repository": "appolon1908-hue/Codestra-Communication-CC",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "bfb654b0cff3416b6f6abd79687d8d33698aab41",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/social_control",
+        "checkout_head": "bfb654b0cff3416b6f6abd79687d8d33698aab41",
+        "clean_worktree": true,
+        "component": "social_control",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "bfb654b0cff3416b6f6abd79687d8d33698aab41",
+        "repository": "appolon1908-hue/Codesrea-Social-",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "4f7817f6c6d1bb38fa7d85bb1656eb41865283d5",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/social_runtime",
+        "checkout_head": "4f7817f6c6d1bb38fa7d85bb1656eb41865283d5",
+        "clean_worktree": true,
+        "component": "social_runtime",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "4f7817f6c6d1bb38fa7d85bb1656eb41865283d5",
+        "repository": "appolon1908-hue/social.codestra.co",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "ab6e28769815f2bc60ca5bb52a4f3aa5818f89a5",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/middleware",
+        "checkout_head": "ab6e28769815f2bc60ca5bb52a4f3aa5818f89a5",
+        "clean_worktree": true,
+        "component": "middleware",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "ab6e28769815f2bc60ca5bb52a4f3aa5818f89a5",
+        "repository": "appolon1908-hue/Middleware-",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "b7afcd6f18969ec55c7323ce285c6b2121386e7a",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/odoo",
+        "checkout_head": "b7afcd6f18969ec55c7323ce285c6b2121386e7a",
+        "clean_worktree": true,
+        "component": "odoo",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "b7afcd6f18969ec55c7323ce285c6b2121386e7a",
+        "repository": "appolon1908-hue/Odoo",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "ca54f1e9238e83eef065f2b99b1f7396e45527b5",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/n8n",
+        "checkout_head": "ca54f1e9238e83eef065f2b99b1f7396e45527b5",
+        "clean_worktree": true,
+        "component": "n8n",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "ca54f1e9238e83eef065f2b99b1f7396e45527b5",
+        "repository": "appolon1908-hue/N8N",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "76323c8c182a98a24a2e7d76bedc41509c416273",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/kong",
+        "checkout_head": "76323c8c182a98a24a2e7d76bedc41509c416273",
+        "clean_worktree": true,
+        "component": "kong",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "76323c8c182a98a24a2e7d76bedc41509c416273",
+        "repository": "appolon1908-hue/Kong",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "27e754ba8f56eaa279cde82ffe1bbc63c9fa0bcc",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/keycloak",
+        "checkout_head": "27e754ba8f56eaa279cde82ffe1bbc63c9fa0bcc",
+        "clean_worktree": true,
+        "component": "keycloak",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "27e754ba8f56eaa279cde82ffe1bbc63c9fa0bcc",
+        "repository": "appolon1908-hue/Keycloak",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "a194b5154a5b313c8fc4b9150abd17a4cc6612ae",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/sdk",
+        "checkout_head": "a194b5154a5b313c8fc4b9150abd17a4cc6612ae",
+        "clean_worktree": true,
+        "component": "sdk",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "a194b5154a5b313c8fc4b9150abd17a4cc6612ae",
+        "repository": "appolon1908-hue/SDK-repository",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "81f21999441eb7dc545fccb7bea7290d5b42cb37",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/prometheus",
+        "checkout_head": "81f21999441eb7dc545fccb7bea7290d5b42cb37",
+        "clean_worktree": true,
+        "component": "prometheus",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "81f21999441eb7dc545fccb7bea7290d5b42cb37",
+        "repository": "appolon1908-hue/Codestra-Prometheus",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "97b7efd9c0e80e7dfd9e01db977bb34f4d0dec5b",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/grafana",
+        "checkout_head": "97b7efd9c0e80e7dfd9e01db977bb34f4d0dec5b",
+        "clean_worktree": true,
+        "component": "grafana",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "97b7efd9c0e80e7dfd9e01db977bb34f4d0dec5b",
+        "repository": "appolon1908-hue/Codestra-Grafana-",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "75a5deb555547b557466c418af18c99f3cef5556",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/loki",
+        "checkout_head": "75a5deb555547b557466c418af18c99f3cef5556",
+        "clean_worktree": true,
+        "component": "loki",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "75a5deb555547b557466c418af18c99f3cef5556",
+        "repository": "appolon1908-hue/Codestra-Loki",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "3993d606e1a2f82b5ac58f2923f2f666d00ed92d",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/tempo",
+        "checkout_head": "3993d606e1a2f82b5ac58f2923f2f666d00ed92d",
+        "clean_worktree": true,
+        "component": "tempo",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "3993d606e1a2f82b5ac58f2923f2f666d00ed92d",
+        "repository": "appolon1908-hue/Codestra-Tempo",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "d42d866072ce86175ca03209bd866b3452d606fe",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/telemetry",
+        "checkout_head": "d42d866072ce86175ca03209bd866b3452d606fe",
+        "clean_worktree": true,
+        "component": "telemetry",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "d42d866072ce86175ca03209bd866b3452d606fe",
+        "repository": "appolon1908-hue/Codestra-Telemetry",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "104966b2cac822d2cc61f058e53a9dff4a10e03e",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/alloy",
+        "checkout_head": "104966b2cac822d2cc61f058e53a9dff4a10e03e",
+        "clean_worktree": true,
+        "component": "alloy",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "104966b2cac822d2cc61f058e53a9dff4a10e03e",
+        "repository": "appolon1908-hue/Codestra-Alloy",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "c18166741f36fc05193187dfd614fbde7f8f9253",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/node_exporter",
+        "checkout_head": "c18166741f36fc05193187dfd614fbde7f8f9253",
+        "clean_worktree": true,
+        "component": "node_exporter",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "c18166741f36fc05193187dfd614fbde7f8f9253",
+        "repository": "appolon1908-hue/Codestra-Node-Exporter",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "add839da944d1f213e978b862f22e856008cf52d",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/cadvisor",
+        "checkout_head": "add839da944d1f213e978b862f22e856008cf52d",
+        "clean_worktree": true,
+        "component": "cadvisor",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "add839da944d1f213e978b862f22e856008cf52d",
+        "repository": "appolon1908-hue/Codestra-cAdvisor",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "784e03d8151136195b3b23c58fe50b68b12cf94f",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/redis_exporter",
+        "checkout_head": "784e03d8151136195b3b23c58fe50b68b12cf94f",
+        "clean_worktree": true,
+        "component": "redis_exporter",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "784e03d8151136195b3b23c58fe50b68b12cf94f",
+        "repository": "appolon1908-hue/Codestra-Redis-Exporter",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "acfe1e83dd05a7d8a45cd70f7661fe414fae39b1",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/blackbox_exporter",
+        "checkout_head": "acfe1e83dd05a7d8a45cd70f7661fe414fae39b1",
+        "clean_worktree": true,
+        "component": "blackbox_exporter",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "acfe1e83dd05a7d8a45cd70f7661fe414fae39b1",
+        "repository": "appolon1908-hue/Codestra-Blackbox-Exporter",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "6cb1498b1aaeb5e8ba7ca0d101070659ce04223a",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/superset",
+        "checkout_head": "6cb1498b1aaeb5e8ba7ca0d101070659ce04223a",
+        "clean_worktree": true,
+        "component": "superset",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "6cb1498b1aaeb5e8ba7ca0d101070659ce04223a",
+        "repository": "appolon1908-hue/Superset",
+        "status": "PASS"
+      },
+      {
+        "authority_branch": "main",
+        "authority_head": "5f5e3583585081e450f945440a1fab503bfa8399",
+        "authority_head_match": true,
+        "checkout": "/tmp/stage6-pr47-refresh-20260910-8e8q59ug/checkouts/openbao",
+        "checkout_head": "5f5e3583585081e450f945440a1fab503bfa8399",
+        "clean_worktree": true,
+        "component": "openbao",
+        "error": null,
+        "fetch": "PASS",
+        "head_match": true,
+        "locked_revision": "5f5e3583585081e450f945440a1fab503bfa8399",
+        "repository": "appolon1908-hue/Codestra-OpenBao",
+        "status": "PASS"
+      }
+    ],
+    "schema": "codestra.stage6.locked-checkouts.v1",
+    "summary": {
+      "components": 23,
+      "fail": 0,
+      "pass": 23
+    }
+  },
+  "resolution_summary": {
+    "activation_eligible_components": 0,
+    "artifact_provenance_pass": 12,
+    "classification_counts": {
+      "custom_attested_image": 1,
+      "custom_signed_image": 1,
+      "frozen_observed_digest": 1,
+      "official_upstream_image_plus_codestra_config": 15,
+      "out_of_batch": 1,
+      "source_only": 7
+    },
+    "exact_authority_head_and_clean_checkout": 23,
+    "fresh_verified_digest_matches": 1,
+    "minimum_verified_digest_matches": 1,
+    "repository_components": 23
+  },
+  "resolved_at": "2026-09-10T00:34:12.424741+00:00",
+  "runtime_readback_scope": {
+    "fresh_host": "37.27.128.39",
+    "core_host": "65.109.65.169",
+    "core_readback": "historical snapshot retained; not revalidated by this source refresh"
+  }
+}

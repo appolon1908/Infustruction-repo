@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from stage6_inventory_common import fail, firewall_rules, sanitized_labels
+from stage6_inventory_common import fail, firewall_rules, sanitized_labels, server_location_name
 
 
 def sanitized_inventory(raw: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
@@ -24,7 +24,7 @@ def sanitized_inventory(raw: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
             "name": server["name"],
             "status": server.get("status"),
             "labels": sanitized_labels(server.get("labels", {})),
-            "location": (server.get("datacenter") or {}).get("location", {}).get("name"),
+            "location": server_location_name(server),
             "public_ipv4": (public_net.get("ipv4") or {}).get("ip"),
             "public_ipv6": (public_net.get("ipv6") or {}).get("ip"),
             "private_network_attachments": [

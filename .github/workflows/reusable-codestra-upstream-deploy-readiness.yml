@@ -268,6 +268,7 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: write
+      actions: read
       id-token: write
     outputs:
       artifact_kind: ${{ steps.release.outputs.artifact_kind }}
@@ -311,6 +312,61 @@ jobs:
             --output "$cosign_bin"
           echo "${COSIGN_SHA256}  ${cosign_bin}" | sha256sum --check --strict
           chmod 0755 "$cosign_bin"
+
+      - name: Bind signature verification to the exact reusable workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          metadata="$RUNNER_TEMP/source-signing-run.json"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" > "$metadata"
+          python3 - "$metadata" <<'IDENTITY_PY'
+          # BEGIN CODESTRA_REUSABLE_SIGNING_IDENTITY
+          import json
+          import os
+          import re
+          import sys
+
+          WORKFLOW = "appolon1908-hue/Infustruction-repo/.github/workflows/reusable-codestra-upstream-deploy-readiness.yml"
+
+          def resolve_signing_identity(metadata, repository, source_sha, run_id):
+              if not re.fullmatch(r"[0-9a-f]{40}", source_sha):
+                  raise ValueError("source SHA must be exact")
+              if metadata.get("repository", {}).get("full_name") != repository:
+                  raise ValueError("run repository does not match the caller")
+              if metadata.get("head_sha") != source_sha:
+                  raise ValueError("run source SHA does not match the checked-out source")
+              if str(metadata.get("id")) != str(run_id):
+                  raise ValueError("run ID does not match this invocation")
+              references = metadata.get("referenced_workflows")
+              if not isinstance(references, list):
+                  raise ValueError("GitHub did not provide referenced workflow evidence")
+              matches = []
+              for reference in references:
+                  path = reference.get("path", "")
+                  if not path.startswith(WORKFLOW + "@"):
+                      continue
+                  revision = path.removeprefix(WORKFLOW + "@")
+                  if not re.fullmatch(r"[0-9a-f]{40}", revision):
+                      raise ValueError("signing workflow reference must be an immutable SHA")
+                  if reference.get("sha") != revision:
+                      raise ValueError("resolved signing workflow SHA disagrees with its pin")
+                  matches.append("https://github.com/" + path)
+              if len(matches) != 1:
+                  raise ValueError("expected exactly one approved reusable signing workflow")
+              return matches[0]
+
+          if __name__ == "__main__":
+              with open(sys.argv[1], encoding="utf-8") as stream:
+                  metadata = json.load(stream)
+              identity = resolve_signing_identity(
+                  metadata, os.environ["GITHUB_REPOSITORY"],
+                  os.environ["GITHUB_SHA"], os.environ["GITHUB_RUN_ID"],
+              )
+              with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+                  stream.write("SOURCE_SIGNING_IDENTITY=" + identity + "\n")
+          # END CODESTRA_REUSABLE_SIGNING_IDENTITY
+          IDENTITY_PY
 
       - name: Build, scan, sign, and publish exact overlay source bundle
         id: release
@@ -416,6 +472,7 @@ jobs:
               ).strip(),
               "upstream_tree": upstream_tree,
               "upstream_tracked_files": upstream_files,
+              "signing_workflow_identity": os.environ["SOURCE_SIGNING_IDENTITY"],
               "bundle_digest": "sha256:" + hashlib.sha256(bundle.read_bytes()).hexdigest(),
               "sbom_sha256": "sha256:" + hashlib.sha256(
                   (evidence / "overlay-file-sbom.json").read_bytes()
@@ -439,14 +496,13 @@ jobs:
           PY
 
           manifest=evidence/deploy-readiness-manifest.json
-          identity="https://github.com/${GITHUB_REPOSITORY}/.github/workflows/codestra-deploy-readiness.yml@${GITHUB_REF}"
           "$RUNNER_TEMP/cosign" sign-blob \
             --yes \
             --bundle evidence/deploy-readiness-manifest.sigstore.json \
             "$manifest"
           "$RUNNER_TEMP/cosign" verify-blob \
             --bundle evidence/deploy-readiness-manifest.sigstore.json \
-            --certificate-identity "$identity" \
+            --certificate-identity "$SOURCE_SIGNING_IDENTITY" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
             "$manifest"
 
@@ -529,6 +585,7 @@ jobs:
             --evidence-output "$RUNNER_TEMP/staging-readiness-evidence.json"
 
       - name: Upload sanitized staging evidence
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: staging-readiness-${{ github.repository_id }}-${{ github.sha }}
@@ -593,6 +650,7 @@ jobs:
             --evidence-output "$RUNNER_TEMP/production-canary-evidence.json"
 
       - name: Upload sanitized production-canary evidence
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: production-readonly-canary-${{ github.repository_id }}-${{ github.sha }}
