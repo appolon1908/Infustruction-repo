@@ -42,7 +42,7 @@ Do not install or expose services on the server until repository authority, host
 ## Smoke tests
 
 ### DNS/TLS
-- all 14 hostnames resolve to `37.27.128.39` with expected TTL behavior;
+- verify only the approved UI/management DNS names (`graf`, `supe`, and restricted `bao`) against the accepted target; private services use internal service identities, and PostgreSQL Exporter must have no public DNS hostname;
 - `graf`, `supe`, and approved `bao` return valid HTTPS certificates only after Caddy routes are enabled;
 - private-only hostnames must not expose their native services publicly simply because DNS resolves.
 
@@ -144,3 +144,11 @@ For each deployed component record:
 - approver and activation timestamp.
 
 Server deployment is not considered complete until the combined evidence packet passes and no public/private exposure discrepancy remains.
+
+## Latest runtime verification
+
+See [the 10 September 2026 live verification](../reports/observability/20260910-runtime-verification.md).
+Container liveness and Prometheus scrape success alone do not certify service
+readiness, configured receiver credential mounts, webhook transport, log/trace
+ingestion or authenticated dashboard access. The fourteen-component provider
+release remains incomplete; this report records the separate core alert repair.

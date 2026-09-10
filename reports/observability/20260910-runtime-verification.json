@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-10T12:13:22Z",
+  "target_host": "37.27.128.39",
+  "application_host": "65.109.65.169",
+  "verdict": "NOT_PRODUCTION_READY",
+  "scope": "Live monitoring inventory, read-only API integration checks, accepted core Alertmanager compatibility repair.",
+  "provider": {
+    "monitoring_container_count": 6,
+    "components": [
+      {
+        "component": "grafana",
+        "repository": "Codestra-Grafana-",
+        "status": "PARTIAL",
+        "evidence": "Klyrow Grafana health HTTP 200/database ok; provisioned Prometheus reachable from Grafana container with sum(up)=2; canonical graf.codestra.media TLS verification fails (curl 60). Authenticated browser session not verified."
+      },
+      {
+        "component": "prometheus",
+        "repository": "Codestra-Prometheus",
+        "status": "PARTIAL",
+        "evidence": "Klyrow 2/2 and Telnexa 3/3 targets up with fresh samples. Both instances have zero active Alertmanager destinations. Klyrow has two firing delivery-stalled alerts."
+      },
+      {
+        "component": "alertmanager",
+        "repository": "Codestra-Alertmanager",
+        "status": "MISSING",
+        "evidence": "No local container or host service found. Central core instance repaired separately."
+      },
+      {
+        "component": "loki",
+        "repository": "Codestra-Loki",
+        "status": "MISSING",
+        "evidence": "No local container or host service found. Host port 3100 belongs to Kyqra crawler, not Loki."
+      },
+      {
+        "component": "tempo",
+        "repository": "Codestra-Tempo",
+        "status": "MISSING",
+        "evidence": "No local container or host service found."
+      },
+      {
+        "component": "opentelemetry",
+        "repository": "Codestra-Telemetry",
+        "status": "MISSING",
+        "evidence": "No local collector container or host service found."
+      },
+      {
+        "component": "alloy",
+        "repository": "Codestra-Alloy",
+        "status": "MISSING",
+        "evidence": "No local collection agent container or host service found."
+      },
+      {
+        "component": "node-exporter",
+        "repository": "Codestra-Node-Exporter",
+        "status": "PARTIAL",
+        "evidence": "Two provider exporter containers are scraped successfully; host exporter listens on loopback 9100. Three instances need reviewed collection ownership to avoid duplicate series."
+      },
+      {
+        "component": "cadvisor",
+        "repository": "Codestra-cAdvisor",
+        "status": "MISSING",
+        "evidence": "No local container or host service found. A separate core instance is scraped successfully."
+      },
+      {
+        "component": "postgres-exporter",
+        "repository": "Codestra-Postgres-Exporter",
+        "status": "MISSING",
+        "evidence": "No provider exporter found. Core PostgreSQL exporter reports pg_up=1 for its configured database."
+      },
+      {
+        "component": "redis-exporter",
+        "repository": "Codestra-Redis-Exporter",
+        "status": "MISSING",
+        "evidence": "No provider exporter found. Core Redis exporter reports redis_up=1 for its configured database."
+      },
+      {
+        "component": "blackbox-exporter",
+        "repository": "Codestra-Blackbox-Exporter",
+        "status": "MISSING",
+        "evidence": "No provider exporter found. Core exporter has eight successful HTTPS/TLS probes and two failing application readiness probes."
+      },
+      {
+        "component": "superset",
+        "repository": "Superset",
+        "status": "MISSING",
+        "evidence": "No local container or host service found; supe.codestra.media TLS verification fails (curl 60)."
+      },
+      {
+        "component": "openbao",
+        "repository": "Codestra-OpenBao",
+        "status": "BLOCKED",
+        "evidence": "Live health HTTP 501, initialized=false, sealed=true. Container version/liveness check says healthy. Offline custody, release and production preflight remain unresolved; no initialization/unseal performed."
+      }
+    ],
+    "public_ui_checks": [
+      {
+        "hostname": "graf.codestra.media",
+        "dns_target": "37.27.128.39",
+        "curl_exit": 60,
+        "http_status": 0
+      },
+      {
+        "hostname": "supe.codestra.media",
+        "dns_target": "37.27.128.39",
+        "curl_exit": 60,
+        "http_status": 0
+      },
+      {
+        "hostname": "bao.codestra.media",
+        "dns_target": "37.27.128.39",
+        "curl_exit": 0,
+        "http_status": 403,
+        "tls_verified": true
+      }
+    ],
+    "prometheus": {
+      "klyrow": {
+        "targets_up": 2,
+        "targets_total": 2,
+        "active_alertmanagers": 0,
+        "firing_alert_names": [
+          "KlyrowEventDeliveryStalled",
+          "KlyrowUsageDeliveryStalled"
+        ]
+      },
+      "telnexa": {
+        "targets_up": 3,
+        "targets_total": 3,
+        "active_alertmanagers": 0,
+        "firing_alert_names": []
+      }
+    }
+  },
+  "core": {
+    "targets_up": 34,
+    "targets_total": 34,
+    "pg_up": 1,
+    "redis_up": 1,
+    "application_probes_failing": [
+      "http://codestra-mail-api:8098/healthz/ready",
+      "http://portal:8080/readyz"
+    ],
+    "alertmanager_repair": {
+      "pull_request": "https://github.com/appolon1908-hue/Codestra-Alertmanager/pull/20",
+      "merge_sha": "99bb8e2075c925634100e8ed4e60dbfac4b9f0f8",
+      "deployed_at": "2026-09-10T12:12:23.645026+00:00",
+      "unit_tests_passed": 17,
+      "github_checks_passed": [
+        "validate-source",
+        "validate",
+        "validate-merge-result"
+      ],
+      "root_cause": "Configured bearer credential and staging receiver URL were not mounted; the old verifier examined only existing mounts.",
+      "configured_files_readable": 6,
+      "ready_http": 200,
+      "image_unchanged": true,
+      "state_volume_unchanged": true,
+      "secret_values_unchanged": true,
+      "natural_webhooks_successful": 10,
+      "natural_webhooks_failed": 0,
+      "synthetic_notifications_sent": 0,
+      "downstream_email_receipt_verified": false,
+      "backup": {
+        "core_directory": "/var/backups/codestra/alertmanager/20260910T121006Z",
+        "encrypted_offhost_file": "37.27.128.39:/var/backups/codestra/alertmanager-core/20260910T121006Z/alertmanager-state.tar.gz.gpg",
+        "ciphertext_sha256": "97cc6726ca2bf8a718a35ffcae188e14158eb9c4ea46343670204afd2160f8d6",
+        "offhost_readback_verified": true,
+        "isolated_restore_ready": true,
+        "isolated_network": "none",
+        "private_key_transferred": false
+      }
+    }
+  },
+  "release_gate": {
+    "infrastructure_sha": "ee47a144ec4c9144ff064336743e6b215f559582",
+    "manifest": "release/observability-release-manifest.v1.json",
+    "manifest_release_ready": false,
+    "manifest_deployment_enabled": false,
+    "accepted_image_digests_in_manifest": 0,
+    "components_in_manifest": 14,
+    "github_release_lists_checked": 14,
+    "github_releases_found": 0,
+    "oci_registry_artifact_absence_claimed": false
+  },
+  "production_stack_certified": false,
+  "live_business_delivery_flags_changed": false,
+  "openbao_initialized_or_unsealed": false,
+  "secret_values_included": false
+}
