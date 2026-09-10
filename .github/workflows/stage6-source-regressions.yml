@@ -1,0 +1,47 @@
+name: Stage 6 source regressions
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/*stage6*'
+      - 'tests/test_stage6_source_regressions.py'
+      - 'tests/test_stage6_authority_heads.py'
+      - 'STAGE6-SOURCE-LOCK*.yaml'
+      - 'deploy/staging/**'
+      - '.github/workflows/stage6-source-regressions.yml'
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    name: stage6-regression (${{ matrix.identity }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        identity: [source, merge]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ matrix.identity == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prove exact checkout
+        env:
+          EXPECTED_SHA: ${{ matrix.identity == 'source' && github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - run: python3 -m pip install --disable-pip-version-check --no-cache-dir PyYAML==6.0.3
+      - name: Validate immutable remediation source without applying it
+        run: |
+          python3 scripts/validate_stage6_remediation.py
+          python3 -O scripts/validate_stage6_remediation.py
+      - name: Test artifact classification and runtime boundaries offline
+        run: |
+          python3 -m unittest discover -s tests -p test_stage6_source_regressions.py -v
+          python3 -O -m unittest discover -s tests -p test_stage6_source_regressions.py -v
+      - name: Test authority validation offline
+        run: |
+          python3 -m unittest discover -s tests -p test_stage6_authority_heads.py -v
+          python3 -O -m unittest discover -s tests -p test_stage6_authority_heads.py -v
