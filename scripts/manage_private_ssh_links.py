@@ -109,6 +109,7 @@ def write_new(path, content, mode=0o600, uid=0, gid=0):
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, mode)
     with os.fdopen(descriptor, "w") as handle:
         os.fchown(handle.fileno(), uid, gid)
+        os.fchmod(handle.fileno(), mode)
         handle.write(content)
         handle.flush()
         os.fsync(handle.fileno())
@@ -184,7 +185,7 @@ def authorize(path):
         for name, content in contents.items():
             target = HOME / ".ssh" / name
             safe_path(target)
-            require(target.is_file() and target.stat().st_uid == 0 and not target.stat().st_mode & 0o022
+            require(target.is_file() and target.stat().st_uid == 0 and stat.S_IMODE(target.stat().st_mode) == 0o644
                     and target.read_text() == content, f"managed SSH file drift: {name}")
         return {"status": "UNCHANGED", "node": value["node"], "peers": len(value["peers"])}
     for name in contents:

@@ -106,6 +106,18 @@ class PrivateSSHLinksTests(unittest.TestCase):
         value["peers"].reverse()
         self.assertEqual(module.render(value), first)
 
+    def test_requested_modes_are_independent_of_administrator_umask(self):
+        for mask in (0o027, 0o077, 0o777):
+            for mode in (0o600, 0o644):
+                with self.subTest(umask=oct(mask), mode=oct(mode)), tempfile.TemporaryDirectory() as tmp:
+                    target = Path(tmp) / "managed"
+                    previous = os.umask(mask)
+                    try:
+                        module.write_new(target, "data", mode=mode, uid=os.getuid(), gid=os.getgid())
+                    finally:
+                        os.umask(previous)
+                    self.assertEqual(target.stat().st_mode & 0o777, mode)
+
     def test_write_refuses_existing_files_and_symlinked_parents(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
