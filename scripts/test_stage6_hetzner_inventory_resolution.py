@@ -49,7 +49,7 @@ def fixture_raw() -> dict:
                 "image": {"name": "ubuntu-24.04"},
                 "backup_window": "22-02",
                 "protection": {"delete": True, "rebuild": True},
-                "datacenter": {"location": {"name": "hel1"}},
+                "location": {"name": "hel1"},
                 "public_net": {"ipv4": {"ip": "192.0.2.10"}, "ipv6": None},
                 "private_net": [{"network": 12602071, "ip": runtime_ip, "alias_ips": []}],
             },
@@ -62,7 +62,7 @@ def fixture_raw() -> dict:
                 "image": {"name": "ubuntu-24.04"},
                 "backup_window": "22-02",
                 "protection": {"delete": True, "rebuild": True},
-                "datacenter": {"location": {"name": "hel1"}},
+                "location": {"name": "hel1"},
                 "public_net": {"ipv4": {"ip": "192.0.2.20"}, "ipv6": None},
                 "private_net": [{"network": 12602071, "ip": gateway_ip, "alias_ips": []}],
             },
@@ -131,6 +131,59 @@ class ResolutionTests(unittest.TestCase):
         self.assertEqual(result["cloud_api_methods"], ["GET"])
         self.assertFalse(result["cloud_mutation"])
         self.assertFalse(result["production_changed"])
+
+    def test_current_server_location_is_used_in_resolution_and_evidence(self):
+        raw = fixture_raw()
+        for server in raw["servers"]:
+            self.assertNotIn("datacenter", server)
+        result = collector.resolve_authority(raw, self.authority)
+        self.assertEqual(result["fields"]["location"], "hel1")
+        self.assertEqual(result["field_sources"]["location"], "hetzner-api:servers.location")
+        inventory = collector.sanitized_inventory(raw)
+        self.assertEqual([server["location"] for server in inventory["servers"]], ["hel1", "hel1"])
+
+    def test_missing_server_location_fails_closed(self):
+        for index, role in enumerate(("runtime", "egress")):
+            with self.subTest(role=role):
+                raw = fixture_raw()
+                raw["servers"][index].pop("location")
+                with self.assertRaisesRegex(collector.InventoryError, f"{role}_location:"):
+                    collector.resolve_authority(raw, self.authority)
+
+    def test_malformed_server_location_fails_closed(self):
+        invalid_locations = (None, [], "hel1", 1, {}, {"name": None}, {"name": []},
+                             {"name": 1}, {"name": ""}, {"name": " hel1 "})
+        for index, role in enumerate(("runtime", "egress")):
+            for location in invalid_locations:
+                with self.subTest(role=role, location=location):
+                    raw = fixture_raw()
+                    raw["servers"][index]["location"] = location
+                    with self.assertRaisesRegex(collector.InventoryError, f"{role}_location:"):
+                        collector.resolve_authority(raw, self.authority)
+                    inventory = collector.sanitized_inventory(raw)
+                    self.assertIsNone(inventory["servers"][index]["location"])
+
+    def test_location_drift_cannot_be_masked_by_legacy_datacenter(self):
+        for index, role in enumerate(("runtime", "egress")):
+            with self.subTest(role=role):
+                raw = fixture_raw()
+                raw["servers"][index]["location"] = {"name": "fsn1"}
+                raw["servers"][index]["datacenter"] = {"location": {"name": "hel1"}}
+                with self.assertRaisesRegex(collector.InventoryError, f"{role}_location:"):
+                    collector.resolve_authority(raw, self.authority)
+                inventory = collector.sanitized_inventory(raw)
+                self.assertEqual(inventory["servers"][index]["location"], "fsn1")
+
+    def test_legacy_datacenter_alone_is_not_location_evidence(self):
+        for index, role in enumerate(("runtime", "egress")):
+            with self.subTest(role=role):
+                raw = fixture_raw()
+                server = raw["servers"][index]
+                server["datacenter"] = {"location": server.pop("location")}
+                with self.assertRaisesRegex(collector.InventoryError, f"{role}_location:"):
+                    collector.resolve_authority(raw, self.authority)
+                inventory = collector.sanitized_inventory(raw)
+                self.assertIsNone(inventory["servers"][index]["location"])
 
     def test_duplicate_runtime_authority_fails_closed(self):
         raw = fixture_raw()
