@@ -98,12 +98,14 @@ def test_recovery_requires_each_exact_evidence_blob(tmp_path):
 
 def test_target_requires_exact_no_send_policy(monkeypatch, tmp_path):
     module = adapter(); path = tmp_path / "target.json"
-    target = {"schema":"codestra.odoo-deploy-target.v2","target_host":"staging-odoo","release_root":"/srv/releases","current_link":"/srv/current","compose_directory":"/srv/compose","compose_files":["compose.yml"],"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp","addon_mount":"/mnt/extra-addons","no_send_env":dict(module.NO_SEND_KEYS),"service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"health_base_url":"http://127.0.0.1:8069","health":{"/web/health":{"status":200,"json_field":"status","json_value":"ok"}}}
+    target = {"schema":"codestra.odoo-deploy-target.v3","target_host":"staging-odoo","environment":"staging-readonly","release_root":"/srv/releases","current_link":"/srv/current","compose_directory":"/srv/compose","compose_files":["compose.yml"],"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp","addon_mount":"/mnt/extra-addons","no_send_env":dict(module.NO_SEND_KEYS),"service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"health_base_url":"http://127.0.0.1:8069","health":{"/web/health":{"status":200,"json_field":"status","json_value":"ok"}}}
     path.write_text(json.dumps(target)); path.chmod(0o600)
-    loaded = module.load_target(path, "staging-odoo"); assert loaded["target_host"] == "staging-odoo"
+    loaded = module.load_target(path, "staging-odoo", "staging-readonly"); assert loaded["target_host"] == "staging-odoo"
+    with pytest.raises(module.Blocked, match="configuration mismatch"):
+        module.load_target(path, "staging-odoo", "production-readonly-canary")
     target["no_send_env"]["LIVE_EMAIL_DELIVERY"] = "true"; path.write_text(json.dumps(target))
     with pytest.raises(module.Blocked, match="no-send"):
-        module.load_target(path, "staging-odoo")
+        module.load_target(path, "staging-odoo", "staging-readonly")
 
 
 def test_failed_upgrade_enters_needs_recovery_without_old_restart(monkeypatch, tmp_path):
@@ -273,10 +275,10 @@ def test_each_health_endpoint_is_required_and_redirects_are_disabled(monkeypatch
 
 def test_target_rejects_non_loopback_health_origin(tmp_path):
     module=adapter(); path=tmp_path/"target.json"
-    target={"schema":"codestra.odoo-deploy-target.v2","target_host":"staging-odoo","release_root":"/srv/releases","current_link":"/srv/current","compose_directory":"/srv/compose","compose_files":["compose.yml"],"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp","addon_mount":"/mnt/extra-addons","no_send_env":dict(module.NO_SEND_KEYS),"service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"health_base_url":"https://example.com","health":{}}
+    target={"schema":"codestra.odoo-deploy-target.v3","target_host":"staging-odoo","environment":"staging-readonly","release_root":"/srv/releases","current_link":"/srv/current","compose_directory":"/srv/compose","compose_files":["compose.yml"],"service":"odoo","database":"odoo","modules":"codestra_klyrow_smtp","addon_mount":"/mnt/extra-addons","no_send_env":dict(module.NO_SEND_KEYS),"service_image":"odoo@sha256:"+"1"*64,"internal_networks":["private"],"health_base_url":"https://example.com","health":{}}
     path.write_text(json.dumps(target)); path.chmod(0o600)
     with pytest.raises(module.Blocked,match="loopback"):
-        module.load_target(path,"staging-odoo")
+        module.load_target(path,"staging-odoo","staging-readonly")
 
 
 def test_effective_compose_uses_stable_current_path(monkeypatch,tmp_path):

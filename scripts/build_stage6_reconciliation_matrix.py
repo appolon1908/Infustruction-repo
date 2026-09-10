@@ -49,7 +49,7 @@ def main() -> None:
             "CURRENT_DIGEST": target["image_digest"],
             "CURRENT_GIT_SHA": target.get("git_sha", "UNVERIFIED"),
             "EXPECTED_REPOSITORY": target.get("expected_repository") or target.get("workflow_repository") or target.get("addons_repository") or target["repository"],
-            "EXPECTED_SHA": target.get("expected_sha") or target.get("workflow_sha") or target.get("addons_sha") or target.get("git_sha", "UNVERIFIED"),
+            "EXPECTED_SHA": target.get("expected_sha") or target.get("expected_workflow_sha") or target.get("workflow_sha") or target.get("addons_sha") or target.get("git_sha", "UNVERIFIED"),
             "EXPECTED_DIGEST": target.get("expected_digest") or target["image_digest"],
             "SAFETY_STATE": current["safety_state"] if current["safety_applicable"] == "true" else "NOT_APPLICABLE_INFRASTRUCTURE",
             "MIGRATION_MODEL": migration,

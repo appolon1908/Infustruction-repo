@@ -1,14 +1,19 @@
 [extend]
 useDefault = true
 
+# Git SHA exceptions apply only to the detector that misidentifies this field,
+# never to other token families or every finding in the same file.
 [[allowlists]]
 description = "Reviewed Stage 6 Keycloak Git SHA field; not credential material"
+targetRules = ["generic-api-key"]
 condition = "AND"
 paths = ['''^STAGE6-SOURCE-LOCK\.yaml$''']
-regexes = ['''keycloak_locked_sha:\s*[0-9a-f]{40}''']
+regexTarget = "line"
+regexes = ['''^\s*keycloak_locked_sha:\s*[0-9a-f]{40}\s*$''']
 
 [[allowlists]]
 description = "Historical PR 30 Keycloak merge 48 Git SHA; verified Git object, not credential material"
+targetRules = ["generic-api-key"]
 condition = "AND"
 paths = ['''^reports/runtime-reconciliation/pr-30-runtime-certification-20260831/STAGE6-SOURCE-LOCK\.yaml$''']
 regexTarget = "line"
@@ -16,14 +21,48 @@ regexes = ['''^\s*keycloak_locked_sha:\s*80fc33c7159440e357219903f62ea7fb84914d5
 
 [[allowlists]]
 description = "Reviewed SHA-256 of the immutable Middleware connector CI workflow; not credential material"
+targetRules = ["generic-api-key"]
 condition = "AND"
 paths = ['''^\.codestra/validate-production-orchestrator-contract\.py$''']
 regexTarget = "line"
-regexes = ['''917ab06febf30f0d81146fc147794dace9510f7bb0a6fb903dd69b2244d4e1d0''']
+regexes = ['''^\s*"\.github/workflows/connector-runtime-api-ci\.yml":\s*"917ab06febf30f0d81146fc147794dace9510f7bb0a6fb903dd69b2244d4e1d0",\s*$''']
 
 [[allowlists]]
 description = "Reviewed SHA-256 of the read-only OpenAPI validator; not credential material"
+targetRules = ["generic-api-key"]
 condition = "AND"
 paths = ['''^\.codestra/validate-production-orchestrator-contract\.py$''']
 regexTarget = "line"
 regexes = ['''^\s*"scripts/verify_openapi_contract\.py":\s*"b4dd40045e2781a6a741787b0c1a51d30b96248027a0e058f0123a9853a784a0",\s*$''']
+
+# Exact revisions from the reviewed PR 40 and PR 47 source-refresh snapshots.
+# A Keycloak password, arbitrary SHA-shaped value, or another YAML field is not exempt.
+[[allowlists]]
+description = "Reviewed Keycloak source revisions in Stage 6 reconciliation mappings"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^STAGE6-SOURCE-LOCK(?:\.RESOLVED)?\.yaml$''']
+regexTarget = "line"
+regexes = ['''^\s*(?:keycloak|keycloak_locked_sha):\s*(?:6ce1806c5d3ba63fd89c3b0168181f944c0d7c4f|7aef62a020c87ffcbf0fbb2f8c4890a8e9d13098|27e754ba8f56eaa279cde82ffe1bbc63c9fa0bcc)\s*$''']
+
+# Match the exact non-secret Podman process identity and command, not all
+# numeric credentials or every finding in this historical evidence file.
+[[allowlists]]
+description = "Archived Podman UID:GID, incorrectly joined to the preceding search expression"
+targetRules = ["curl-auth-user"]
+condition = "AND"
+paths = ['''^evidence/server-a-consolidation-20260901/PRODUCTION-SAFETY-SWITCH-INVENTORY\.md$''']
+regexTarget = "match"
+regexes = ['''/opt/codestra/backups/middleware-control-plane-20260815T073500Z/compose/telephony-gateway-schema-aware-ack-release-20260728/deployment-dropin-before\.conf:7:ExecStart=/usr/bin/podman run --rm --name codestra-telephony-event-gateway-rc4 --pull=never --network=host --user=65532:65532(?:\s|$)''']
+
+[[allowlists]]
+description = "Existing release-policy source SHA-256 mappings; not credential material"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^\.codestra/validate-production-orchestrator-contract\.py$''']
+regexTarget = "line"
+regexes = [
+  '''^\s*"apps/api/scripts/generate_openapi\.py":\s*"7e1ad9606a113b556752222b2782da01b66651b2f8107d3108014b9d45f29a66",\s*$''',
+  '''^\s*"\.github/workflows/enterprise\-api\.yml":\s*"0d41ab216db01c92761c261f303ddc949b7eba43d4c7d323144028089e9ac99d",\s*$''',
+  '''^\s*"\.github/workflows/workspace\-api\.yml":\s*"abf3d41bfe718ecd343cd540ea27cd330c16294b192a7aa37f0435b895cc90b5",\s*$''',
+]
