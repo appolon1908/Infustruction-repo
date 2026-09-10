@@ -57,6 +57,38 @@
   },
   "recorded_at": "2026-09-10T13:27:34Z",
   "schema_version": "1.0",
+  "source_readiness_merges": [
+    {
+      "merge": "d914fd53a72ffeb57a63ca39ac761abc285e33bf",
+      "pr": 32,
+      "repository": "Codestra-Loki"
+    },
+    {
+      "merge": "de5e9d56a0607719facc4341cc95aa175528a69d",
+      "pr": 23,
+      "repository": "Codestra-Tempo"
+    },
+    {
+      "merge": "baef21fba00fe353dee1fa6f379924720655fec0",
+      "pr": 31,
+      "repository": "Codestra-Alloy"
+    },
+    {
+      "merge": "248b26635087f4bb2621e2150505ada141c2d4e7",
+      "pr": 51,
+      "repository": "Codestra-Telemetry"
+    },
+    {
+      "merge": "a4816e255b5ccac6ad475e52f01e601d9cffcdd2",
+      "pr": 59,
+      "repository": "Codestra-Prometheus"
+    },
+    {
+      "merge": "225c3995c9368aef1288faac1bf7005e0d0b8ac5",
+      "pr": 15,
+      "repository": "Codestra-Alertmanager"
+    }
+  ],
   "source_repairs": {
     "alloy": {
       "blocker": "Marked ready for review on unchanged tested head; PR body requires fresh independent approval before merge, none present.",
@@ -68,24 +100,24 @@
     "grafana_conflict": {
       "blocker": "GitHub rejected provider OAuth push because workflow scope is missing",
       "local_head": "853c5615eb2ded718196559e98b3734c9050be52",
-      "patch_status": "Review artifact only; it does not update or execute a workflow",
+      "patch_status": "Review-only complete workflow text; it does not update or execute a workflow.",
       "pr": "https://github.com/appolon1908-hue/Codestra-Grafana-/pull/25",
-      "review_patch": "20260910-grafana-workflow-resolution.patch",
       "state": "COMMITTED_LOCALLY_PUSH_REJECTED",
       "validation": "15 tests and both Compose renders pass",
-      "worktree": "/root/grafana-production-conflict-20260910"
+      "worktree": "/root/grafana-production-conflict-20260910",
+      "review_record": "20260910-grafana-workflow-resolution.md"
     },
     "loki_bundle": {
       "head": "5fe937dc6f11f2880bcd82e6cdd3222078272917",
+      "merge": "f15b898a16faa4dd25ca071e50f51792fa8bfc44",
       "pr": "https://github.com/appolon1908-hue/Codestra-Loki/pull/34",
       "remaining_promotion_findings": [
         "Unauthenticated native API shares the observability network",
         "Imported upstream source differs from locked official tree"
       ],
+      "resolved_review_thread": "PRRT_kwDOUIMVDs6fvAR0",
       "state": "MERGED",
-      "validation": "11 local tests plus both PR CI checks successful.",
-      "merge": "f15b898a16faa4dd25ca071e50f51792fa8bfc44",
-      "resolved_review_thread": "PRRT_kwDOUIMVDs6fvAR0"
+      "validation": "11 local tests plus both PR CI checks successful."
     },
     "loki_source_tree": {
       "imported_tree": "898f1848141e8bd0aa412c5369557832976b0d23",
@@ -101,6 +133,13 @@
       ],
       "official_tree": "66ec085431036028f464a79469599032e377d4b6",
       "state": "VERIFIED_DRIFT_NOT_REPAIRED"
+    },
+    "native_configuration_publisher": {
+      "affected": "Native Loki configuration-bundle publication",
+      "authority": "appolon1908-hue/Codestra-Telemetry/.github/workflows/reusable-release-config-bundle.yml",
+      "finding": "Cosign verification expects the caller workflow production branch identity instead of the reusable workflow immutable identity. This is separate from Infra PR120.",
+      "source": "9ee1c357432e34ff681189411f11ca1f1a0d87a7",
+      "state": "SIGNER_DEFECT_CONFIRMED_NOT_CHANGED"
     },
     "platform_monitoring": {
       "pr": 338,
@@ -118,29 +157,29 @@
       "merge": "234cae81d2b760044409e3965e28c00423a023ca",
       "pr": "https://github.com/appolon1908-hue/Codestra-Tempo/pull/27",
       "previous_failed_release": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34480768297",
-      "protected_source_run": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34482565345",
-      "state": "MERGED_RELEASE_REJECTED_BY_SCAN",
-      "validation": "10 tests and all 3 PR checks, including exact-head and merge-result image builds, passed",
-      "release_retry": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34483210673",
       "protected_checks": "Both post-merge workflows passed on 234cae81d2b760044409e3965e28c00423a023ca",
+      "protected_source_run": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34482565345",
       "release_result": {
         "conclusion": "failure",
-        "failed_step": "Build and scan a non-published exact candidate first",
-        "manifest_authority": "PASS",
-        "source_secret_scan": "PASS",
         "dependency": "google.golang.org/grpc",
-        "installed": "v1.82.1",
+        "failed_step": "Build and scan a non-published exact candidate first",
         "findings": [
           "CVE-2026-84304",
           "CVE-2026-84445"
         ],
-        "severity": "2 HIGH",
         "fixed_version_covering_both": "v1.83.2",
+        "installed": "v1.82.1",
+        "manifest_authority": "PASS",
         "registry_publication": "SKIPPED",
+        "runtime_deployed": false,
+        "severity": "2 HIGH",
         "signing": "SKIPPED",
-        "runtime_deployed": false
+        "source_secret_scan": "PASS"
       },
-      "upstream_pr_26": "PR26 still requires review and still imports gRPC v1.82.1; merging it alone does not remediate this scan."
+      "release_retry": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34483210673",
+      "state": "MERGED_RELEASE_REJECTED_BY_SCAN",
+      "upstream_pr_26": "PR26 still requires review and still imports gRPC v1.82.1; merging it alone does not remediate this scan.",
+      "validation": "10 tests and all 3 PR checks, including exact-head and merge-result image builds, passed"
     },
     "upstream_signing_identity": {
       "checks": "9 successful",
@@ -148,46 +187,7 @@
       "head": "fb3e3ec66a232b1470066df33bbcb2596ac40952",
       "pr": "https://github.com/appolon1908-hue/Infustruction-repo/pull/120",
       "state": "PUSHED_REVIEW_REQUIRED"
-    },
-    "native_configuration_publisher": {
-      "state": "SIGNER_DEFECT_CONFIRMED_NOT_CHANGED",
-      "authority": "appolon1908-hue/Codestra-Telemetry/.github/workflows/reusable-release-config-bundle.yml",
-      "source": "9ee1c357432e34ff681189411f11ca1f1a0d87a7",
-      "finding": "Cosign verification expects the caller workflow production branch identity instead of the reusable workflow immutable identity. This is separate from Infra PR120.",
-      "affected": "Native Loki configuration-bundle publication"
     }
   },
-  "updated_at": "2026-09-10T13:37:30Z",
-  "source_readiness_merges": [
-    {
-      "repository": "Codestra-Loki",
-      "pr": 32,
-      "merge": "d914fd53a72ffeb57a63ca39ac761abc285e33bf"
-    },
-    {
-      "repository": "Codestra-Tempo",
-      "pr": 23,
-      "merge": "de5e9d56a0607719facc4341cc95aa175528a69d"
-    },
-    {
-      "repository": "Codestra-Alloy",
-      "pr": 31,
-      "merge": "baef21fba00fe353dee1fa6f379924720655fec0"
-    },
-    {
-      "repository": "Codestra-Telemetry",
-      "pr": 51,
-      "merge": "248b26635087f4bb2621e2150505ada141c2d4e7"
-    },
-    {
-      "repository": "Codestra-Prometheus",
-      "pr": 59,
-      "merge": "a4816e255b5ccac6ad475e52f01e601d9cffcdd2"
-    },
-    {
-      "repository": "Codestra-Alertmanager",
-      "pr": 15,
-      "merge": "225c3995c9368aef1288faac1bf7005e0d0b8ac5"
-    }
-  ]
+  "updated_at": "2026-09-10T13:37:30Z"
 }

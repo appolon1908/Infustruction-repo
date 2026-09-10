@@ -15,7 +15,7 @@ The [application monitoring change](https://github.com/appolon1908-hue/codestra-
 | Grafana/Superset HTTPS | Both names resolve to 37.27.128.39; nginx default certificate mismatch identified | Matching service deployment, virtual hosts and certificates |
 | Keycloak/OpenBao | Desired identity contract identified; no live identity mutation | Existing admin inventory authentication returned HTTP 400; dedicated clients/flows/secrets and approved offline recovery-key custody remain unresolved |
 
-The Grafana workflow resolution is included as a **review-only patch** beside this report. It is not installed or executed, and the Grafana remote branch has not been updated.
+The Grafana workflow resolution is included as a **review-only workflow record** beside this report. It is not installed or executed, and the Grafana remote branch has not been updated.
 
 Loki's official locked upstream tree was fetched and compared. Seven entries are absent from the imported source, including three Logstash Ruby files. The exact entries and tree identities are in the JSON. This audit did **not** restore those entries or close that review finding.
 
