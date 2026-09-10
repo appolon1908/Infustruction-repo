@@ -1,5 +1,7 @@
 # Integrated monitoring commit and verification index
 
+**Live verification addendum (2026-09-10):** [Application and platform report](reports/observability/20260910-app-suite-verification.md) covers 24 repositories. The current monitoring candidate passes 28 PostgreSQL tests for 36 operations, while its public routes remain undeployed. A tested Telnexa website/provider routing repair is committed in PR 15. Full production integration is not certified. The snapshot below preserves the earlier commit/CI evidence.
+
 Snapshot: 2026-09-10T16:17:24.267Z
 
 **63 repositories have committed design/onboarding records and open pull requests.** The shared design includes 17 monitoring components, with Backstage, Sentry and Wazuh added. Repository records are source/onboarding contracts; runtime coverage remains unverified.

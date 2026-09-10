@@ -1,0 +1,668 @@
+{
+  "boundaries": {
+    "calls_made": false,
+    "customer_records_created": false,
+    "dns_changes": false,
+    "identity_changes": false,
+    "messages_sent": false,
+    "runtime_changes": false
+  },
+  "browser": {
+    "limitations": [
+      "Odoo returned Site Unavailable in this cloud browser while server-side HTTPS checks returned 200.",
+      "Phone navigation timed out in this cloud browser while server-side HTTPS checks returned 200.",
+      "Authenticated user sessions, provider deliveries, campaigns and cross-system write/replay tests were not performed on production."
+    ],
+    "rendered": [
+      "https://app.klyrow.com/",
+      "https://social.codestra.co/auth",
+      "https://ai.codestra.co/",
+      "https://sentry.codestra.co/auth/login/sentry/",
+      "https://wazuh.codestra.co/app/login?",
+      "https://api.telnexa.co/"
+    ]
+  },
+  "checked_at": "2026-09-10T17:14:42Z",
+  "decision": "NOT_FULLY_INTEGRATED",
+  "documented_health_checks": {
+    "at": "2026-09-10T17:04:48.707495+00:00",
+    "health_checks": [
+      {
+        "body": {
+          "status": "healthy"
+        },
+        "error": "",
+        "rc": 0,
+        "status": "200",
+        "url": "https://api.codestra.co/healthz"
+      },
+      {
+        "body": {
+          "status": "pass"
+        },
+        "error": "",
+        "rc": 0,
+        "status": "200",
+        "url": "https://crm.codestra.agency/web/health"
+      },
+      {
+        "body": {
+          "status": "ok"
+        },
+        "error": "",
+        "rc": 0,
+        "status": "200",
+        "url": "https://n8n.codestra.agency/healthz/readiness"
+      },
+      {
+        "body_type": "html_or_empty",
+        "error": "",
+        "rc": 0,
+        "status": "200",
+        "url": "https://phone.codestra.agency/"
+      },
+      {
+        "body": {
+          "message": "no Route matched with those values"
+        },
+        "error": "",
+        "rc": 0,
+        "status": "404",
+        "url": "https://api.codestra.co/v1/platform/repositories"
+      },
+      {
+        "body": {
+          "status": "ready"
+        },
+        "error": "",
+        "rc": 0,
+        "status": "200",
+        "url": "https://api.klyrow.com/readyz"
+      },
+      {
+        "body": {
+          "status": "ready"
+        },
+        "error": "",
+        "rc": 0,
+        "status": "200",
+        "url": "https://api.telnexa.co/ready"
+      },
+      {
+        "body": {
+          "authorization_endpoint": "https://auth.codestra.co/realms/codestra/protocol/openid-connect/auth",
+          "issuer": "https://auth.codestra.co/realms/codestra",
+          "jwks_uri": "https://auth.codestra.co/realms/codestra/protocol/openid-connect/certs",
+          "token_endpoint": "https://auth.codestra.co/realms/codestra/protocol/openid-connect/token"
+        },
+        "error": "",
+        "rc": 0,
+        "status": "200",
+        "url": "https://auth.codestra.co/realms/codestra/.well-known/openid-configuration"
+      }
+    ]
+  },
+  "native_monitoring": [
+    {
+      "status": 200,
+      "url": "http://10.40.0.4:17007/healthcheck"
+    },
+    {
+      "status": 401,
+      "url": "http://10.40.0.4:17007/api/catalog/entities"
+    },
+    {
+      "status": 200,
+      "url": "http://10.40.0.4:19000/_health/"
+    },
+    {
+      "catalog_file": "platform.yaml",
+      "entity_names": [
+        "appolon-platform",
+        "codestra-production",
+        "backstage",
+        "middleware",
+        "odoo",
+        "sentry",
+        "wazuh"
+      ],
+      "kinds": [
+        "Group",
+        "System",
+        "Component",
+        "Component",
+        "Component",
+        "Component",
+        "Component"
+      ]
+    },
+    {
+      "backstage_config": {
+        "guest_outside_development": true,
+        "guest_provider_present": true,
+        "oidc_provider_present": false
+      }
+    },
+    {
+      "active": 4,
+      "disconnected": 0,
+      "wazuh_agents": 4
+    },
+    {
+      "manager_local_entry": true,
+      "remote_agents": 3,
+      "remote_active": 3,
+      "remote_disconnected": 0
+    }
+  ],
+  "private_dependency_checks": [
+    {
+      "check": "sms-to-telnexa",
+      "error": "",
+      "output": [
+        {
+          "body": {
+            "status": "ok"
+          },
+          "path": "/health",
+          "status": 200
+        },
+        {
+          "body": {
+            "status": "ok"
+          },
+          "path": "/ready",
+          "status": 200
+        }
+      ],
+      "rc": 0
+    },
+    {
+      "check": "middleware-dependencies",
+      "error": "",
+      "output": [
+        {
+          "body": {
+            "status": "ready"
+          },
+          "check": "middleware-readiness",
+          "status": 200
+        },
+        {
+          "body": {
+            "status": "ok"
+          },
+          "check": "n8n-runtime",
+          "status": 200
+        },
+        {
+          "body": {},
+          "check": "keycloak-jwks",
+          "key_count": 2,
+          "status": 200
+        }
+      ],
+      "rc": 0
+    }
+  ],
+  "production_ready": false,
+  "prometheus": {
+    "healthy_scrape_targets": 38,
+    "probe_results": [
+      {
+        "instance": "https://crm.codestra.agency/web/health",
+        "job": "blackbox_tls",
+        "value": "1"
+      },
+      {
+        "instance": "https://crm.codestra.agency/web/health",
+        "job": "blackbox_https",
+        "value": "1"
+      },
+      {
+        "instance": "https://api.codestra.co/healthz",
+        "job": "blackbox_https",
+        "value": "1"
+      },
+      {
+        "instance": "https://n8n-staging.codestra.agency/healthz",
+        "job": "blackbox_tls",
+        "value": "1"
+      },
+      {
+        "instance": "https://api.codestra.co/healthz",
+        "job": "blackbox_tls",
+        "value": "1"
+      },
+      {
+        "instance": "https://phone.codestra.agency/",
+        "job": "blackbox_tls",
+        "value": "1"
+      },
+      {
+        "instance": "https://phone.codestra.agency/",
+        "job": "blackbox_https",
+        "value": "1"
+      },
+      {
+        "instance": "https://n8n-staging.codestra.agency/healthz",
+        "job": "blackbox_https",
+        "value": "1"
+      },
+      {
+        "instance": "http://codestra-mail-api:8098/healthz/ready",
+        "job": "blackbox_application_readiness",
+        "value": "1"
+      },
+      {
+        "instance": "http://portal:8080/readyz",
+        "job": "blackbox_application_readiness",
+        "value": "1"
+      },
+      {
+        "instance": "http://codestra-middleware-1:8095/readyz",
+        "job": "blackbox_platform_services",
+        "value": "1"
+      },
+      {
+        "instance": "http://codestra-odoo-1:8069/web/health",
+        "job": "blackbox_platform_services",
+        "value": "1"
+      },
+      {
+        "instance": "http://middleware-vicidial-adapter:8095/readyz",
+        "job": "blackbox_platform_services",
+        "value": "1"
+      },
+      {
+        "instance": "http://codestra-n8n-1:5678/healthz/readiness",
+        "job": "blackbox_platform_services",
+        "value": "1"
+      }
+    ],
+    "scrape_targets": 38
+  },
+  "public_checks": {
+    "checked_at": "2026-09-10T17:02:59.062132+00:00",
+    "results": [
+      {
+        "curl_exit": 0,
+        "duration": 0.115346,
+        "error": "",
+        "redirect": "https://app.klyrow.com/",
+        "remote_ip": "37.27.128.39",
+        "status": 308,
+        "tls_verified": true,
+        "url": "https://klyrow.com/"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.157774,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "37.27.128.39",
+        "status": 200,
+        "tls_verified": true,
+        "url": "https://app.klyrow.com/"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.134748,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "37.27.128.39",
+        "status": 200,
+        "tls_verified": true,
+        "url": "https://api.klyrow.com/healthz"
+      },
+      {
+        "curl_exit": 60,
+        "duration": 0.115548,
+        "error": "curl: (60) SSL: no alternative certificate subject name matches target host name 'telnexa.co'\nMore details here: https://curl.se/docs/sslcerts.html\n\ncurl failed to verify the legitimacy of the server and therefore could ",
+        "redirect": null,
+        "remote_ip": "37.27.128.39",
+        "status": 0,
+        "tls_verified": false,
+        "url": "https://telnexa.co/"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.189632,
+        "error": "",
+        "redirect": "https://api.telnexa.co/",
+        "remote_ip": "37.27.128.39",
+        "status": 308,
+        "tls_verified": true,
+        "url": "https://sms.telnexa.co/"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.221066,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "37.27.128.39",
+        "status": 200,
+        "tls_verified": true,
+        "url": "https://api.telnexa.co/health"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.352414,
+        "error": "",
+        "redirect": "https://social.codestra.co/auth",
+        "remote_ip": "49.12.145.107",
+        "status": 307,
+        "tls_verified": true,
+        "url": "https://social.codestra.co/"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.238811,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "49.12.145.107",
+        "status": 200,
+        "tls_verified": true,
+        "url": "https://ai.codestra.co/"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.060528,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "65.109.65.169",
+        "status": 200,
+        "tls_verified": true,
+        "url": "https://auth.codestra.co/realms/codestra/.well-known/openid-configuration"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.102715,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "65.109.65.169",
+        "status": 404,
+        "tls_verified": true,
+        "url": "https://api.codestra.co/health"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.16198,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "65.109.65.169",
+        "status": 200,
+        "tls_verified": true,
+        "url": "https://crm.codestra.agency/web/login"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.351385,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "65.109.65.169",
+        "status": 200,
+        "tls_verified": true,
+        "url": "https://n8n.codestra.agency/healthz"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.286101,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "65.109.65.169",
+        "status": 404,
+        "tls_verified": true,
+        "url": "https://n8n.codestra.agency/"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.179365,
+        "error": "",
+        "redirect": null,
+        "remote_ip": "37.27.128.39",
+        "status": 401,
+        "tls_verified": true,
+        "url": "https://backstage.codestra.co/"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.184169,
+        "error": "",
+        "redirect": "https://sentry.codestra.co/auth/login/",
+        "remote_ip": "37.27.128.39",
+        "status": 302,
+        "tls_verified": true,
+        "url": "https://sentry.codestra.co/"
+      },
+      {
+        "curl_exit": 0,
+        "duration": 0.250384,
+        "error": "",
+        "redirect": "https://wazuh.codestra.co/app/login",
+        "remote_ip": "37.27.128.39",
+        "status": 302,
+        "tls_verified": true,
+        "url": "https://wazuh.codestra.co/"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "scope": {
+    "design_records": 63,
+    "supporting_repositories": 5,
+    "user_named_repositories": 19
+  },
+  "source_tests": {
+    "monitoring": {
+      "commit": "de3c5239fa1ce9e4fa016b302ccb9063b23f828c",
+      "live_routes_available": false,
+      "operations": 36,
+      "postgresql_tests_passed": 28,
+      "run_url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34506572911"
+    },
+    "telnexa": {
+      "commit": "0462ab8e444078cab6f4433c5bc3b3209d43bdb2",
+      "final_ci_status": "success",
+      "local_tests_passed": 24,
+      "provider_probe_live_pass": true,
+      "pull_request": "https://github.com/appolon1908-hue/Telnexa-web/pull/15",
+      "workflow_runs": [
+        {
+          "name": "Operations CI",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/appolon1908-hue/Telnexa-web/actions/runs/34507142139",
+          "head_sha": "0462ab8e444078cab6f4433c5bc3b3209d43bdb2"
+        },
+        {
+          "name": "Application CI",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/appolon1908-hue/Telnexa-web/actions/runs/34507142070",
+          "head_sha": "0462ab8e444078cab6f4433c5bc3b3209d43bdb2"
+        }
+      ]
+    }
+  },
+  "telnexa_handoff": [
+    {
+      "at": "2026-09-10T17:14:39.929042+00:00",
+      "error": "curl: (6) Could not resolve host: app.telnexa.co\n",
+      "redirect": null,
+      "status": 0,
+      "tls_verified": false,
+      "url": "https://app.telnexa.co/"
+    },
+    {
+      "at": "2026-09-10T17:14:40.394500+00:00",
+      "error": "",
+      "redirect": null,
+      "status": 200,
+      "tls_verified": true,
+      "url": "https://api.telnexa.co/dashboard"
+    },
+    {
+      "at": "2026-09-10T17:14:40.858887+00:00",
+      "error": "",
+      "redirect": null,
+      "status": 200,
+      "tls_verified": true,
+      "url": "https://api.telnexa.co/developers"
+    },
+    {
+      "at": "2026-09-10T17:14:41.543560+00:00",
+      "error": "curl: (35) error:0A000458:SSL routines::tlsv1 unrecognized name\n",
+      "redirect": null,
+      "status": 0,
+      "tls_verified": false,
+      "url": "https://www.telnexa.co/"
+    }
+  ],
+  "repository_matrix": [
+    {
+      "repository": "klyrow.com",
+      "responsibility": "Public application + email API",
+      "evidence": "Application login rendered; API health and readiness returned 200 with valid TLS. Provider delivery was not exercised.",
+      "result": "Runtime reachable; full email/event synchronization unverified"
+    },
+    {
+      "repository": "klyrow-Website-",
+      "responsibility": "Public marketing and onboarding",
+      "evidence": "Source explicitly says production deployment is inactive. Apex redirects to app.klyrow.com; no separate marketing workload was matched.",
+      "result": "Website rollout incomplete"
+    },
+    {
+      "repository": "telnexa",
+      "responsibility": "SMS provider + billing",
+      "evidence": "Public health/readiness returned 200. Core SMS service reached private provider health/readiness using its installed mTLS certificate.",
+      "result": "Connectivity verified; delivery disabled"
+    },
+    {
+      "repository": "Telnexa-web",
+      "responsibility": "Public marketing and onboarding",
+      "evidence": "Apex TLS hostname mismatch; www TLS failure; app.telnexa.co does not resolve. PR 15 preserves provider routing and fixes the account handoff.",
+      "result": "Source repaired; deployment blocked"
+    },
+    {
+      "repository": "Vicidialer-Codestra",
+      "responsibility": "Voice/contact-center runtime",
+      "evidence": "Asterisk, MariaDB and restricted adapter units are active. Core adapter readiness probe passes. Asterisk health-monitor unit was observed in failed state; remote runtime certification and call reconciliation remain separate.",
+      "result": "Partial runtime evidence; calls untested"
+    },
+    {
+      "repository": "social.codestra.co",
+      "responsibility": "Social application",
+      "evidence": "HTTPS redirects to rendered account page. Postiz container is healthy. Publishing, approval synchronization and central SSO were not exercised.",
+      "result": "Runtime reachable; business integration unverified"
+    },
+    {
+      "repository": "Websocket-",
+      "responsibility": "Authorized call-state/screen-pop events",
+      "evidence": "Live gateway container is healthy and references the central issuer and exact staff origins. No authenticated event delivery/reconnect test was run.",
+      "result": "Runtime present; event integration unverified"
+    },
+    {
+      "repository": "Odoo",
+      "responsibility": "CRM/ERP",
+      "evidence": "Public health and login HTTP checks return 200; production container is healthy. Cloud browser could not render its login. Middleware identity lookup is configured against staging Odoo.",
+      "result": "Production identity binding needs reconciliation"
+    },
+    {
+      "repository": "Middleware-",
+      "responsibility": "Cross-system command/event authority",
+      "evidence": "Live readiness 200; n8n health and Keycloak JWKS accessible from the running container. New monitoring route is absent at Kong (404).",
+      "result": "Existing runtime reachable; 36-operation extension undeployed"
+    },
+    {
+      "repository": "N8N",
+      "responsibility": "Workflow orchestration",
+      "evidence": "Production health/readiness 200; Middleware can reach it. Public editor 404 matches its private staff access policy. Delivery and internal notification switches remain false.",
+      "result": "Private connectivity verified; workflow activation unverified"
+    },
+    {
+      "repository": "codestra-foundation",
+      "responsibility": "Shared tenants, profiles, consent, billing",
+      "evidence": "Source implements shared functions, with mutations/delivery disabled by default. No running service was matched to this repository in the inspected inventories.",
+      "result": "Source implemented; runtime binding unverified"
+    },
+    {
+      "repository": "codestra-provisioning-service",
+      "responsibility": "Account/access provisioning",
+      "evidence": "A production-named container is healthy, while source README describes staging-only scope. A container name alone is not release certification.",
+      "result": "Runtime present; source/environment reconciliation needed"
+    },
+    {
+      "repository": "SDK-repository",
+      "responsibility": "Contracts, clients and connector helpers",
+      "evidence": "Source authority for consumers; not a standalone service. Consumer versions and runtime use were not exhaustively certified.",
+      "result": "Contract repository; consumer alignment required"
+    },
+    {
+      "repository": "Codestra-Marketing-",
+      "responsibility": "Marketing control-plane design",
+      "evidence": "README states architecture/bootstrap only and unverified off-host runtime authority.",
+      "result": "Design phase; no verified runtime integration"
+    },
+    {
+      "repository": "Codestra-Communication-CC",
+      "responsibility": "Communications control-plane design",
+      "evidence": "README states architecture/bootstrap only; live delivery disabled.",
+      "result": "Design phase; no verified runtime integration"
+    },
+    {
+      "repository": "Codesrea-Social-",
+      "responsibility": "Provider-neutral social control-plane design",
+      "evidence": "README states architecture foundation only; application authority remains social.codestra.co.",
+      "result": "Design phase; consumer integration unverified"
+    },
+    {
+      "repository": "Codestra-AI",
+      "responsibility": "Shared AI control-plane design",
+      "evidence": "README states architecture/bootstrap only. A separate live AI console renders, but repository-to-runtime authority was not certified.",
+      "result": "Design phase; live console source alignment unverified"
+    },
+    {
+      "repository": "communication-platform-",
+      "responsibility": "Channel contracts and release coordination",
+      "evidence": "Architecture/coordination authority with named runtime owners; intentionally not a second provider implementation.",
+      "result": "Contract repository; release coordination required"
+    },
+    {
+      "repository": "Keycloak",
+      "responsibility": "Central identity",
+      "evidence": "Canonical discovery and issuer validated over HTTPS; running Middleware reads two JWKS keys. Authenticated sessions and all service grants were not certified.",
+      "result": "Issuer/JWKS connectivity verified; full SSO unverified"
+    },
+    {
+      "repository": "Kong",
+      "responsibility": "API routing and policy",
+      "evidence": "Canonical /healthz returns 200. /health is not its documented health route. /v1/platform/repositories has no route.",
+      "result": "Existing gateway reachable; monitoring route rollout pending"
+    },
+    {
+      "repository": "Caddy",
+      "responsibility": "Core/web TLS edge",
+      "evidence": "Core and web edges route the observed services. Provider host uses its separate Nginx edge. Website/provider ownership conflict repaired in Telnexa source.",
+      "result": "Partial edge coverage verified"
+    },
+    {
+      "repository": "Backstage",
+      "responsibility": "Catalog and ownership",
+      "evidence": "Private healthcheck 200; public access and catalog API require authentication (401). Mounted catalog has five components, a group and a system. Guest provider is configured behind the edge; OIDC provider absent.",
+      "result": "Running; full catalog and Keycloak adoption pending"
+    },
+    {
+      "repository": "Sentry",
+      "responsibility": "Application errors",
+      "evidence": "Private health 200 and public login rendered over valid TLS. Application SDK event ingestion was not exercised.",
+      "result": "Running; per-app ingestion unverified"
+    },
+    {
+      "repository": "Wazuh",
+      "responsibility": "Host security telemetry",
+      "evidence": "Public login rendered over valid TLS. Manager lists four active agent entries; count includes any manager-local entry. Dashboard/API-to-monitoring integration was not exercised.",
+      "result": "Running; agent presence verified, full integration pending"
+    }
+  ]
+}
