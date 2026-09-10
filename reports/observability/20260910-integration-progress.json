@@ -1,0 +1,193 @@
+{
+  "core": {
+    "application_probe_scope": {
+      "middleware": "runtime readiness",
+      "n8n": "database readiness",
+      "odoo": "HTTP liveness only",
+      "vicidial_adapter": "core adapter worker readiness; remote Asterisk/call flow not certified"
+    },
+    "application_probe_success": {
+      "middleware": 1,
+      "n8n": 1,
+      "odoo": 1,
+      "vicidial_adapter": 1
+    },
+    "deployment": {
+      "backup_paths": [
+        "/var/backups/codestra/blackbox-network/20260910T124928Z",
+        "/var/backups/codestra/application-monitoring/20260910T130411Z"
+      ],
+      "blackbox_networks": [
+        "codestra-monitoring_monitoring",
+        "codestra_backend",
+        "codestra_edge"
+      ],
+      "blackbox_recreated": true,
+      "prometheus_image_changed": false,
+      "prometheus_restarted": false
+    },
+    "healthy_targets": 38,
+    "host": "65.109.65.169",
+    "merged_source": "8ee5fd1b62a18cadfa6bfe917c21a679aa798b1b",
+    "pull_request": "https://github.com/appolon1908-hue/codestra-production-platform/pull/338",
+    "total_targets": 38,
+    "validation": "7 Prometheus rule scenarios pass; all 5 PR checks passed; live reload HTTP 200; 5 new alert rules healthy/inactive"
+  },
+  "limitations": [
+    "Health probes do not certify business transactions, remote telephony, user SSO or log/trace delivery.",
+    "Provider certificates, Grafana/Superset Keycloak login, and cross-application Loki/Tempo/collector delivery remain incomplete.",
+    "No business delivery switches, calls, workflow execution, mail or SMS were changed."
+  ],
+  "overall_status": "PARTIALLY_DEPLOYED_PROVIDER_NOT_COMPLETE",
+  "provider": {
+    "alloy_deployed": false,
+    "existing_grafana": "Klyrow Grafana is a separate running deployment",
+    "host": "37.27.128.39",
+    "https": {
+      "grafana": "DNS points to provider; no matching nginx virtual host/certificate; default wrong certificate",
+      "superset": "DNS points to provider; no matching nginx virtual host/certificate; default wrong certificate"
+    },
+    "keycloak": "Existing permanent-human admin credential inventory attempt returned HTTP400; no identity mutation. Dedicated observability client/flow/secret rollout remains incomplete.",
+    "loki_deployed": false,
+    "openbao": "Uninitialized/sealed; approved offline recovery-key custody destination has not been specified",
+    "otel_collector_deployed": false,
+    "runtime_changed": false,
+    "superset_deployed": false,
+    "tempo_deployed": false
+  },
+  "recorded_at": "2026-09-10T13:27:34Z",
+  "schema_version": "1.0",
+  "source_readiness_merges": [
+    {
+      "merge": "d914fd53a72ffeb57a63ca39ac761abc285e33bf",
+      "pr": 32,
+      "repository": "Codestra-Loki"
+    },
+    {
+      "merge": "de5e9d56a0607719facc4341cc95aa175528a69d",
+      "pr": 23,
+      "repository": "Codestra-Tempo"
+    },
+    {
+      "merge": "baef21fba00fe353dee1fa6f379924720655fec0",
+      "pr": 31,
+      "repository": "Codestra-Alloy"
+    },
+    {
+      "merge": "248b26635087f4bb2621e2150505ada141c2d4e7",
+      "pr": 51,
+      "repository": "Codestra-Telemetry"
+    },
+    {
+      "merge": "a4816e255b5ccac6ad475e52f01e601d9cffcdd2",
+      "pr": 59,
+      "repository": "Codestra-Prometheus"
+    },
+    {
+      "merge": "225c3995c9368aef1288faac1bf7005e0d0b8ac5",
+      "pr": 15,
+      "repository": "Codestra-Alertmanager"
+    }
+  ],
+  "source_repairs": {
+    "alloy": {
+      "blocker": "Marked ready for review on unchanged tested head; PR body requires fresh independent approval before merge, none present.",
+      "checks": "7 successful; no unresolved review threads",
+      "head": "f4c4e6b19e6274578a97e1db0ca85e32339a2062",
+      "pr": "https://github.com/appolon1908-hue/Codestra-Alloy/pull/30",
+      "state": "READY_FOR_INDEPENDENT_REVIEW"
+    },
+    "grafana_conflict": {
+      "blocker": "GitHub rejected provider OAuth push because workflow scope is missing",
+      "local_head": "853c5615eb2ded718196559e98b3734c9050be52",
+      "patch_status": "Review-only complete workflow text; it does not update or execute a workflow.",
+      "pr": "https://github.com/appolon1908-hue/Codestra-Grafana-/pull/25",
+      "state": "COMMITTED_LOCALLY_PUSH_REJECTED",
+      "validation": "15 tests and both Compose renders pass",
+      "worktree": "/root/grafana-production-conflict-20260910",
+      "review_record": "20260910-grafana-workflow-resolution.md"
+    },
+    "loki_bundle": {
+      "head": "5fe937dc6f11f2880bcd82e6cdd3222078272917",
+      "merge": "f15b898a16faa4dd25ca071e50f51792fa8bfc44",
+      "pr": "https://github.com/appolon1908-hue/Codestra-Loki/pull/34",
+      "remaining_promotion_findings": [
+        "Unauthenticated native API shares the observability network",
+        "Imported upstream source differs from locked official tree"
+      ],
+      "resolved_review_thread": "PRRT_kwDOUIMVDs6fvAR0",
+      "state": "MERGED",
+      "validation": "11 local tests plus both PR CI checks successful."
+    },
+    "loki_source_tree": {
+      "imported_tree": "898f1848141e8bd0aa412c5369557832976b0d23",
+      "locked_commit": "d8a4d755695929a19ce53ab730a8776ddae09ea2",
+      "missing_entries": [
+        ".vscode/launch.json",
+        "clients/cmd/logstash/lib/logstash/outputs/loki.rb",
+        "clients/cmd/logstash/lib/logstash/outputs/loki/batch.rb",
+        "clients/cmd/logstash/lib/logstash/outputs/loki/entry.rb",
+        "operator/website/themes/doks",
+        "vendor/go.yaml.in/yaml/v4/CONTRIBUTING.md",
+        "vendor/go.yaml.in/yaml/v4/README.md"
+      ],
+      "official_tree": "66ec085431036028f464a79469599032e377d4b6",
+      "state": "VERIFIED_DRIFT_NOT_REPAIRED"
+    },
+    "native_configuration_publisher": {
+      "affected": "Native Loki configuration-bundle publication",
+      "authority": "appolon1908-hue/Codestra-Telemetry/.github/workflows/reusable-release-config-bundle.yml",
+      "finding": "Cosign verification expects the caller workflow production branch identity instead of the reusable workflow immutable identity. This is separate from Infra PR120.",
+      "source": "9ee1c357432e34ff681189411f11ca1f1a0d87a7",
+      "state": "SIGNER_DEFECT_CONFIRMED_NOT_CHANGED"
+    },
+    "platform_monitoring": {
+      "pr": 338,
+      "state": "MERGED_AND_DEPLOYED"
+    },
+    "superset": {
+      "findings": "HIGH/CRITICAL operating-system findings, including no-fix dispositions, plus 33 HIGH Python findings",
+      "gate_waived": false,
+      "run": "https://github.com/appolon1908-hue/Superset/actions/runs/33823779682",
+      "source": "4be372094eee08c814948c35dc30adfaf40f42b0",
+      "state": "IMAGE_RELEASE_REJECTED_BY_SCAN"
+    },
+    "tempo_manifest": {
+      "head_before_merge": "9cd47dda14c5b5622274d92c012f8304b81e741d",
+      "merge": "234cae81d2b760044409e3965e28c00423a023ca",
+      "pr": "https://github.com/appolon1908-hue/Codestra-Tempo/pull/27",
+      "previous_failed_release": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34480768297",
+      "protected_checks": "Both post-merge workflows passed on 234cae81d2b760044409e3965e28c00423a023ca",
+      "protected_source_run": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34482565345",
+      "release_result": {
+        "conclusion": "failure",
+        "dependency": "google.golang.org/grpc",
+        "failed_step": "Build and scan a non-published exact candidate first",
+        "findings": [
+          "CVE-2026-84304",
+          "CVE-2026-84445"
+        ],
+        "fixed_version_covering_both": "v1.83.2",
+        "installed": "v1.82.1",
+        "manifest_authority": "PASS",
+        "registry_publication": "SKIPPED",
+        "runtime_deployed": false,
+        "severity": "2 HIGH",
+        "signing": "SKIPPED",
+        "source_secret_scan": "PASS"
+      },
+      "release_retry": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34483210673",
+      "state": "MERGED_RELEASE_REJECTED_BY_SCAN",
+      "upstream_pr_26": "PR26 still requires review and still imports gRPC v1.82.1; merging it alone does not remediate this scan.",
+      "validation": "10 tests and all 3 PR checks, including exact-head and merge-result image builds, passed"
+    },
+    "upstream_signing_identity": {
+      "checks": "9 successful",
+      "consumer_followup": "Repin only the accepted commit and grant caller job actions:read.",
+      "head": "fb3e3ec66a232b1470066df33bbcb2596ac40952",
+      "pr": "https://github.com/appolon1908-hue/Infustruction-repo/pull/120",
+      "state": "PUSHED_REVIEW_REQUIRED"
+    }
+  },
+  "updated_at": "2026-09-10T13:37:30Z"
+}
