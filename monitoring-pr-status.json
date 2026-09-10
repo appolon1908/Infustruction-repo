@@ -1,0 +1,2013 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-10T16:17:24.267Z",
+  "repository_count": 63,
+  "monitoring_component_count": 17,
+  "operation_count": 36,
+  "api_tests": {
+    "commit": "cedaa23b89f84f365ae6789413411c3f01516952",
+    "database": "PostgreSQL",
+    "passed": 23,
+    "run_url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827916"
+  },
+  "deployment_verified": false,
+  "records": [
+    {
+      "branch": "feat/integrated-monitoring-36-operations",
+      "ci": {
+        "observed_at": "2026-09-10T16:16:15.895Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500828117,
+            "name": "Historical Stage 6 staging intake observability source contract",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500828117"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500828021,
+            "name": "Python quality baseline",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500828021"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500827905,
+            "name": "beyvra-email-authority",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827905"
+          },
+          {
+            "conclusion": null,
+            "id": 34500828006,
+            "name": "Required exact-SHA CI",
+            "status": "in_progress",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500828006"
+          },
+          {
+            "conclusion": null,
+            "id": 34500827885,
+            "name": "Release component matrix CI",
+            "status": "in_progress",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827885"
+          },
+          {
+            "conclusion": null,
+            "id": 34500828008,
+            "name": "source-lock-candidate-build",
+            "status": "in_progress",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500828008"
+          },
+          {
+            "conclusion": null,
+            "id": 34500827705,
+            "name": "Odoo calling endpoint contract",
+            "status": "in_progress",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827705"
+          },
+          {
+            "conclusion": null,
+            "id": 34500827726,
+            "name": "Middleware CI",
+            "status": "in_progress",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827726"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500827801,
+            "name": "Production integration lock",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827801"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500827930,
+            "name": "Marketing Stage 5 Certification",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827930"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500827965,
+            "name": "Production orchestrator contract",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827965"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500827846,
+            "name": "Connector SDK v1 validation",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827846"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500827765,
+            "name": "Production route contract",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827765"
+          },
+          {
+            "conclusion": "failure",
+            "id": 34500827809,
+            "name": "Approved order orchestration",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827809"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500827721,
+            "name": "CodeQL Advanced",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827721"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500827916,
+            "name": "Integrated monitoring API",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500827916"
+          },
+          {
+            "conclusion": "failure",
+            "id": 34500824519,
+            "name": "Trusted production orchestrator evidence",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34500824519"
+          }
+        ],
+        "state": "needs-attention",
+        "tested_sha": "cedaa23b89f84f365ae6789413411c3f01516952"
+      },
+      "name": "Middleware-",
+      "number": 226,
+      "pr": "https://github.com/appolon1908-hue/Middleware-/pull/226",
+      "repository": "appolon1908-hue/Middleware-",
+      "sha": "cedaa23b89f84f365ae6789413411c3f01516952",
+      "note": "The API-specific PostgreSQL job passes. Full CI requires separate migration-head/history approval; the protected trust launcher also rejects an unchanged baseline workflow hash."
+    },
+    {
+      "base": "main",
+      "base_sha": "7575806ace5f3afafd687678a1568b42b6988c34",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.039Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499760402,
+            "name": "Repository Name Authority",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/34499760402"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499760362,
+            "name": "Production orchestrator contract",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/34499760362"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499760249,
+            "name": "source-authority-matrix",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/34499760249"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499760361,
+            "name": "calling-contract-pin",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Infustruction-repo/actions/runs/34499760361"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "66ce3cb997d0d13d0e212db64b1e05d9e94c11ca"
+      },
+      "name": "Infustruction-repo",
+      "number": 122,
+      "pr": "https://github.com/appolon1908-hue/Infustruction-repo/pull/122",
+      "repository": "appolon1908-hue/Infustruction-repo",
+      "sha": "66ce3cb997d0d13d0e212db64b1e05d9e94c11ca",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "de9e39aa5fa572c8a3b32b2bd6e35aba6a537b7a",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.026Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34498948087,
+            "name": "validate",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Backstage/actions/runs/34498948087"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "1bcb8647a6e9bc275045d432a53e87a4a4b034a6"
+      },
+      "name": "Backstage",
+      "number": 1,
+      "pr": "https://github.com/appolon1908-hue/Backstage/pull/1",
+      "repository": "appolon1908-hue/Backstage",
+      "sha": "1bcb8647a6e9bc275045d432a53e87a4a4b034a6",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "780cb1c87e4bfbdaa361222424a33fb408eac5b1",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:08.970Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34498954648,
+            "name": "validate",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Sentry/actions/runs/34498954648"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "83eeabf4e1ba1e5e2ee4d9d5510f8437d39567b3"
+      },
+      "name": "Sentry",
+      "number": 1,
+      "pr": "https://github.com/appolon1908-hue/Sentry/pull/1",
+      "repository": "appolon1908-hue/Sentry",
+      "sha": "83eeabf4e1ba1e5e2ee4d9d5510f8437d39567b3",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "66bc885514efa0b15ff61943f8286eb60a5325dd",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:08.984Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34498959252,
+            "name": "validate",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Wazuh/actions/runs/34498959252"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "af13c8307e777eae3164b55a2278972f5e3d7e79"
+      },
+      "name": "Wazuh",
+      "number": 1,
+      "pr": "https://github.com/appolon1908-hue/Wazuh/pull/1",
+      "repository": "appolon1908-hue/Wazuh",
+      "sha": "af13c8307e777eae3164b55a2278972f5e3d7e79",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "b15e489210bf9e0d7cd59fda7f936521caddb339",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:08.891Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499164013,
+            "name": "Repository Name Migration Authority",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Frontend-Resturant-/actions/runs/34499164013"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499164038,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Frontend-Resturant-/actions/runs/34499164038"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499161080,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Frontend-Resturant-/actions/runs/34499161080"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "7282fc2e0f86591d87329ae15d1c93e0a9bf095a"
+      },
+      "name": "Frontend-Resturant-",
+      "number": 13,
+      "pr": "https://github.com/appolon1908-hue/Frontend-Resturant-/pull/13",
+      "repository": "appolon1908-hue/Frontend-Resturant-",
+      "sha": "7282fc2e0f86591d87329ae15d1c93e0a9bf095a",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "release/production-activation",
+      "base_sha": "83748f14b5c355e9aa45480674df88d5c9cc3dfc",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.019Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499171321,
+            "name": "Gitleaks PR diagnostics",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-production-platform/actions/runs/34499171321"
+          },
+          {
+            "conclusion": "failure",
+            "id": 34499171242,
+            "name": "Production merge gate",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-production-platform/actions/runs/34499171242"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499171426,
+            "name": "Platform source validation",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-production-platform/actions/runs/34499171426"
+          }
+        ],
+        "state": "needs-attention",
+        "tested_sha": "0a9f15828862bc1aaf25b80d4e95508b32af8e5d"
+      },
+      "name": "codestra-production-platform",
+      "number": 340,
+      "pr": "https://github.com/appolon1908-hue/codestra-production-platform/pull/340",
+      "repository": "appolon1908-hue/codestra-production-platform",
+      "sha": "0a9f15828862bc1aaf25b80d4e95508b32af8e5d",
+      "note": "Production merge gate requires exact-candidate and current-base CI."
+    },
+    {
+      "base": "main",
+      "base_sha": "46802fc58c442e469d2c097f7eafefb2e0cec22c",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:08.968Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499177597,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestraxxxx/actions/runs/34499177597"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499173277,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestraxxxx/actions/runs/34499173277"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "ab5d7bd615560c9db6ec42932b3d78de3011f70a"
+      },
+      "name": "Codestraxxxx",
+      "number": 2,
+      "pr": "https://github.com/appolon1908-hue/Codestraxxxx/pull/2",
+      "repository": "appolon1908-hue/Codestraxxxx",
+      "sha": "ab5d7bd615560c9db6ec42932b3d78de3011f70a",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "b3ecae9c535c2c6542aaa61b3c1cfa5d218d037b",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:08.889Z",
+        "runs": [
+          {
+            "conclusion": "failure",
+            "id": 34499185179,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra/actions/runs/34499185179"
+          }
+        ],
+        "state": "needs-attention",
+        "tested_sha": "8d5bcd6d3a8cc6729d2eda9fe683b6c7e4ecc69d"
+      },
+      "name": "codestra",
+      "number": 28,
+      "pr": "https://github.com/appolon1908-hue/codestra/pull/28",
+      "repository": "appolon1908-hue/codestra",
+      "sha": "8d5bcd6d3a8cc6729d2eda9fe683b6c7e4ecc69d",
+      "note": "Trivy scan step failed; this PR changes only the two onboarding documents."
+    },
+    {
+      "base": "main",
+      "base_sha": "d1fe36fb15c4534fee48aa117190311f9107a3a3",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.095Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499193399,
+            "name": "Production orchestrator contract",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/beyvra-backend/actions/runs/34499193399"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499193254,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/beyvra-backend/actions/runs/34499193254"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "e640ab06f08b82eb75a16450def7f00291a76ba9"
+      },
+      "name": "beyvra-backend",
+      "number": 107,
+      "pr": "https://github.com/appolon1908-hue/beyvra-backend/pull/107",
+      "repository": "appolon1908-hue/beyvra-backend",
+      "sha": "e640ab06f08b82eb75a16450def7f00291a76ba9",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "afeb86a99710b646c746d20315ce3f4cbcead95a",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:08.872Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499198696,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-backend/actions/runs/34499198696"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "0f1f6d9992c081a290f7a95ede89c47c310fdddc"
+      },
+      "name": "codestra-backend",
+      "number": 4,
+      "pr": "https://github.com/appolon1908-hue/codestra-backend/pull/4",
+      "repository": "appolon1908-hue/codestra-backend",
+      "sha": "0f1f6d9992c081a290f7a95ede89c47c310fdddc",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "10a1e5fa21d0fa10b037c98807d7aa63c06619fb",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:08.906Z",
+        "runs": [
+          {
+            "conclusion": "failure",
+            "id": 34499205178,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/backend2/actions/runs/34499205178"
+          }
+        ],
+        "state": "needs-attention",
+        "tested_sha": "ea5f316e16b69b002e98e8ec29cfb52fa6117029"
+      },
+      "name": "backend2",
+      "number": 10,
+      "pr": "https://github.com/appolon1908-hue/backend2/pull/10",
+      "repository": "appolon1908-hue/backend2",
+      "sha": "ea5f316e16b69b002e98e8ec29cfb52fa6117029",
+      "note": "Dependency audit step failed; requirements are unchanged by this design PR."
+    },
+    {
+      "base": "main",
+      "base_sha": "46472a1e780f20c531297c74b1ab603156abea93",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.752Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499210979,
+            "name": "Frontend README Authority",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/beyvra-frontend/actions/runs/34499210979"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499210944,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/beyvra-frontend/actions/runs/34499210944"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "fad35760130e7ac70d33151f47d97151e4268b13"
+      },
+      "name": "beyvra-frontend",
+      "number": 42,
+      "pr": "https://github.com/appolon1908-hue/beyvra-frontend/pull/42",
+      "repository": "appolon1908-hue/beyvra-frontend",
+      "sha": "fad35760130e7ac70d33151f47d97151e4268b13",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "120528e1ac2d4f4ee200bfc4858bfde4e838ce8c",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.764Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499218415,
+            "name": "Gateway security validation",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/scrapper/actions/runs/34499218415"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499218420,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/scrapper/actions/runs/34499218420"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "df35f5e4499a33d680196348586feb420f6ef3b5"
+      },
+      "name": "scrapper",
+      "number": 33,
+      "pr": "https://github.com/appolon1908-hue/scrapper/pull/33",
+      "repository": "appolon1908-hue/scrapper",
+      "sha": "df35f5e4499a33d680196348586feb420f6ef3b5",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "a5fc9921cbd6b71f83f1660fc505f02316572256",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.739Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499224037,
+            "name": "Required quality gate",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Breero.com/actions/runs/34499224037"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "8e89a865583bb2abf46f9ba44d3a5df92626f849"
+      },
+      "name": "Breero.com",
+      "number": 125,
+      "pr": "https://github.com/appolon1908-hue/Breero.com/pull/125",
+      "repository": "appolon1908-hue/Breero.com",
+      "sha": "8e89a865583bb2abf46f9ba44d3a5df92626f849",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "2345f4c8d52f3d9d8e748d0db6a5cad41b86662b",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.769Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499229218,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/booked4seasons/actions/runs/34499229218"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "b30c0fe9e53d494aac5011e283fdf59c2a7b48fd"
+      },
+      "name": "booked4seasons",
+      "number": 11,
+      "pr": "https://github.com/appolon1908-hue/booked4seasons/pull/11",
+      "repository": "appolon1908-hue/booked4seasons",
+      "sha": "b30c0fe9e53d494aac5011e283fdf59c2a7b48fd",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "34aa038dbee965a81c23adab73b6efc812ae3c47",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.761Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499235621,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/kyqra/actions/runs/34499235621"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499231029,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/kyqra/actions/runs/34499231029"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "945d873e2c62241d352c0aab3eec5b69f71138e7"
+      },
+      "name": "kyqra",
+      "number": 7,
+      "pr": "https://github.com/appolon1908-hue/kyqra/pull/7",
+      "repository": "appolon1908-hue/kyqra",
+      "sha": "945d873e2c62241d352c0aab3eec5b69f71138e7",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "8c8a8f95556ee4ca9a374abdaf9781ce9469ace6",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.783Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499241794,
+            "name": "Telnexa exact-head CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/telnexa/actions/runs/34499241794"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "4cf4279c8b02cd0f5344b7ba4c68ccea90fc7333"
+      },
+      "name": "telnexa",
+      "number": 33,
+      "pr": "https://github.com/appolon1908-hue/telnexa/pull/33",
+      "repository": "appolon1908-hue/telnexa",
+      "sha": "4cf4279c8b02cd0f5344b7ba4c68ccea90fc7333",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "ccd66d47eaef6ca2cc0e97dcf00e18b757a03b93",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.750Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499250548,
+            "name": "kyqra-ci",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/kyqra-crawler/actions/runs/34499250548"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "d754fee59748ef4d5a3ebf8d553070cafd87e402"
+      },
+      "name": "kyqra-crawler",
+      "number": 50,
+      "pr": "https://github.com/appolon1908-hue/kyqra-crawler/pull/50",
+      "repository": "appolon1908-hue/kyqra-crawler",
+      "sha": "d754fee59748ef4d5a3ebf8d553070cafd87e402",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "28e466f535365045054bb80c81c59fcf1b191895",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:16:16.344Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499258313,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/klyrow.com/actions/runs/34499258313"
+          },
+          {
+            "conclusion": null,
+            "id": 34499257566,
+            "name": "Klyrow gateway CI",
+            "status": "in_progress",
+            "url": "https://github.com/appolon1908-hue/klyrow.com/actions/runs/34499257566"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499254226,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/klyrow.com/actions/runs/34499254226"
+          }
+        ],
+        "state": "running",
+        "tested_sha": "8e108c6950fc6074dd8ed87806ed8f76724e3834"
+      },
+      "name": "klyrow.com",
+      "number": 111,
+      "pr": "https://github.com/appolon1908-hue/klyrow.com/pull/111",
+      "repository": "appolon1908-hue/klyrow.com",
+      "sha": "8e108c6950fc6074dd8ed87806ed8f76724e3834",
+      "note": "Some workflow jobs are still running at this snapshot."
+    },
+    {
+      "base": "main",
+      "base_sha": "4e35cb8ad7c7a363814e06477c5e5510a85d3311",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.800Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499265683,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/34499265683"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499264953,
+            "name": "Provisioning source validation",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/34499264953"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499261444,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-provisioning-service/actions/runs/34499261444"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "0ee42ae32af068f0097b2c3b4bc38710d5757065"
+      },
+      "name": "codestra-provisioning-service",
+      "number": 30,
+      "pr": "https://github.com/appolon1908-hue/codestra-provisioning-service/pull/30",
+      "repository": "appolon1908-hue/codestra-provisioning-service",
+      "sha": "0ee42ae32af068f0097b2c3b4bc38710d5757065",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "7a42cf438c713239a6fe4fe001d8ae4282427cb0",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.700Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499271394,
+            "name": "secure-frontend-ci",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Moneybee-frontend-/actions/runs/34499271394"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "0e5b35f3904c06462bad08dfa440de0a56c59f5d"
+      },
+      "name": "Moneybee-frontend-",
+      "number": 35,
+      "pr": "https://github.com/appolon1908-hue/Moneybee-frontend-/pull/35",
+      "repository": "appolon1908-hue/Moneybee-frontend-",
+      "sha": "0e5b35f3904c06462bad08dfa440de0a56c59f5d",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "ee03b38aab6780ea5692bcc2844545af4b2b9836",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.823Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499278071,
+            "name": "backend-ci",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Moneybee-Backend/actions/runs/34499278071"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "526c692bd8076ca552912ac8cf5e222599152698"
+      },
+      "name": "Moneybee-Backend",
+      "number": 77,
+      "pr": "https://github.com/appolon1908-hue/Moneybee-Backend/pull/77",
+      "repository": "appolon1908-hue/Moneybee-Backend",
+      "sha": "526c692bd8076ca552912ac8cf5e222599152698",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "a6952694dc82a22603a03cde0c1444c3533e0615",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:09.677Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499571293,
+            "name": "Freight Frontend Repository Name Migration",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/transportaion-Frontend/actions/runs/34499571293"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499571223,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/transportaion-Frontend/actions/runs/34499571223"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499566668,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/transportaion-Frontend/actions/runs/34499566668"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "5cebc6027bee15e6973fed4a9eb0f7c5bdbd86d2"
+      },
+      "name": "transportaion-Frontend",
+      "number": 10,
+      "pr": "https://github.com/appolon1908-hue/transportaion-Frontend/pull/10",
+      "repository": "appolon1908-hue/transportaion-Frontend",
+      "sha": "5cebc6027bee15e6973fed4a9eb0f7c5bdbd86d2",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "30970dbec8eb6687c1a56a571a8f54777cf7ccde",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.572Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499579624,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/transportation-backend-/actions/runs/34499579624"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499573785,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/transportation-backend-/actions/runs/34499573785"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "4ad5f2878c67e2f030a9ad6bde1f397eb13f3e54"
+      },
+      "name": "transportation-backend-",
+      "number": 18,
+      "pr": "https://github.com/appolon1908-hue/transportation-backend-/pull/18",
+      "repository": "appolon1908-hue/transportation-backend-",
+      "sha": "4ad5f2878c67e2f030a9ad6bde1f397eb13f3e54",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "948a8cf6bbd2c9d55f99012fa4379cfb0a1a1842",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.328Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499583567,
+            "name": "frontend-ci",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/LARIM-A-Fornt-end/actions/runs/34499583567"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "74467bbc85534c1a58e744c301360ecd13919746"
+      },
+      "name": "LARIM-A-Fornt-end",
+      "number": 8,
+      "pr": "https://github.com/appolon1908-hue/LARIM-A-Fornt-end/pull/8",
+      "repository": "appolon1908-hue/LARIM-A-Fornt-end",
+      "sha": "74467bbc85534c1a58e744c301360ecd13919746",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "82f022040da443a283e7656eae5bd5a12adb7c3e",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.552Z",
+        "runs": [
+          {
+            "conclusion": "failure",
+            "id": 34499590711,
+            "name": "backend-ci",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/LARIM-A-Backend/actions/runs/34499590711"
+          },
+          {
+            "conclusion": "failure",
+            "id": 34499584984,
+            "name": ".github/workflows/security.yml",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/LARIM-A-Backend/actions/runs/34499584984"
+          }
+        ],
+        "state": "needs-attention",
+        "tested_sha": "34f59432cc122eaccb0b6629caba7581278aa449"
+      },
+      "name": "LARIM-A-Backend",
+      "number": 7,
+      "pr": "https://github.com/appolon1908-hue/LARIM-A-Backend/pull/7",
+      "repository": "appolon1908-hue/LARIM-A-Backend",
+      "sha": "34f59432cc122eaccb0b6629caba7581278aa449",
+      "note": "Source/test Ruff check failed and the security workflow also reports failure; application source is unchanged by this design PR."
+    },
+    {
+      "base": "main",
+      "base_sha": "e89ebfd78c8929b2c52e44fe7762cf415d8593fb",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.509Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499597189,
+            "name": "Application CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Telnexa-web/actions/runs/34499597189"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "db5b17109fea496824cd755413511366da5a94c0"
+      },
+      "name": "Telnexa-web",
+      "number": 14,
+      "pr": "https://github.com/appolon1908-hue/Telnexa-web/pull/14",
+      "repository": "appolon1908-hue/Telnexa-web",
+      "sha": "db5b17109fea496824cd755413511366da5a94c0",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "3cec3f164e8dcfa77df339a5529959fafaa1f952",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.388Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499604346,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/klyrow-Website-/actions/runs/34499604346"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499603697,
+            "name": "PR checks",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/klyrow-Website-/actions/runs/34499603697"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499599981,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/klyrow-Website-/actions/runs/34499599981"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "149e1889b6be710b4552bfbf06cafc196264b02c"
+      },
+      "name": "klyrow-Website-",
+      "number": 30,
+      "pr": "https://github.com/appolon1908-hue/klyrow-Website-/pull/30",
+      "repository": "appolon1908-hue/klyrow-Website-",
+      "sha": "149e1889b6be710b4552bfbf06cafc196264b02c",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "3396700f9e24c58b71cbe1733cd65e396d11d002",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.450Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499613453,
+            "name": "Odoo Addons CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Odoo/actions/runs/34499613453"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499613448,
+            "name": "Security gates",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Odoo/actions/runs/34499613448"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499614565,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Odoo/actions/runs/34499614565"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499609811,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Odoo/actions/runs/34499609811"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "6cdee8611cc89d72341a8ca69616f6ae07d2066f"
+      },
+      "name": "Odoo",
+      "number": 98,
+      "pr": "https://github.com/appolon1908-hue/Odoo/pull/98",
+      "repository": "appolon1908-hue/Odoo",
+      "sha": "6cdee8611cc89d72341a8ca69616f6ae07d2066f",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "5ee6077338936b43e4c771bb5729cb3b479a3f80",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.528Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499621848,
+            "name": "Validate password reset acceptance policy",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Keycloak/actions/runs/34499621848"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499621896,
+            "name": "Repository Name Authority",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Keycloak/actions/runs/34499621896"
+          },
+          {
+            "conclusion": null,
+            "id": 34499621831,
+            "name": "Validate Keycloak GitOps",
+            "status": "in_progress",
+            "url": "https://github.com/appolon1908-hue/Keycloak/actions/runs/34499621831"
+          },
+          {
+            "conclusion": "failure",
+            "id": 34499621928,
+            "name": "Keycloak release trust root",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Keycloak/actions/runs/34499621928"
+          }
+        ],
+        "state": "needs-attention",
+        "tested_sha": "8222aa0084ac141dd1a05ef23460088933694b12"
+      },
+      "name": "Keycloak",
+      "number": 110,
+      "pr": "https://github.com/appolon1908-hue/Keycloak/pull/110",
+      "repository": "appolon1908-hue/Keycloak",
+      "sha": "8222aa0084ac141dd1a05ef23460088933694b12",
+      "note": "Protected-main bootstrap reports missing independent approval."
+    },
+    {
+      "base": "main",
+      "base_sha": "ca54f1e9238e83eef065f2b99b1f7396e45527b5",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.361Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499628125,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/N8N/actions/runs/34499628125"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499627501,
+            "name": "source-validation",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/N8N/actions/runs/34499627501"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499625494,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/N8N/actions/runs/34499625494"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "8f2d4225fd989584edc6bd5142877f8ff15b9971"
+      },
+      "name": "N8N",
+      "number": 61,
+      "pr": "https://github.com/appolon1908-hue/N8N/pull/61",
+      "repository": "appolon1908-hue/N8N",
+      "sha": "8f2d4225fd989584edc6bd5142877f8ff15b9971",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "f43aa44fa0082eb2bb15be9ec3950ddfd8bc72e1",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.498Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499635189,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/34499635189"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499631384,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Vicidialer-Codestra/actions/runs/34499631384"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "30ebbddf46b1853e0b53db59372b9afd56473ddc"
+      },
+      "name": "Vicidialer-Codestra",
+      "number": 47,
+      "pr": "https://github.com/appolon1908-hue/Vicidialer-Codestra/pull/47",
+      "repository": "appolon1908-hue/Vicidialer-Codestra",
+      "sha": "30ebbddf46b1853e0b53db59372b9afd56473ddc",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "76323c8c182a98a24a2e7d76bedc41509c416273",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.514Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499640735,
+            "name": "Validate Kong configuration",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Kong/actions/runs/34499640735"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499640674,
+            "name": "Kong candidate certification",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Kong/actions/runs/34499640674"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499640830,
+            "name": "Check Kong authority manifests",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Kong/actions/runs/34499640830"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499640671,
+            "name": "Validate Kong source authority",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Kong/actions/runs/34499640671"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499640688,
+            "name": "Security and supply-chain validation",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Kong/actions/runs/34499640688"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "5e96bbe687e336f6c5c8afcc6d48bef568dc9ba3"
+      },
+      "name": "Kong",
+      "number": 100,
+      "pr": "https://github.com/appolon1908-hue/Kong/pull/100",
+      "repository": "appolon1908-hue/Kong",
+      "sha": "5e96bbe687e336f6c5c8afcc6d48bef568dc9ba3",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "4f7817f6c6d1bb38fa7d85bb1656eb41865283d5",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:16:15.583Z",
+        "runs": [
+          {
+            "conclusion": null,
+            "id": 34499649344,
+            "name": "Backend CI",
+            "status": "in_progress",
+            "url": "https://github.com/appolon1908-hue/social.codestra.co/actions/runs/34499649344"
+          }
+        ],
+        "state": "running",
+        "tested_sha": "151febfaaa8256f51268d2c4878897d5c8d35b1f"
+      },
+      "name": "social.codestra.co",
+      "number": 49,
+      "pr": "https://github.com/appolon1908-hue/social.codestra.co/pull/49",
+      "repository": "appolon1908-hue/social.codestra.co",
+      "sha": "151febfaaa8256f51268d2c4878897d5c8d35b1f",
+      "note": "Some workflow jobs are still running at this snapshot."
+    },
+    {
+      "base": "main",
+      "base_sha": "a194b5154a5b313c8fc4b9150abd17a4cc6612ae",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:10.594Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499657763,
+            "name": "Generated SDKs",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/SDK-repository/actions/runs/34499657763"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499657725,
+            "name": "Contract validation",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/SDK-repository/actions/runs/34499657725"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499657909,
+            "name": "Marketing SDK Stage 5",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/SDK-repository/actions/runs/34499657909"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499657867,
+            "name": "Workspace CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/SDK-repository/actions/runs/34499657867"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499657822,
+            "name": "Compatibility gates",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/SDK-repository/actions/runs/34499657822"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "2e25e9303d237161709056d888c96c652a43872a"
+      },
+      "name": "SDK-repository",
+      "number": 140,
+      "pr": "https://github.com/appolon1908-hue/SDK-repository/pull/140",
+      "repository": "appolon1908-hue/SDK-repository",
+      "sha": "2e25e9303d237161709056d888c96c652a43872a",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "dc6f7e4447d76d611d9b8ce9068b34e87b90d948",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.294Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499660251,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Caddy/actions/runs/34499660251"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499659506,
+            "name": "Validate Caddy source authority",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Caddy/actions/runs/34499659506"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499656738,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Caddy/actions/runs/34499656738"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "a211989ab05c8cf2033635476083f786226fa8a6"
+      },
+      "name": "Caddy",
+      "number": 169,
+      "pr": "https://github.com/appolon1908-hue/Caddy/pull/169",
+      "repository": "appolon1908-hue/Caddy",
+      "sha": "a211989ab05c8cf2033635476083f786226fa8a6",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "fe6c5a2f99e3ff5c802f555e6391f7e5dc0edb25",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.192Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499665550,
+            "name": "Required documentation CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/documentaions/actions/runs/34499665550"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499663013,
+            "name": "Required documentation CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/documentaions/actions/runs/34499663013"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "e93ed65f086a3827d948b43d7c061c7f7d979486"
+      },
+      "name": "documentaions",
+      "number": 13,
+      "pr": "https://github.com/appolon1908-hue/documentaions/pull/13",
+      "repository": "appolon1908-hue/documentaions",
+      "sha": "e93ed65f086a3827d948b43d7c061c7f7d979486",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "5343a5b6675f87baee5b1da93cb3b93d65cddef9",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.207Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "74396318ff970ddf066a0fe621d2f56213901614"
+      },
+      "name": "communication-platform-",
+      "number": 9,
+      "pr": "https://github.com/appolon1908-hue/communication-platform-/pull/9",
+      "repository": "appolon1908-hue/communication-platform-",
+      "sha": "74396318ff970ddf066a0fe621d2f56213901614",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    },
+    {
+      "base": "main",
+      "base_sha": "97b7efd9c0e80e7dfd9e01db977bb34f4d0dec5b",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.185Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "7c5d4bfbdc93ea3193ba6ef9ed40191da04cb0eb"
+      },
+      "name": "Codestra-Grafana-",
+      "number": 28,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Grafana-/pull/28",
+      "repository": "appolon1908-hue/Codestra-Grafana-",
+      "sha": "7c5d4bfbdc93ea3193ba6ef9ed40191da04cb0eb",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    },
+    {
+      "base": "main",
+      "base_sha": "a4816e255b5ccac6ad475e52f01e601d9cffcdd2",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.687Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499932083,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Prometheus/actions/runs/34499932083"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499931354,
+            "name": "Prometheus production source validation",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Prometheus/actions/runs/34499931354"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499929137,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Prometheus/actions/runs/34499929137"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "58b705cda683a2be122f7d7b23256fae375bbf3e"
+      },
+      "name": "Codestra-Prometheus",
+      "number": 66,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Prometheus/pull/66",
+      "repository": "appolon1908-hue/Codestra-Prometheus",
+      "sha": "58b705cda683a2be122f7d7b23256fae375bbf3e",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "225c3995c9368aef1288faac1bf7005e0d0b8ac5",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.284Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499938931,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Alertmanager/actions/runs/34499938931"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499935581,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Alertmanager/actions/runs/34499935581"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "6482c34bad18a61a38b9b856975610301bd187ef"
+      },
+      "name": "Codestra-Alertmanager",
+      "number": 25,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Alertmanager/pull/25",
+      "repository": "appolon1908-hue/Codestra-Alertmanager",
+      "sha": "6482c34bad18a61a38b9b856975610301bd187ef",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "d914fd53a72ffeb57a63ca39ac761abc285e33bf",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.318Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499947751,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Loki/actions/runs/34499947751"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499941868,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Loki/actions/runs/34499941868"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "a571d8376ebfcd8a9ce3c563f2d2c44206b978cf"
+      },
+      "name": "Codestra-Loki",
+      "number": 37,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Loki/pull/37",
+      "repository": "appolon1908-hue/Codestra-Loki",
+      "sha": "a571d8376ebfcd8a9ce3c563f2d2c44206b978cf",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "248b26635087f4bb2621e2150505ada141c2d4e7",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.128Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499953604,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Telemetry/actions/runs/34499953604"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499949572,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Telemetry/actions/runs/34499949572"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "1af419d5f093b5a4d1bca9c74422ecf8c54f5c8b"
+      },
+      "name": "Codestra-Telemetry",
+      "number": 54,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Telemetry/pull/54",
+      "repository": "appolon1908-hue/Codestra-Telemetry",
+      "sha": "1af419d5f093b5a4d1bca9c74422ecf8c54f5c8b",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "de5e9d56a0607719facc4341cc95aa175528a69d",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.327Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499962269,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34499962269"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499961249,
+            "name": "Validate Tempo repository readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34499961249"
+          },
+          {
+            "conclusion": "success",
+            "id": 34499958349,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34499958349"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "ceab5548196ceed9c704e3bf77851884570e6a84"
+      },
+      "name": "Codestra-Tempo",
+      "number": 30,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Tempo/pull/30",
+      "repository": "appolon1908-hue/Codestra-Tempo",
+      "sha": "ceab5548196ceed9c704e3bf77851884570e6a84",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "6cb1498b1aaeb5e8ba7ca0d101070659ce04223a",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.255Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34499970299,
+            "name": "Validate Superset repository readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Superset/actions/runs/34499970299"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "e3f4c26dcc049f81cbcdb8d5e63e884b50f35306"
+      },
+      "name": "Superset",
+      "number": 48,
+      "pr": "https://github.com/appolon1908-hue/Superset/pull/48",
+      "repository": "appolon1908-hue/Superset",
+      "sha": "e3f4c26dcc049f81cbcdb8d5e63e884b50f35306",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "c18166741f36fc05193187dfd614fbde7f8f9253",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.238Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "d0aff2c1255cd104681d36e495bf8281a35ea736"
+      },
+      "name": "Codestra-Node-Exporter",
+      "number": 33,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Node-Exporter/pull/33",
+      "repository": "appolon1908-hue/Codestra-Node-Exporter",
+      "sha": "d0aff2c1255cd104681d36e495bf8281a35ea736",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    },
+    {
+      "base": "main",
+      "base_sha": "add839da944d1f213e978b862f22e856008cf52d",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:11.229Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "7564a400ad20aef39ac4215fa5c4c9416b25034c"
+      },
+      "name": "Codestra-cAdvisor",
+      "number": 38,
+      "pr": "https://github.com/appolon1908-hue/Codestra-cAdvisor/pull/38",
+      "repository": "appolon1908-hue/Codestra-cAdvisor",
+      "sha": "7564a400ad20aef39ac4215fa5c4c9416b25034c",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    },
+    {
+      "base": "main",
+      "base_sha": "784e03d8151136195b3b23c58fe50b68b12cf94f",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.128Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "8f140a0759019b93d344822fedb6ef99caef9bed"
+      },
+      "name": "Codestra-Redis-Exporter",
+      "number": 37,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Redis-Exporter/pull/37",
+      "repository": "appolon1908-hue/Codestra-Redis-Exporter",
+      "sha": "8f140a0759019b93d344822fedb6ef99caef9bed",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    },
+    {
+      "base": "main",
+      "base_sha": "acfe1e83dd05a7d8a45cd70f7661fe414fae39b1",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.244Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "2bc96709668862b0765510b18b52d36d555909f4"
+      },
+      "name": "Codestra-Blackbox-Exporter",
+      "number": 33,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Blackbox-Exporter/pull/33",
+      "repository": "appolon1908-hue/Codestra-Blackbox-Exporter",
+      "sha": "2bc96709668862b0765510b18b52d36d555909f4",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    },
+    {
+      "base": "main",
+      "base_sha": "baef21fba00fe353dee1fa6f379924720655fec0",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.237Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500009712,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Alloy/actions/runs/34500009712"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500003174,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Alloy/actions/runs/34500003174"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "d51b0e8e7943668aaa2bd73f262b16c0d5b6a72f"
+      },
+      "name": "Codestra-Alloy",
+      "number": 34,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Alloy/pull/34",
+      "repository": "appolon1908-hue/Codestra-Alloy",
+      "sha": "d51b0e8e7943668aaa2bd73f262b16c0d5b6a72f",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "5f5e3583585081e450f945440a1fab503bfa8399",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.115Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "f8f32558e3436e59ca9d6f3e15a05dd78e539ba5"
+      },
+      "name": "Codestra-OpenBao",
+      "number": 53,
+      "pr": "https://github.com/appolon1908-hue/Codestra-OpenBao/pull/53",
+      "repository": "appolon1908-hue/Codestra-OpenBao",
+      "sha": "f8f32558e3436e59ca9d6f3e15a05dd78e539ba5",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    },
+    {
+      "base": "main",
+      "base_sha": "957bb3272298b1416f8f663f4f1c5d99ac895b5c",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.257Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "81c6d92311f6ef0651f1aa2600578bed8c35ff16"
+      },
+      "name": "Codestra-Postgres-Exporter",
+      "number": 17,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Postgres-Exporter/pull/17",
+      "repository": "appolon1908-hue/Codestra-Postgres-Exporter",
+      "sha": "81c6d92311f6ef0651f1aa2600578bed8c35ff16",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    },
+    {
+      "base": "main",
+      "base_sha": "722f2d8c4a066dc0795439ba0504d1882f28cf6e",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.449Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500029900,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Marketing-/actions/runs/34500029900"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500030563,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Marketing-/actions/runs/34500030563"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500029881,
+            "name": "Immutable image",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Marketing-/actions/runs/34500029881"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500024991,
+            "name": "Codestra deploy readiness",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Marketing-/actions/runs/34500024991"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "382e80602bbcc7af3d4d672cf1d46e6c6f9d2b66"
+      },
+      "name": "Codestra-Marketing-",
+      "number": 14,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Marketing-/pull/14",
+      "repository": "appolon1908-hue/Codestra-Marketing-",
+      "sha": "382e80602bbcc7af3d4d672cf1d46e6c6f9d2b66",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "cceb1fd7462f765e6ac36db154086d56a88ba712",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.251Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500037649,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-Communication-CC/actions/runs/34500037649"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "45146f379dc320f09d6f72b2712feeaac5974900"
+      },
+      "name": "Codestra-Communication-CC",
+      "number": 13,
+      "pr": "https://github.com/appolon1908-hue/Codestra-Communication-CC/pull/13",
+      "repository": "appolon1908-hue/Codestra-Communication-CC",
+      "sha": "45146f379dc320f09d6f72b2712feeaac5974900",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "bfb654b0cff3416b6f6abd79687d8d33698aab41",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.141Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500255394,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codesrea-Social-/actions/runs/34500255394"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "9e19d3c012afabb88fdaeaf2b413e985411aae34"
+      },
+      "name": "Codesrea-Social-",
+      "number": 13,
+      "pr": "https://github.com/appolon1908-hue/Codesrea-Social-/pull/13",
+      "repository": "appolon1908-hue/Codesrea-Social-",
+      "sha": "9e19d3c012afabb88fdaeaf2b413e985411aae34",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "7d31ef8de1c15bcc71b61de50917c81e3bcf557d",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.230Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500261639,
+            "name": "CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-AI/actions/runs/34500261639"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500261647,
+            "name": "Immutable image",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Codestra-AI/actions/runs/34500261647"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "5605077dbd3cad64b4cab2705ad50e087c4c75cf"
+      },
+      "name": "Codestra-AI",
+      "number": 12,
+      "pr": "https://github.com/appolon1908-hue/Codestra-AI/pull/12",
+      "repository": "appolon1908-hue/Codestra-AI",
+      "sha": "5605077dbd3cad64b4cab2705ad50e087c4c75cf",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "e90eaf64d13f4fa09508cd115449cc5bf807a5f8",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.265Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500267204,
+            "name": "Foundation CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-foundation/actions/runs/34500267204"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "751e98f9d2a2d6f2f7ff5bb78f9f1e74f3fd30cf"
+      },
+      "name": "codestra-foundation",
+      "number": 4,
+      "pr": "https://github.com/appolon1908-hue/codestra-foundation/pull/4",
+      "repository": "appolon1908-hue/codestra-foundation",
+      "sha": "751e98f9d2a2d6f2f7ff5bb78f9f1e74f3fd30cf",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "470591454b681092cc8fdde57b2a921802dffd3f",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:11:29.350Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500275210,
+            "name": "authority",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-production-runtime-authority/actions/runs/34500275210"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500275002,
+            "name": "build-authority",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-production-runtime-authority/actions/runs/34500275002"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "add427f89ed893b1f969d89bc2569310a4eb914d"
+      },
+      "name": "codestra-production-runtime-authority",
+      "number": 8,
+      "pr": "https://github.com/appolon1908-hue/codestra-production-runtime-authority/pull/8",
+      "repository": "appolon1908-hue/codestra-production-runtime-authority",
+      "sha": "add427f89ed893b1f969d89bc2569310a4eb914d",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "84434eb31320c73d8950882b693763a8ab4728b4",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.379Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500280427,
+            "name": "exact-head-ci",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Websocket-/actions/runs/34500280427"
+          },
+          {
+            "conclusion": "success",
+            "id": 34500280420,
+            "name": "Imported WebSocket components CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/Websocket-/actions/runs/34500280420"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "1871a9e352a57eb3987c7f70769ded4317e51493"
+      },
+      "name": "Websocket-",
+      "number": 7,
+      "pr": "https://github.com/appolon1908-hue/Websocket-/pull/7",
+      "repository": "appolon1908-hue/Websocket-",
+      "sha": "1871a9e352a57eb3987c7f70769ded4317e51493",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "89238734bd0b3cf3512a6f74bfc3b1bf32ca22d3",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.978Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "0848d7c406e006b134f3311f15d624a45a61f974"
+      },
+      "name": "Database-migrations-",
+      "number": 2,
+      "pr": "https://github.com/appolon1908-hue/Database-migrations-/pull/2",
+      "repository": "appolon1908-hue/Database-migrations-",
+      "sha": "0848d7c406e006b134f3311f15d624a45a61f974",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    },
+    {
+      "base": "main",
+      "base_sha": "a790c2f10d24c3a72d0940c3466e4c8c116078dd",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:11:29.474Z",
+        "runs": [
+          {
+            "conclusion": "success",
+            "id": 34500294262,
+            "name": "Required CI",
+            "status": "completed",
+            "url": "https://github.com/appolon1908-hue/codestra-server-c/actions/runs/34500294262"
+          }
+        ],
+        "state": "passed",
+        "tested_sha": "237a6c6f9a21b1dd9ded16d5c97044d648bdf82e"
+      },
+      "name": "codestra-server-c",
+      "number": 6,
+      "pr": "https://github.com/appolon1908-hue/codestra-server-c/pull/6",
+      "repository": "appolon1908-hue/codestra-server-c",
+      "sha": "237a6c6f9a21b1dd9ded16d5c97044d648bdf82e",
+      "note": "Observed workflow runs passed or were explicitly skipped; merge/review gates still apply."
+    },
+    {
+      "base": "main",
+      "base_sha": "ddce4bbd76b69d4957fe12e5bff32700962b5df3",
+      "branch": "docs/integrated-monitoring-design",
+      "ci": {
+        "observed_at": "2026-09-10T16:10:12.904Z",
+        "runs": [],
+        "state": "not-triggered",
+        "tested_sha": "803483b83bf5543d2b9e440b4dfacb5e8420113d"
+      },
+      "name": "codestra-ruleset-toolkit",
+      "number": 1,
+      "pr": "https://github.com/appolon1908-hue/codestra-ruleset-toolkit/pull/1",
+      "repository": "appolon1908-hue/codestra-ruleset-toolkit",
+      "sha": "803483b83bf5543d2b9e440b4dfacb5e8420113d",
+      "note": "No workflow run was found for this commit; no CI success is claimed."
+    }
+  ]
+}
