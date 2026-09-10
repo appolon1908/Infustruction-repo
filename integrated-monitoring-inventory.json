@@ -663,119 +663,120 @@
       "component": "Grafana",
       "documented_dns": "graf.codestra.media",
       "owns": "Operational dashboards, datasource provisioning and drilldowns",
-      "flow": "Prometheus, Loki, Tempo \u2192 operators"
+      "flow": "Prometheus, Loki, Tempo → operators"
     },
     {
       "repository": "appolon1908-hue/Codestra-Prometheus",
       "component": "Prometheus",
       "documented_dns": "prom.codestra.media",
       "owns": "Scrapes, metric storage, recording rules and alert rules",
-      "flow": "Exporters/apps \u2192 Prometheus \u2192 Grafana and Alertmanager"
+      "flow": "Exporters/apps → Prometheus → Grafana and Alertmanager"
     },
     {
       "repository": "appolon1908-hue/Codestra-Alertmanager",
       "component": "Alertmanager",
       "documented_dns": "aler.codestra.media",
       "owns": "Grouping, inhibition, silences and receiver routing",
-      "flow": "Prometheus \u2192 durable Middleware incident API"
+      "flow": "Prometheus → durable Middleware incident API"
     },
     {
       "repository": "appolon1908-hue/Codestra-Loki",
       "component": "Loki",
       "documented_dns": "loki.codestra.media",
       "owns": "Sanitized logs, tenancy and retention",
-      "flow": "Alloy/OTel \u2192 Loki \u2192 Grafana"
+      "flow": "Alloy/OTel → Loki → Grafana"
     },
     {
       "repository": "appolon1908-hue/Codestra-Telemetry",
       "component": "OpenTelemetry",
       "documented_dns": "otel.codestra.media",
       "owns": "Gateway pipelines, trace propagation, batching and redaction",
-      "flow": "SDKs/Alloy \u2192 OTel \u2192 Tempo; optional OTLP logs/metrics"
+      "flow": "SDKs/Alloy → OTel → Tempo; optional OTLP logs/metrics"
     },
     {
       "repository": "appolon1908-hue/Codestra-Tempo",
       "component": "Tempo",
       "documented_dns": "temp.codestra.media",
       "owns": "Trace ingestion, storage and query",
-      "flow": "OTel \u2192 Tempo \u2192 Grafana"
+      "flow": "OTel → Tempo → Grafana"
     },
     {
       "repository": "appolon1908-hue/Codestra-Alloy",
       "component": "Alloy",
       "documented_dns": "allo.codestra.media",
       "owns": "Host log collection and local OTLP forwarding",
-      "flow": "Each host \u2192 central telemetry services"
+      "flow": "Each host → central telemetry services"
     },
     {
       "repository": "appolon1908-hue/Codestra-Node-Exporter",
       "component": "Node Exporter",
       "documented_dns": "node.codestra.media",
       "owns": "CPU, RAM, filesystem, network and host pressure",
-      "flow": "Each host \u2192 Prometheus"
+      "flow": "Each host → Prometheus"
     },
     {
       "repository": "appolon1908-hue/Codestra-cAdvisor",
       "component": "cAdvisor",
       "documented_dns": "cadv.codestra.media",
       "owns": "Container resource use and runtime inventory",
-      "flow": "Each container host \u2192 Prometheus"
+      "flow": "Each container host → Prometheus"
     },
     {
       "repository": "appolon1908-hue/Codestra-Redis-Exporter",
       "component": "Redis Exporter",
       "documented_dns": "rdex.codestra.media",
       "owns": "Redis availability, memory, persistence and connections",
-      "flow": "Each Redis deployment \u2192 Prometheus"
+      "flow": "Each Redis deployment → Prometheus"
     },
     {
       "repository": "appolon1908-hue/Codestra-Postgres-Exporter",
       "component": "PostgreSQL Exporter",
-      "documented_dns": "pgex.codestra.media",
+      "documented_dns": null,
       "owns": "Database availability, pools, locks, replication and storage",
-      "flow": "Each PostgreSQL deployment \u2192 Prometheus"
+      "flow": "Each PostgreSQL deployment → Prometheus",
+      "private_service_identity": "postgres-exporter:9187"
     },
     {
       "repository": "appolon1908-hue/Codestra-Blackbox-Exporter",
       "component": "Blackbox Exporter",
       "documented_dns": "blac.codestra.media",
       "owns": "Registered HTTP/TLS/DNS/TCP availability probes",
-      "flow": "Approved website/API targets \u2192 Prometheus"
+      "flow": "Approved website/API targets → Prometheus"
     },
     {
       "repository": "appolon1908-hue/Superset",
       "component": "Superset",
       "documented_dns": "supe.codestra.media",
       "owns": "Business analytics over curated read models",
-      "flow": "Read-only analytics views \u2192 business users"
+      "flow": "Read-only analytics views → business users"
     },
     {
       "repository": "appolon1908-hue/Codestra-OpenBao",
       "component": "OpenBao",
       "documented_dns": "bao.codestra.media",
       "owns": "Workload secrets and PKI; non-secret health monitoring",
-      "flow": "Machine identities \u2192 secret references; health \u2192 Prometheus"
+      "flow": "Machine identities → secret references; health → Prometheus"
     },
     {
       "repository": "appolon1908-hue/Backstage",
       "component": "Backstage",
       "documented_dns": null,
       "owns": "Service and repository catalog; ownership and API discovery",
-      "flow": "Private native API \u2192 Middleware read adapter \u2192 operations UI"
+      "flow": "Private native API → Middleware read adapter → operations UI"
     },
     {
       "repository": "appolon1908-hue/Sentry",
       "component": "Sentry",
       "documented_dns": null,
       "owns": "Application exceptions and release-level error evidence",
-      "flow": "Private native API \u2192 Middleware read adapter \u2192 operations UI"
+      "flow": "Private native API → Middleware read adapter → operations UI"
     },
     {
       "repository": "appolon1908-hue/Wazuh",
       "component": "Wazuh",
       "documented_dns": null,
       "owns": "Security agent status and sanitized security observations",
-      "flow": "Private native API \u2192 Middleware read adapter \u2192 operations UI"
+      "flow": "Private native API → Middleware read adapter → operations UI"
     }
   ],
   "middleware_endpoint_design": [
@@ -1901,12 +1902,12 @@
     }
   ],
   "signal_paths": {
-    "metrics": "Registered app/exporter \u2192 central Prometheus private scrape \u2192 Grafana/Observability API; Prometheus rules \u2192 Alertmanager",
-    "logs": "stdout/journal \u2192 Alloy \u2192 Loki \u2192 Grafana/Observability API; OTLP-only log sources use OTel \u2192 Loki /otlp/v1/logs instead",
-    "traces": "SDK \u2192 local Alloy OTLP receiver \u2192 central OpenTelemetry gateway \u2192 Tempo \u2192 Grafana/Observability API",
-    "alerts": "Prometheus \u2192 Alertmanager \u2192 existing Middleware events API \u2192 durable incident/outbox \u2192 existing command executor/Temporal \u2192 Klyrow adapter \u2192 provider read-back",
-    "configuration": "Component Git authorities + service descriptors \u2192 tested immutable release \u2192 approved reconciler \u2192 observed revision/read-back",
-    "analytics": "Odoo/Middleware/provider event projections \u2192 curated read-only views \u2192 Superset"
+    "metrics": "Registered app/exporter → central Prometheus private scrape → Grafana/Observability API; Prometheus rules → Alertmanager",
+    "logs": "stdout/journal → Alloy → Loki → Grafana/Observability API; OTLP-only log sources use OTel → Loki /otlp/v1/logs instead",
+    "traces": "SDK → local Alloy OTLP receiver → central OpenTelemetry gateway → Tempo → Grafana/Observability API",
+    "alerts": "Prometheus → Alertmanager → existing Middleware events API → durable incident/outbox → existing command executor/Temporal → Klyrow adapter → provider read-back",
+    "configuration": "Component Git authorities + service descriptors → tested immutable release → approved reconciler → observed revision/read-back",
+    "analytics": "Odoo/Middleware/provider event projections → curated read-only views → Superset"
   },
   "catalog_example": {
     "design_status": "proposed envelope; not a direct current API request",
