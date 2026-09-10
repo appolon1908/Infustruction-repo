@@ -14,10 +14,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = (
     "ghcr.io/appolon1908-hue/codestra-middleware@"
-    "sha256:91b91b6ba1c828919c86102806eb2cfe6da1295cd7b4fe34df3121dd0bbff1b2"
+    "sha256:d899b182a414eef7c59e66c7fecb38b1161851b66c43d95e19e890a53f8caf58"
 )
-DIGEST = "sha256:91b91b6ba1c828919c86102806eb2cfe6da1295cd7b4fe34df3121dd0bbff1b2"
-SOURCE_SHA = "9152a04ed8df52269b30d7a9c6b18ef00a0caf75"
+DIGEST = "sha256:d899b182a414eef7c59e66c7fecb38b1161851b66c43d95e19e890a53f8caf58"
+SOURCE_SHA = "ab6e28769815f2bc60ca5bb52a4f3aa5818f89a5"
 REPOSITORY = "appolon1908-hue/Middleware-"
 IDENTITY = (
     "https://github.com/appolon1908-hue/Middleware-/"
@@ -27,7 +27,7 @@ ISSUER = "https://token.actions.githubusercontent.com"
 EXPECTED_COSIGN_VERSION = "v3.0.6"
 MANIFEST = (
     ROOT
-    / "reports/runtime-reconciliation/middleware-release-9152a0/release-manifest.v1.json"
+    / "reports/runtime-reconciliation/middleware-release-ab6e287/release-manifest.v1.json"
 )
 BUNDLE = MANIFEST.with_name("release-manifest.v1.sigstore.json")
 

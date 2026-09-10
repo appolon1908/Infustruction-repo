@@ -2,6 +2,10 @@
 
 Captured: 2026-08-31T22:10:00Z. This was a read-only source-lock mission. No deployment, migration, workflow activation, monitoring-target activation, failure injection, or production canary occurred.
 
+Historical snapshot: the authority revisions below describe that capture. Current
+source and artifact pins are recorded in [the September 10 refresh](docs/STAGE6-SOURCE-REFRESH-20260910.md).
+That refresh does not recertify these core-host runtime observations.
+
 ## Decision
 
 `RUNTIME_PROVENANCE=FAIL`

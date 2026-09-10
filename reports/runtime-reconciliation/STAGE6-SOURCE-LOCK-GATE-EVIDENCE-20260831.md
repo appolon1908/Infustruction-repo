@@ -2,6 +2,10 @@
 
 Captured: `2026-08-31T18:54:22Z`
 
+Historical snapshot: current source and artifact pins are documented in
+[the September 10 refresh](../../docs/STAGE6-SOURCE-REFRESH-20260910.md).
+The original signed release evidence is retained unchanged.
+
 This is source and read-only evidence. It performed no deployment, restart,
 migration, secret change, monitoring activation, production activation, or
 Klyrow/Postal mutation.

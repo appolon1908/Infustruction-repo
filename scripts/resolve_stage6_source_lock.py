@@ -24,7 +24,7 @@ OUTPUT = ROOT / "STAGE6-SOURCE-LOCK.RESOLVED.yaml"
 CHECKOUT_ROOT = Path("/root/stage6-source-lock-checkouts")
 MIDDLEWARE_RELEASE_MANIFEST = (
     ROOT
-    / "reports/runtime-reconciliation/middleware-release-9152a0/release-manifest.v1.json"
+    / "reports/runtime-reconciliation/middleware-release-ab6e287/release-manifest.v1.json"
 )
 MIDDLEWARE_VERIFIER = ROOT / "scripts/verify_stage6_middleware_artifact.py"
 SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -55,7 +55,7 @@ IMAGE_REFERENCES = {
 }
 UPSTREAM_COMPONENTS = {"odoo", "n8n", "openbao", "kong", "keycloak"}
 CORE_COMPONENTS = {"middleware", "odoo", "n8n"}
-MIDDLEWARE_RUN_ID = 33427334862
+MIDDLEWARE_RUN_ID = 34412423980
 INSPECTION_HOST = "37.27.128.39"
 DOCKER_ENDPOINT = "unix:///var/run/docker.sock"
 
