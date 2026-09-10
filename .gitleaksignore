@@ -5,3 +5,6 @@ a9d15842e967343ef4a78f7fab97b40476f6e756:.codestra/validate-production-orchestra
 a9d15842e967343ef4a78f7fab97b40476f6e756:.codestra/validate-production-orchestrator-contract.py:generic-api-key:617
 a9d15842e967343ef4a78f7fab97b40476f6e756:.codestra/validate-production-orchestrator-contract.py:generic-api-key:620
 f196ceec03c0db3f4be1fa2c746f240308522188:.codestra/validate-production-orchestrator-contract.py:generic-api-key:786
+
+# Non-secret immutable Git SHA in the pre-existing source lock.
+STAGE6-SOURCE-LOCK.yaml:generic-api-key:18

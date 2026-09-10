@@ -1,0 +1,9 @@
+{
+  "source_sha": "9684fd55bdbc64a971a17a291ff293a178a2ebac",
+  "images": {
+    "gateway": "codestra/klyrow-gateway@sha256:7cb3769eceb3339dbbd4392580fceaa4ff285dbec3721fbb4dd2763a00e27d7f",
+    "web": "codestra/klyrow-web@sha256:dd4a20b1c80f206ffb471bffaff5024f426e03f47ba9787e060933d65fb27019",
+    "migrate": "codestra/klyrow-migrate@sha256:40b5ab536c79fe27cd55038332417e917b10f6fbe2fb2b0f169a57dc5d9724b8",
+    "postal_provisioner": "codestra/klyrow-postal-provisioner@sha256:82910d20b3cabd293d2bd896ee4b32cb5edf8c45412f44fd7800d86e18aefeb8"
+  }
+}

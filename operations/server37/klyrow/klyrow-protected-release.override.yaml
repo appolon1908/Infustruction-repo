@@ -1,0 +1,233 @@
+services:
+  gateway:
+    image: "${KLYROW_GATEWAY_IMAGE:?set the protected gateway digest reference}"
+    env_file: !override
+      - "${KLYROW_RUNTIME_ENV_FILE:?set the release runtime environment file}"
+    environment:
+      KLYROW_ENV: production
+      KLYROW_DATABASE_URL: postgresql+psycopg://klyrow_runtime@postgres:5432/klyrow
+      KLYROW_DATABASE_PASSWORD_FILE: /run/secrets/klyrow_database_password
+      KLYROW_SESSION_SECRET_FILE: /run/secrets/klyrow_session_secret
+      KLYROW_POSTAL_API_KEY_FILE: /run/secrets/klyrow_postal_api_key
+      KLYROW_METRICS_TOKEN_FILE: /run/secrets/klyrow_metrics_token
+      KLYROW_MIDDLEWARE_API_KEY_FILE: /run/secrets/klyrow_middleware_api_key
+      KLYROW_WEBHOOK_SECRET_FILE: /run/secrets/klyrow_webhook_secret
+      KLYROW_RELEASE: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_VERSION: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_SOURCE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_REQUIRED_SCHEMA_VERSION: 2026090208_runtime_database_least_privilege.sql
+      KLYROW_REQUIRE_LEAST_PRIVILEGE_DB: "true"
+      KLYROW_SAFE_MODE: "false"
+      KLYROW_PRODUCTION_GATE_APPROVED: "true"
+      LIVE_EMAIL_DELIVERY: "true"
+      EXTERNAL_EMAIL_DELIVERY: "true"
+      PRODUCTION_PROVIDER_ROUTING: "true"
+      KLYROW_BULK_DELIVERY_ENABLED: "true"
+      KLYROW_CAMPAIGN_DELIVERY_ENABLED: "true"
+      MARKETING_DELIVERY: "true"
+    volumes:
+      - /opt/klyrow/secrets/runtime/database-runtime-password:/run/secrets/klyrow_database_password:ro
+      - /opt/klyrow/secrets/runtime/middleware-api-key:/run/secrets/klyrow_middleware_api_key:ro
+      - /opt/klyrow/secrets/runtime/webhook-secret:/run/secrets/klyrow_webhook_secret:ro
+
+  worker:
+    image: "${KLYROW_GATEWAY_IMAGE:?set the protected gateway digest reference}"
+    env_file: !override
+      - "${KLYROW_RUNTIME_ENV_FILE:?set the release runtime environment file}"
+    environment:
+      KLYROW_ENV: production
+      KLYROW_DATABASE_URL: postgresql+psycopg://klyrow_runtime@postgres:5432/klyrow
+      KLYROW_DATABASE_PASSWORD_FILE: /run/secrets/klyrow_database_password
+      KLYROW_SESSION_SECRET_FILE: /run/secrets/klyrow_session_secret
+      KLYROW_POSTAL_API_KEY_FILE: /run/secrets/klyrow_postal_api_key
+      KLYROW_MIDDLEWARE_API_KEY_FILE: /run/secrets/klyrow_middleware_api_key
+      KLYROW_WEBHOOK_SECRET_FILE: /run/secrets/klyrow_webhook_secret
+      KLYROW_RELEASE: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_VERSION: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_SOURCE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_REQUIRED_SCHEMA_VERSION: 2026090208_runtime_database_least_privilege.sql
+      KLYROW_REQUIRE_LEAST_PRIVILEGE_DB: "true"
+      KLYROW_SAFE_MODE: "false"
+      KLYROW_PRODUCTION_GATE_APPROVED: "true"
+      LIVE_EMAIL_DELIVERY: "true"
+      EXTERNAL_EMAIL_DELIVERY: "true"
+      PRODUCTION_PROVIDER_ROUTING: "true"
+    volumes:
+      - /opt/klyrow/secrets/runtime/database-runtime-password:/run/secrets/klyrow_database_password:ro
+      - /opt/klyrow/secrets/runtime/middleware-api-key:/run/secrets/klyrow_middleware_api_key:ro
+      - /opt/klyrow/secrets/runtime/webhook-secret:/run/secrets/klyrow_webhook_secret:ro
+
+  scheduler:
+    image: "${KLYROW_GATEWAY_IMAGE:?set the protected gateway digest reference}"
+    env_file: !override
+      - "${KLYROW_RUNTIME_ENV_FILE:?set the release runtime environment file}"
+    environment:
+      KLYROW_ENV: production
+      KLYROW_DATABASE_URL: postgresql+psycopg://klyrow_runtime@postgres:5432/klyrow
+      KLYROW_DATABASE_PASSWORD_FILE: /run/secrets/klyrow_database_password
+      KLYROW_SESSION_SECRET_FILE: /run/secrets/klyrow_session_secret
+      KLYROW_MAUTIC_API_URL: http://mautic
+      KLYROW_MAUTIC_API_CLIENT_ID_FILE: /run/secrets/klyrow_mautic_api_client_id
+      KLYROW_MAUTIC_API_CLIENT_SECRET_FILE: /run/secrets/klyrow_mautic_api_client_secret
+      KLYROW_RELEASE: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_VERSION: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_SOURCE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_REQUIRED_SCHEMA_VERSION: 2026090208_runtime_database_least_privilege.sql
+      KLYROW_REQUIRE_LEAST_PRIVILEGE_DB: "true"
+    volumes:
+      - /opt/klyrow/secrets/runtime/database-runtime-password:/run/secrets/klyrow_database_password:ro
+      - /opt/klyrow/secrets/mautic/client-id:/run/secrets/klyrow_mautic_api_client_id:ro
+      - /opt/klyrow/secrets/mautic/client-secret:/run/secrets/klyrow_mautic_api_client_secret:ro
+
+  billing-api:
+    image: "${KLYROW_GATEWAY_IMAGE:?set the protected gateway digest reference}"
+    env_file: !override
+      - "${KLYROW_RUNTIME_ENV_FILE:?set the release runtime environment file}"
+    environment:
+      KLYROW_ENV: production
+      KLYROW_DATABASE_URL: postgresql+psycopg://klyrow_runtime@postgres:5432/klyrow
+      KLYROW_DATABASE_PASSWORD_FILE: /run/secrets/klyrow_database_password
+      KLYROW_SESSION_SECRET_FILE: /run/secrets/klyrow_session_secret
+      KLYROW_METRICS_TOKEN_FILE: /run/secrets/klyrow_metrics_token
+      KLYROW_RELEASE: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_VERSION: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_SOURCE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_REQUIRED_SCHEMA_VERSION: 2026090208_runtime_database_least_privilege.sql
+      KLYROW_REQUIRE_LEAST_PRIVILEGE_DB: "true"
+    volumes:
+      - /opt/klyrow/secrets/runtime/database-runtime-password:/run/secrets/klyrow_database_password:ro
+
+  billing-worker:
+    image: "${KLYROW_GATEWAY_IMAGE:?set the protected gateway digest reference}"
+    env_file: !override
+      - "${KLYROW_RUNTIME_ENV_FILE:?set the release runtime environment file}"
+    environment:
+      KLYROW_ENV: production
+      KLYROW_DATABASE_URL: postgresql+psycopg://klyrow_runtime@postgres:5432/klyrow
+      KLYROW_DATABASE_PASSWORD_FILE: /run/secrets/klyrow_database_password
+      KLYROW_SESSION_SECRET_FILE: /run/secrets/klyrow_session_secret
+      KLYROW_RELEASE: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_VERSION: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_SOURCE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_REQUIRED_SCHEMA_VERSION: 2026090208_runtime_database_least_privilege.sql
+      KLYROW_REQUIRE_LEAST_PRIVILEGE_DB: "true"
+    volumes:
+      - /opt/klyrow/secrets/runtime/database-runtime-password:/run/secrets/klyrow_database_password:ro
+
+  smtp-relay:
+    image: "${KLYROW_GATEWAY_IMAGE:?set the protected gateway digest reference}"
+    env_file: !override
+      - "${KLYROW_RUNTIME_ENV_FILE:?set the release runtime environment file}"
+    environment:
+      KLYROW_ENV: production
+      KLYROW_DATABASE_URL: postgresql+psycopg://klyrow_runtime@postgres:5432/klyrow
+      KLYROW_DATABASE_PASSWORD_FILE: /run/secrets/klyrow_database_password
+      KLYROW_SESSION_SECRET_FILE: /run/secrets/klyrow_session_secret
+      KLYROW_RELEASE: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_VERSION: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_SOURCE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_REQUIRED_SCHEMA_VERSION: 2026090208_runtime_database_least_privilege.sql
+      KLYROW_REQUIRE_LEAST_PRIVILEGE_DB: "true"
+      KLYROW_SAFE_MODE: "false"
+      KLYROW_PRODUCTION_GATE_APPROVED: "true"
+      LIVE_EMAIL_DELIVERY: "true"
+      EXTERNAL_EMAIL_DELIVERY: "true"
+      PRODUCTION_PROVIDER_ROUTING: "true"
+    volumes:
+      - /opt/klyrow/secrets/runtime/database-runtime-password.smtp:/run/secrets/klyrow_database_password:ro
+      - /opt/klyrow/secrets/runtime/session-secret.smtp:/run/secrets/klyrow_session_secret:ro
+    healthcheck:
+      test: [CMD, python, -c, "import socket; s=socket.create_connection(('127.0.0.1',8025),3); assert s.recv(256).startswith(b'220'); s.close()"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+  gateway-migrate:
+    image: "${KLYROW_MIGRATE_IMAGE:?set the protected migration digest reference}"
+    container_name: klyrow-gateway-migrate
+    environment:
+      KLYROW_DATABASE_URL: postgresql+psycopg://klyrow@postgres:5432/klyrow
+      KLYROW_DATABASE_OWNER_PASSWORD_FILE: /run/secrets/klyrow_database_owner_password
+      KLYROW_DATABASE_RUNTIME_PASSWORD_FILE: /run/secrets/klyrow_database_runtime_password
+    volumes:
+      - /opt/klyrow/secrets/runtime/database-owner-password:/run/secrets/klyrow_database_owner_password:ro
+      - /opt/klyrow/secrets/runtime/database-runtime-password.migrate:/run/secrets/klyrow_database_runtime_password:ro
+    networks: [backend]
+    restart: "no"
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+
+  postal-provisioner:
+    image: "${KLYROW_POSTAL_PROVISIONER_IMAGE:?set the protected Postal provisioner digest reference}"
+    environment:
+      KLYROW_ADMIN_EMAIL: admin@klyrow.com
+      KLYROW_POSTAL_PROVISIONER_TOKEN_FILE: /run/secrets/klyrow_postal_provisioner_token
+      KLYROW_POSTAL_INBOUND_URL: http://gateway:8000/v1/webhooks/postal-inbound
+    volumes:
+      - /opt/klyrow/secrets/runtime/postal-provisioner-token.postal:/run/secrets/klyrow_postal_provisioner_token:ro
+
+  provisioning-worker:
+    image: "${KLYROW_GATEWAY_IMAGE:?set the protected gateway digest reference}"
+    container_name: klyrow-provisioning-worker-1
+    env_file:
+      - "${KLYROW_RUNTIME_ENV_FILE:?set the release runtime environment file}"
+    environment:
+      KLYROW_ENV: production
+      KLYROW_WORKER_ROLE: provisioning
+      KLYROW_DATABASE_URL: postgresql+psycopg://klyrow_runtime@postgres:5432/klyrow
+      KLYROW_DATABASE_PASSWORD_FILE: /run/secrets/klyrow_database_password
+      KLYROW_SESSION_SECRET_FILE: /run/secrets/klyrow_session_secret
+      KLYROW_PROVIDER_CREDENTIAL_KEY_FILE: /run/secrets/klyrow_provider_credential_key
+      KLYROW_POSTAL_PROVISIONER_TOKEN_FILE: /run/secrets/klyrow_postal_provisioner_token
+      KLYROW_POSTAL_PROVISIONER_URL: http://postal-provisioner:9090
+      KLYROW_RELEASE: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_VERSION: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_RELEASE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_SOURCE_SHA: "${KLYROW_SOURCE_SHA:?set the protected source SHA}"
+      KLYROW_REQUIRED_SCHEMA_VERSION: 2026090208_runtime_database_least_privilege.sql
+      KLYROW_REQUIRE_LEAST_PRIVILEGE_DB: "true"
+    command: [python, -m, app.service_worker]
+    volumes:
+      - /root/klyrow.com/secrets/runtime/session_secret:/run/secrets/klyrow_session_secret:ro
+      - /opt/klyrow/secrets/runtime/database-runtime-password:/run/secrets/klyrow_database_password:ro
+      - /opt/klyrow/secrets/runtime/provider-credential-key:/run/secrets/klyrow_provider_credential_key:ro
+      - /opt/klyrow/secrets/runtime/postal-provisioner-token.gateway:/run/secrets/klyrow_postal_provisioner_token:ro
+    depends_on:
+      postal-provisioner: {condition: service_healthy}
+    networks: [backend]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/')"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+  web:
+    image: "${KLYROW_WEB_IMAGE:?set the protected frontend digest reference}"
+    container_name: klyrow-web-production
+    depends_on:
+      gateway: {condition: service_healthy}
+    ports: ["127.0.0.1:18004:8080"]
+    networks: [frontend]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp, /var/cache/nginx, /var/run]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:8080/healthz]
+      interval: 20s
+      timeout: 5s
+      retries: 5

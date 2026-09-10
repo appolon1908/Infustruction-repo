@@ -99,6 +99,10 @@ The current server inventory identified several infrastructure risks that this r
 - `docs/CAPACITY-AND-STORAGE.md`
 - `docs/RUNBOOKS.md`
 
+## Server 37 production evidence
+
+`SERVER-37-PRODUCTION-API-MATRIX.yaml` classifies the completed runtime inventory and the bounded custom API contract without counting product-native APIs as custom implementation work. `SERVER-37-PRODUCTION-ROLLBACK.yaml` records before/candidate identities and remains fail-closed until reviewed promotion and isolated rollback rehearsal are complete.
+
 ## Branch policy
 
 After repository bootstrap, use:
