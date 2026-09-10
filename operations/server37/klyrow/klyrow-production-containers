@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+readonly ACTION="${1:-}"
+readonly -a CONTAINERS=(
+  klyrow-postgres-1
+  klyrow-rabbitmq-1
+  klyrow-postal-db-1
+  klyrow-mautic-db-1
+  klyrow-postal-web-1
+  klyrow-postal-smtp-1
+  klyrow-postal-worker-1
+  klyrow-mautic-1
+  klyrow-mautic-cron-1
+  klyrow-mautic-worker-1
+  klyrow-node-exporter-1
+  klyrow-prometheus-1
+  klyrow-grafana-1
+  klyrow-postal-provisioner-1
+  klyrow-provisioning-worker-1
+  klyrow-gateway-1
+  klyrow-smtp-relay-1
+  klyrow-worker-1
+  klyrow-scheduler-1
+  klyrow-billing-api-1
+  klyrow-billing-worker-1
+  klyrow-web-production
+)
+
+require_inventory() {
+  local container
+  for container in "${CONTAINERS[@]}"; do
+    docker container inspect "$container" >/dev/null
+  done
+}
+
+wait_healthy() {
+  local container state health deadline
+  deadline=$((SECONDS + 180))
+  while (( SECONDS < deadline )); do
+    local pending=0
+    for container in "${CONTAINERS[@]}"; do
+      state=$(docker inspect --format '{{.State.Status}}' "$container")
+      [[ "$state" == running ]] || { pending=1; continue; }
+      health=$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$container")
+      [[ "$health" == starting ]] && pending=1
+      [[ "$health" == unhealthy ]] && {
+        echo "unhealthy production container: $container" >&2
+        return 1
+      }
+    done
+    (( pending == 0 )) && return 0
+    sleep 3
+  done
+  echo 'Klyrow production containers did not become ready before timeout' >&2
+  return 1
+}
+
+case "$ACTION" in
+  start)
+    require_inventory
+    docker start "${CONTAINERS[@]}" >/dev/null
+    wait_healthy
+    ;;
+  stop)
+    require_inventory
+    docker stop --time 30 "${CONTAINERS[@]}" >/dev/null
+    ;;
+  status)
+    require_inventory
+    for container in "${CONTAINERS[@]}"; do
+      docker inspect --format '{{.Name}}|{{.State.Status}}|{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}|{{.HostConfig.RestartPolicy.Name}}' "$container"
+    done
+    ;;
+  *)
+    echo 'usage: klyrow-production-containers start|stop|status' >&2
+    exit 64
+    ;;
+esac

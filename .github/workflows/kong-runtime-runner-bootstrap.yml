@@ -1,0 +1,165 @@
+name: Kong runtime runner bootstrap
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/kong-runtime-runner-bootstrap.yml"
+      - "operations/kong-runtime/**"
+      - "scripts/install_kong_actions_runner.sh"
+      - "scripts/configure_kong_runtime_runner.sh"
+      - "scripts/validate_kong_runtime_runner_contract.py"
+      - "tests/test_kong_runtime_runner_contract.py"
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type BOOTSTRAP_KONG_STAGING_RUNTIME_RUNNER"
+        required: true
+        type: string
+      runtime_run_id:
+        description: "Exact Kong staging release run waiting at runtime-topology"
+        required: true
+        type: string
+      replace_stale_registration:
+        description: "Replace only the exact offline/non-busy stale runner registration"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kong-runtime-runner-${{ github.event.pull_request.number || inputs.runtime_run_id || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  validate-source:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact pull-request head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Prove exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Validate fail-closed Kong runner contract
+        run: |
+          set -Eeuo pipefail
+          bash -n scripts/install_kong_actions_runner.sh
+          bash -n scripts/configure_kong_runtime_runner.sh
+          python3 scripts/validate_kong_runtime_runner_contract.py
+          python3 -m unittest -v tests/test_kong_runtime_runner_contract.py
+
+  validate-merge-result:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact synthetic merge result
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prove and validate exact merge result
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          bash -n scripts/install_kong_actions_runner.sh
+          bash -n scripts/configure_kong_runtime_runner.sh
+          python3 scripts/validate_kong_runtime_runner_contract.py
+          python3 -m unittest -v tests/test_kong_runtime_runner_contract.py
+
+  bootstrap-staging-runtime:
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: kong-staging-runtime-runner-bootstrap
+    steps:
+      - name: Require exact bootstrap authorization
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -Eeuo pipefail
+          test "$CONFIRMATION" = "BOOTSTRAP_KONG_STAGING_RUNTIME_RUNNER"
+
+      - name: Check out exact protected infrastructure source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Prove exact protected main authority
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_REF_PROTECTED" = true
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git fetch origin main --depth=1
+          test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Revalidate bootstrap contract on protected source
+        run: |
+          set -Eeuo pipefail
+          bash -n scripts/install_kong_actions_runner.sh
+          bash -n scripts/configure_kong_runtime_runner.sh
+          python3 scripts/validate_kong_runtime_runner_contract.py
+          python3 -m unittest -v tests/test_kong_runtime_runner_contract.py
+
+      - name: Materialize protected bootstrap inputs
+        env:
+          ADMIN_TOKEN: ${{ secrets.CODESTRA_REPOSITORY_ADMIN_TOKEN }}
+          SSH_PRIVATE_KEY: ${{ secrets.KONG_RUNTIME_RUNNER_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.KONG_RUNTIME_RUNNER_KNOWN_HOSTS }}
+        run: |
+          set -Eeuo pipefail
+          test -n "$ADMIN_TOKEN"
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$KNOWN_HOSTS"
+          umask 077
+          printf '%s' "$ADMIN_TOKEN" > "$RUNNER_TEMP/admin-token"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$RUNNER_TEMP/ssh-key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/known-hosts"
+          chmod 0600 "$RUNNER_TEMP/admin-token" "$RUNNER_TEMP/ssh-key" "$RUNNER_TEMP/known-hosts"
+
+      - name: Register exact one-job Kong staging runtime runner
+        env:
+          KONG_RUNTIME_RUNNER_HOST: ${{ vars.KONG_RUNTIME_RUNNER_HOST }}
+          KONG_RUNTIME_RUNNER_SSH_USER: ${{ vars.KONG_RUNTIME_RUNNER_SSH_USER }}
+          KONG_RUNTIME_RUNNER_SSH_PORT: ${{ vars.KONG_RUNTIME_RUNNER_SSH_PORT || '22' }}
+          REPLACE_STALE: ${{ inputs.replace_stale_registration }}
+        run: |
+          set -Eeuo pipefail
+          test -n "$KONG_RUNTIME_RUNNER_HOST"
+          test -n "$KONG_RUNTIME_RUNNER_SSH_USER"
+          test -n "$KONG_RUNTIME_RUNNER_SSH_PORT"
+          args=()
+          test "$REPLACE_STALE" != true || args+=(--replace-stale-registration)
+          bash scripts/configure_kong_runtime_runner.sh \
+            --host "$KONG_RUNTIME_RUNNER_HOST" \
+            --ssh-user "$KONG_RUNTIME_RUNNER_SSH_USER" \
+            --ssh-port "$KONG_RUNTIME_RUNNER_SSH_PORT" \
+            --ssh-key-file "$RUNNER_TEMP/ssh-key" \
+            --known-hosts-file "$RUNNER_TEMP/known-hosts" \
+            --admin-token-file "$RUNNER_TEMP/admin-token" \
+            --runtime-run-id "${{ inputs.runtime_run_id }}" \
+            --evidence-file "$RUNNER_TEMP/kong-runtime-runner-evidence.json" \
+            "${args[@]}"
+
+      - name: Upload bounded runner bootstrap evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kong-runtime-runner-bootstrap-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/kong-runtime-runner-evidence.json
+          if-no-files-found: error
+          retention-days: 30

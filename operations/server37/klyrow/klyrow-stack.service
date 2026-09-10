@@ -1,0 +1,15 @@
+[Unit]
+Description=Klyrow production email platform
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/klyrow-production-containers start
+ExecStop=/usr/local/sbin/klyrow-production-containers stop
+TimeoutStartSec=300
+TimeoutStopSec=300
+
+[Install]
+WantedBy=multi-user.target

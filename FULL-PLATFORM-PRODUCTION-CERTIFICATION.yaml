@@ -1,0 +1,161 @@
+PHASE: FULL_PLATFORM_API_INTEGRATION_AND_PRODUCTION_CERTIFICATION
+SERVER: Ubuntu-jammy-latest-amd64-base.zst
+PUBLIC_IPV4: 37.27.128.39
+PRIVATE_IP: 10.40.0.4
+PRODUCTION_SERVICES: 47
+KLYROW_SOURCE_SHA: da9d85891a4e313748e309aed86662d6c03d26bb
+TELNEXA_SOURCE_SHA: 8c18c069103b485ead76446ec979034eb62c748a
+KYQRA_SOURCE_SHA: 58aceb3d1464c6ffd8f9a9b48ee6ef67d5490c29
+PRIVATE_GATEWAY_SOURCE_SHA: 9ec227d6a2b5c14217d88c33a8cfd4e057486c56
+ALL_IMAGES_DIGEST_PINNED: 'NO'
+SOURCE_RUNTIME_DRIFT: 6
+KLYROW_API_ENDPOINTS: 325
+TELNEXA_API_ENDPOINTS: 101
+KYQRA_API_ENDPOINTS: 26
+PRIVATE_GATEWAY_API_ENDPOINTS: 34
+TOTAL_REQUIRED_ENDPOINTS: 134
+IMPLEMENTED_ENDPOINTS: 122
+PARTIAL_ENDPOINTS: 12
+MISSING_ENDPOINTS: 0
+KLYROW_OPENAPI: FAIL
+TELNEXA_OPENAPI: FAIL
+KYQRA_OPENAPI: FAIL
+PRIVATE_GATEWAY_OPENAPI: FAIL
+OPENBAO: FAIL
+KEYCLOAK: FAIL
+POSTAL: FAIL
+MAUTIC: PASS
+JASMIN: FAIL
+MTLS: FAIL
+DNS: PASS
+TLS: PASS
+POSTGRES: FAIL
+MARIADB: FAIL
+REDIS: FAIL
+RABBITMQ: FAIL
+PROMETHEUS: PASS
+GRAFANA: PASS
+OBSERVABILITY: FAIL
+BACKUPS: FAIL
+RESTORE: FAIL
+SECURITY: FAIL
+ROLLBACK: FAIL
+KLYROW_EMAIL_E2E: FAIL
+TELNEXA_SMS_E2E: FAIL
+KYQRA_E2E: FAIL
+PRIVATE_INTEGRATION_E2E: FAIL
+PRODUCTION_CHANGED: 'YES'
+OVERALL_VERDICT: PRODUCTION_BLOCKED
+CLASSIFICATIONS:
+  NGINX: PASS
+  OPENBAO: FAIL
+  KLYROW_GATEWAY: FAIL
+  KLYROW_WORKER: PASS
+  KLYROW_BILLING: FAIL
+  KLYROW_SMTP: PASS
+  KLYROW_FRONTEND: FAIL
+  POSTAL: PASS
+  MAUTIC: PASS
+  TELNEXA_SMS: PASS
+  TELNEXA_BILLING: FAIL
+  KEYCLOAK: PASS
+  KYQRA: FAIL
+  PRIVATE_GATEWAY: FAIL
+  POSTGRES: PASS
+  MARIADB: PASS
+  REDIS: PASS
+  RABBITMQ: PASS
+  PROMETHEUS: PASS
+  GRAFANA: PASS
+  MTLS: FAIL
+  DNS: PASS
+  TLS: PASS
+  API_CONTRACTS: FAIL
+  IDEMPOTENCY: FAIL
+  AUTH: FAIL
+  RBAC: FAIL
+  AUDIT: FAIL
+  BACKUPS: FAIL
+  RESTORE: FAIL
+  OBSERVABILITY: FAIL
+  SECURITY: FAIL
+  SOURCE_PROVENANCE: FAIL
+  ROLLBACK: FAIL
+BLOCKERS:
+- blocker: OpenBao is uninitialized and sealed; initialization needs independent recovery-share and root-token custody approval.
+  owner: platform owner and independent recovery custodians
+  repository: codestra-openbao-production
+  component: OPENBAO
+  required_action: Approve and perform guarded initialization with independent custody, TLS audit enablement, backup, and
+    isolated restore drill.
+  validation_after_action: Seal status initialized=true and sealed=false; audit, policy, AppRole, off-host backup, and recovery
+    evidence all pass.
+- blocker: The private gateway candidate preserves the event-ingress and durable operation contracts, but its checked-in shared
+    production edge authorizes only the SMS command channel; provider-specific downstream dispatch authorities and credentials
+    for other channels are unavailable.
+  owner: Klyrow, Telnexa, Kyqra, and platform repository owners
+  repository: https://github.com/appolon1908-hue/codestra-production-platform
+  component: PRIVATE_GATEWAY
+  required_action: Approve concrete provider adapter contracts, networks, service identities, scopes, and credentials; implement
+    each bounded dispatcher behind the durable operation engine.
+  validation_after_action: Protected image deployment, runtime OpenAPI parity, positive mTLS authorization, bounded dispatch/reconciliation,
+    and controlled integration E2E pass.
+- blocker: This regenerated infrastructure evidence requires independent review and exact-head CI before merge.
+  owner: independent infrastructure repository reviewer
+  repository: https://github.com/appolon1908-hue/Infustruction-repo
+  component: RELEASE_PROCESS
+  required_action: Review and approve infrastructure pull request 57 at its exact head after the protected application sources
+    are recorded.
+  validation_after_action: Exact-head and merge-result CI pass, the evidence pull request is approved and merged normally,
+    and its protected destination SHA is recorded.
+- blocker: No approved provider test mailbox, SMS sandbox number, positive mTLS client certificate, Mautic API credential,
+    or off-host backup target is available.
+  owner: platform owner and provider credential custodians
+  repository: N/A
+  component: E2E_BACKUP_RESTORE
+  required_action: Provide scoped test identities/targets and off-host backup authority without exposing credential values.
+  validation_after_action: Controlled email, SMS, crawler, private-mTLS, secret-read, off-host backup, and isolated restore
+    tests pass.
+OBSERVATION_MODE: RECORDED_EVIDENCE_NO_RUNTIME_PROBE
+EVIDENCE_BINDINGS:
+  OFF_HOST_BACKUP:
+    path: STAGE6-BACKUP-EVIDENCE.md
+    sha256: 251469917a895aa0de4ea0b45a6eab9204181a57866eb76ba4486f20612f9067
+    status: FAIL
+  ISOLATED_RESTORE:
+    path: SERVER-37-RESTORE-EVIDENCE.md
+    sha256: c88f29e3fb2369a62d805e5b07c2043488298ddd10549c76cea5b7f06dc9af77
+    status: FAIL
+  CONTROLLED_EMAIL_E2E:
+    path: STAGE7-E2E-TRACE-EVIDENCE.md
+    sha256: 7db126afc36f191e5c35d7ee1b2417a1c1b262b850274a3c0fb274029d02a61e
+    status: FAIL
+  CONTROLLED_SMS_E2E:
+    path: STAGE7-E2E-TRACE-EVIDENCE.md
+    sha256: 7db126afc36f191e5c35d7ee1b2417a1c1b262b850274a3c0fb274029d02a61e
+    status: FAIL
+  CONTROLLED_PRIVATE_INTEGRATION_E2E:
+    path: SERVER-37-KLYROW-EVENT-DELIVERY-EVIDENCE.md
+    sha256: 0c9df7c43e2eb2d2fd7d62ac6bee0c1fb0443f56ad367ba9569d904a003a3c78
+    status: FAIL
+  KEYCLOAK_AUTH_E2E:
+    path: SERVER-37-PRODUCTION-API-MATRIX.yaml
+    sha256: c49c8e1ca41c65d2cd31edd65454a0f956ed591adeca4449dd48ed0f1ab37c41
+    status: FAIL
+  MAUTIC_KLYROW_E2E:
+    path: SERVER-37-MAUTIC-INTEGRATION-EVIDENCE.md
+    sha256: afed0c21dcd66f839f0e97b3dc5637e9794ded86f957992d0f2663ae0a828833
+    status: PASS
+  ALERT_AND_RETENTION_E2E:
+    path: STAGE7-OBSERVABILITY-EVIDENCE.md
+    sha256: 8403ea34d6a43e72d3ee9195202838e293360fba8b247ddb99dd32e9b3eba66b
+    status: FAIL
+RECORDED_INPUTS:
+  PRODUCTION-RUNTIME-INVENTORY.yaml:
+    sha256: 987a720beb690beb7c4d0b5c6d4b62e1934c5ab49d1181eccb04fbc30d72f14f
+  PRODUCTION-API-MATRIX.yaml:
+    sha256: 0b50e4064e8ecb4c0c1777aff5a5142f5cf1852f99c24206f3b12ba21f8c8312
+  SERVER-37-PRODUCTION-GATE-EVIDENCE.yaml:
+    sha256: 0d458cbb8f5d6be356a8f33de7eedeef12419415b4f75e2d07edc271c10d6209
+  SERVER-37-PRODUCTION-ROLLBACK.yaml:
+    sha256: fdc6db2ead26c60db7fc7c104aac275721312d830686335b348f5af6be7b67b3
