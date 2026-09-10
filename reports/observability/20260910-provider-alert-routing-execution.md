@@ -1,5 +1,36 @@
 # Provider alert routing and observability execution — 2026-09-10
 
+## Follow-up: protected trust workflow repaired
+
+After the user approved continuation, the failing Middleware workflow was repaired
+in the existing PR215. Its earlier candidate combined the exact preauthorized
+workflow with a trust-launcher change that the protected gate correctly rejected.
+The new candidate keeps the launcher byte-for-byte equal to protected main and
+uses the workflow digest already authorized there. No trust allowlist in the
+launcher, review requirement, signature check or server-side control was weakened.
+
+- PR215 head 81da75ed71abd8803e3e85aeef027b83a22a4901: all 32 GitHub checks pass,
+  including trusted-orchestrator-evidence. Auto-merge remains enabled, awaiting
+  fresh independent security CODEOWNER review.
+- PR224 head e8eb9c5499cf163fbce4946cc0cd01bb20e315cf: the repaired dependency is
+  merged into the alert-ingestion branch; all 36 GitHub checks pass.
+- Combined local validation: 51 alert/trust tests pass. The actual unchanged
+  protected-main launcher also validated the committed workflow candidate from
+  a separate temporary protected-root directory. Governance, production contract
+  and observability contract validators pass.
+- The repository CODEOWNERS file assigns the production trust workflow and its
+  governance validator to @kazan555. Chat approval authorizes execution but does
+  not supply this independent GitHub review. Merge PR215 first, then refresh and
+  revalidate PR224 against the accepted main before its merge/release.
+- Strict HTTPS Keycloak discovery returned 200 with issuer
+  https://auth.codestra.co/realms/codestra and matching authorization/token/JWKS
+  endpoints. This does not establish an interactive Grafana/Superset login.
+
+The earlier trust-failure diagnosis below is historical. The source defect is
+now corrected in green PRs; required independent GitHub review and protected
+release/deployment gates remain. No runtime transport cutover, new delivery,
+Grafana/Superset deployment or OpenBao initialization occurred in this follow-up.
+
 Evidence refreshed at 14:09 UTC. The full provider-to-Middleware chain is **not complete**.
 Core routing repairs are live; provider transport, canonical Middleware activation,
 and the remaining production services are still gated.
