@@ -1,0 +1,126 @@
+# Grafana workflow conflict resolution
+
+This is a review record. The workflow below was validated locally and is not installed or executed from this document. GitHub rejected the original push because the provider OAuth credential lacks workflow-write scope.
+
+- Repository: appolon1908-hue/Codestra-Grafana-
+- Target PR: https://github.com/appolon1908-hue/Codestra-Grafana-/pull/25
+- File: `.github/workflows/validate-codestra-observability.yml`
+- Original candidate: `67174f2e133ee17756a73b66971764c63e4c6bc1`
+- Merged main: `97b7efd9c0e80e7dfd9e01db977bb34f4d0dec5b`
+- Local resolved merge commit: `853c5615eb2ded718196559e98b3734c9050be52`
+- Validation: 15 tests, staging and hardened Compose renders, corporate and private-service validators all pass.
+
+```yaml
+name: Validate Codestra Grafana corporate control plane
+
+on:
+  pull_request:
+  push:
+    branches: [development, test, staging, production, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codestra-grafana-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Prove exact source identity
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned validator dependency
+        run: python -m pip install --disable-pip-version-check --no-cache-dir PyYAML==6.0.3
+
+      - name: Compile deterministic generators and validators
+        env:
+          PYTHONPYCACHEPREFIX: /tmp/codestra-grafana-pycache
+        run: python -m py_compile scripts/generate_codestra_dashboards.py scripts/validate_codestra_observability.py scripts/validate_private_service_authority.py tests/test_private_service_authority.py scripts/validate_staging_observability.py scripts/deploy_staging_runtime.py
+
+      - name: Validate registry, SSO, datasources, RBAC, dashboards, and packaging
+        run: |
+          python scripts/validate_codestra_observability.py
+          python scripts/validate_staging_observability.py
+
+      - name: Render dedicated staging Grafana authority
+        env:
+          GRAFANA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GRAFANA_ROOT_URL: https://graf.codestra.media/
+          GRAFANA_ADMIN_PASSWORD_FILE: /tmp/not-read-during-compose-render-admin
+          GRAFANA_SECRET_KEY_FILE: /tmp/not-read-during-compose-render-key
+        run: |
+          python scripts/deploy_staging_runtime.py \
+            --mode render \
+            --source-sha "$GRAFANA_SOURCE_SHA" \
+            --root-url "$GRAFANA_ROOT_URL" \
+            --admin-password-file "$GRAFANA_ADMIN_PASSWORD_FILE" \
+            --secret-key-file "$GRAFANA_SECRET_KEY_FILE"
+          docker compose -f codestra/deploy/staging/compose.yaml config > /tmp/codestra-grafana-staging.yaml
+          test -s /tmp/codestra-grafana-staging.yaml
+          grep -F 'grafana/grafana:13.2.0@sha256:3fd54ae1214669f8355f065ec9f6445d5279a3d77095ab048ca045685272429b' /tmp/codestra-grafana-staging.yaml
+          ! grep -Eq 'privileged: true|seccomp.*unconfined|host_ip:|published:' /tmp/codestra-grafana-staging.yaml
+
+      - name: Validate private-service and repository-name authority
+        run: python scripts/validate_private_service_authority.py
+
+      - name: Run authority regression tests
+        env:
+          PYTHONPYCACHEPREFIX: /tmp/codestra-grafana-pycache
+        run: python -m unittest discover -s tests -p 'test_*.py'
+
+      - name: Render hardened Compose candidate
+        env:
+          CODESTRA_GRAFANA_IMAGE: ghcr.io/appolon1908-hue/codestra-grafana--grafana@sha256:2222222222222222222222222222222222222222222222222222222222222222
+          CODESTRA_SOURCE_SHA: '0000000000000000000000000000000000000000'
+          CODESTRA_IMAGE_DIGEST: sha256:2222222222222222222222222222222222222222222222222222222222222222
+          CODESTRA_ENVIRONMENT: test
+          CODESTRA_REGION: ci
+          CODESTRA_DEPLOYMENT_ID: exact-head-ci
+          GF_DATABASE_HOST: postgres-grafana:5432
+          GF_DATABASE_NAME: grafana
+          GRAFANA_HOST_PORT: '3000'
+          GRAFANA_OIDC_CLIENT_SECRET_FILE: /tmp/not-read-during-render
+          GRAFANA_DATABASE_USER_FILE: /tmp/not-read-during-render
+          GRAFANA_DATABASE_PASSWORD_FILE: /tmp/not-read-during-render
+          GRAFANA_DATABASE_CA_FILE: /tmp/not-read-during-render
+          GRAFANA_SECRET_KEY_FILE: /tmp/not-read-during-render
+        run: |
+          docker compose -f codestra/deploy/compose.candidate.yaml config > /tmp/codestra-grafana-compose.yaml
+          test -s /tmp/codestra-grafana-compose.yaml
+          grep -Eq 'host_ip:[[:space:]]*127\.0\.0\.1' /tmp/codestra-grafana-compose.yaml
+          ! grep -Eq 'host_ip:[[:space:]]*(0\.0\.0\.0|::)|:latest([[:space:]]|$)|privileged: true|/var/run/docker\.sock' /tmp/codestra-grafana-compose.yaml
+
+      - name: Confirm source-only safety state
+        run: |
+          test "$(python -c 'import json; print(json.load(open("codestra/runtime.v1.json"))["status"])')" = "CONFIG_PREPARED_NOT_DEPLOYED"
+          test "$(python -c 'import json; print(json.load(open("codestra/rbac-policy.json"))["status"])')" = "POLICY_PREPARED_NOT_APPLIED"
+          python - <<'PY'
+          import json
+          runtime = json.load(open('codestra/runtime.v1.json', encoding='utf-8'))
+          assert runtime['activation']
+          assert all(value is False for value in runtime['activation'].values())
+          PY
+
+```
