@@ -16,17 +16,19 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1221155447
     },
     {
       "name": "codestra-production-platform",
       "repository": "appolon1908-hue/codestra-production-platform",
       "url": "https://github.com/appolon1908-hue/codestra-production-platform",
-      "design_group": "Governance/shared source",
-      "proposed_monitoring_profile": "release-and-dependency",
+      "design_group": "Runtime and shared source",
+      "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
-      "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "classification_basis": "Deployable application/optional service units are present in source; release service mappings remain unverified",
+      "service_ids": [],
+      "repository_id": 1314230781
     },
     {
       "name": "Codestraxxxx",
@@ -36,7 +38,8 @@
       "proposed_monitoring_profile": "classify-before-target-registration",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1319798768
     },
     {
       "name": "codestra",
@@ -46,7 +49,8 @@
       "proposed_monitoring_profile": "classify-before-target-registration",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1319808791
     },
     {
       "name": "beyvra-backend",
@@ -56,7 +60,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1319831182
     },
     {
       "name": "codestra-backend",
@@ -66,7 +71,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1319883343
     },
     {
       "name": "backend2",
@@ -76,7 +82,8 @@
       "proposed_monitoring_profile": "classify-before-target-registration",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1319903950
     },
     {
       "name": "beyvra-frontend",
@@ -86,17 +93,22 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1320246591
     },
     {
       "name": "scrapper",
       "repository": "appolon1908-hue/scrapper",
       "url": "https://github.com/appolon1908-hue/scrapper",
-      "design_group": "Applications/websites",
-      "proposed_monitoring_profile": "runtime-or-website",
+      "design_group": "Archival source",
+      "proposed_monitoring_profile": "release-and-dependency",
       "runtime_coverage": "unverified",
-      "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "classification_basis": "Canonical repository policy preserves this lineage for migration/source evidence only",
+      "service_ids": [],
+      "repository_id": 1329513537,
+      "repository_lifecycle": "archival",
+      "runtime_onboarding_allowed": false,
+      "canonical_runtime_repository": "appolon1908-hue/kyqra-crawler"
     },
     {
       "name": "Breero.com",
@@ -106,7 +118,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1331354808
     },
     {
       "name": "booked4seasons",
@@ -116,17 +129,22 @@
       "proposed_monitoring_profile": "classify-before-target-registration",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1332044491
     },
     {
       "name": "kyqra",
       "repository": "appolon1908-hue/kyqra",
       "url": "https://github.com/appolon1908-hue/kyqra",
-      "design_group": "Applications/websites",
-      "proposed_monitoring_profile": "runtime-or-website",
+      "design_group": "Archival source",
+      "proposed_monitoring_profile": "release-and-dependency",
       "runtime_coverage": "unverified",
-      "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "classification_basis": "Canonical repository policy preserves this lineage for migration/source evidence only",
+      "service_ids": [],
+      "repository_id": 1334764212,
+      "repository_lifecycle": "archival",
+      "runtime_onboarding_allowed": false,
+      "canonical_runtime_repository": "appolon1908-hue/kyqra-crawler"
     },
     {
       "name": "telnexa",
@@ -136,7 +154,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1334764612
     },
     {
       "name": "kyqra-crawler",
@@ -146,7 +165,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1334792686
     },
     {
       "name": "klyrow.com",
@@ -156,7 +176,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1334863061
     },
     {
       "name": "codestra-provisioning-service",
@@ -166,7 +187,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1339900477
     },
     {
       "name": "Moneybee-frontend-",
@@ -176,7 +198,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1343759743
     },
     {
       "name": "Moneybee-Backend",
@@ -186,7 +209,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1343760409
     },
     {
       "name": "transportaion-Frontend",
@@ -196,7 +220,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1343761049
     },
     {
       "name": "transportation-backend-",
@@ -206,7 +231,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1343761943
     },
     {
       "name": "LARIM-A-Fornt-end",
@@ -216,7 +242,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1343962199
     },
     {
       "name": "LARIM-A-Backend",
@@ -226,7 +253,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1343962951
     },
     {
       "name": "Telnexa-web",
@@ -236,7 +264,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1346958528
     },
     {
       "name": "klyrow-Website-",
@@ -246,7 +275,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1346968526
     },
     {
       "name": "Odoo",
@@ -256,7 +286,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1347522940
     },
     {
       "name": "Keycloak",
@@ -266,7 +297,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1347523366
     },
     {
       "name": "Middleware-",
@@ -276,7 +308,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1347559071
     },
     {
       "name": "N8N",
@@ -286,7 +319,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1347560645
     },
     {
       "name": "Vicidialer-Codestra",
@@ -296,7 +330,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1347744324
     },
     {
       "name": "Kong",
@@ -306,7 +341,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1347790742
     },
     {
       "name": "social.codestra.co",
@@ -316,17 +352,19 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1348783113
     },
     {
       "name": "SDK-repository",
       "repository": "appolon1908-hue/SDK-repository",
       "url": "https://github.com/appolon1908-hue/SDK-repository",
-      "design_group": "Governance/shared source",
-      "proposed_monitoring_profile": "release-and-dependency",
+      "design_group": "Runtime and shared source",
+      "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
-      "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "classification_basis": "Deployable application/optional service units are present in source; release service mappings remain unverified",
+      "service_ids": [],
+      "repository_id": 1349042079
     },
     {
       "name": "Caddy",
@@ -336,7 +374,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350228103
     },
     {
       "name": "documentaions",
@@ -346,7 +385,8 @@
       "proposed_monitoring_profile": "release-and-dependency",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350724356
     },
     {
       "name": "Infustruction-repo",
@@ -356,7 +396,8 @@
       "proposed_monitoring_profile": "release-and-dependency",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350724865
     },
     {
       "name": "communication-platform-",
@@ -366,7 +407,8 @@
       "proposed_monitoring_profile": "release-and-dependency",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350725438
     },
     {
       "name": "Codestra-Grafana-",
@@ -376,7 +418,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350767762
     },
     {
       "name": "Codestra-Prometheus",
@@ -386,7 +429,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350767800
     },
     {
       "name": "Codestra-Alertmanager",
@@ -396,7 +440,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350767845
     },
     {
       "name": "Codestra-Loki",
@@ -406,7 +451,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350767886
     },
     {
       "name": "Codestra-Telemetry",
@@ -416,7 +462,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350769372
     },
     {
       "name": "Codestra-Tempo",
@@ -426,7 +473,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350769497
     },
     {
       "name": "Superset",
@@ -436,7 +484,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350771770
     },
     {
       "name": "Codestra-Node-Exporter",
@@ -446,7 +495,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350787277
     },
     {
       "name": "Codestra-cAdvisor",
@@ -456,7 +506,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350787755
     },
     {
       "name": "Codestra-Redis-Exporter",
@@ -466,7 +517,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350788067
     },
     {
       "name": "Codestra-Blackbox-Exporter",
@@ -476,7 +528,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350788687
     },
     {
       "name": "Codestra-Alloy",
@@ -486,7 +539,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350788969
     },
     {
       "name": "Codestra-OpenBao",
@@ -496,7 +550,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350795432
     },
     {
       "name": "Codestra-Postgres-Exporter",
@@ -506,7 +561,8 @@
       "proposed_monitoring_profile": "native-component",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1350839865
     },
     {
       "name": "Codestra-Marketing-",
@@ -516,7 +572,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1351352422
     },
     {
       "name": "Codestra-Communication-CC",
@@ -526,7 +583,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1351353098
     },
     {
       "name": "Codesrea-Social-",
@@ -536,7 +594,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1351353723
     },
     {
       "name": "Codestra-AI",
@@ -546,7 +605,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1351354401
     },
     {
       "name": "codestra-foundation",
@@ -556,7 +616,8 @@
       "proposed_monitoring_profile": "release-and-dependency",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1351529599
     },
     {
       "name": "codestra-production-runtime-authority",
@@ -566,7 +627,8 @@
       "proposed_monitoring_profile": "release-and-dependency",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1353559375
     },
     {
       "name": "Websocket-",
@@ -576,7 +638,8 @@
       "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1357322123
     },
     {
       "name": "Database-migrations-",
@@ -586,17 +649,19 @@
       "proposed_monitoring_profile": "release-and-dependency",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1359115629
     },
     {
       "name": "codestra-server-c",
       "repository": "appolon1908-hue/codestra-server-c",
       "url": "https://github.com/appolon1908-hue/codestra-server-c",
-      "design_group": "Governance/shared source",
-      "proposed_monitoring_profile": "release-and-dependency",
+      "design_group": "Runtime and shared source",
+      "proposed_monitoring_profile": "runtime-or-website",
       "runtime_coverage": "unverified",
-      "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "classification_basis": "Deployable application/optional service units are present in source; release service mappings remain unverified",
+      "service_ids": [],
+      "repository_id": 1361975444
     },
     {
       "name": "codestra-ruleset-toolkit",
@@ -606,7 +671,8 @@
       "proposed_monitoring_profile": "release-and-dependency",
       "runtime_coverage": "unverified",
       "classification_basis": "Design assignment; verify deployable units before activation",
-      "service_ids": []
+      "service_ids": [],
+      "repository_id": 1362180048
     },
     {
       "name": "Backstage",
@@ -622,7 +688,8 @@
         "conclusion": "success",
         "url": "https://github.com/appolon1908-hue/Backstage/actions/runs/34493359172",
         "scope": "Existing validate workflow at this SHA; does not certify the new change or production"
-      }
+      },
+      "repository_id": 1364315703
     },
     {
       "name": "Sentry",
@@ -638,7 +705,8 @@
         "conclusion": "success",
         "url": "https://github.com/appolon1908-hue/Sentry/actions/runs/34493357611",
         "scope": "Existing validate workflow at this SHA; does not certify the new change or production"
-      }
+      },
+      "repository_id": 1364321063
     },
     {
       "name": "Wazuh",
@@ -654,7 +722,8 @@
         "conclusion": "success",
         "url": "https://github.com/appolon1908-hue/Wazuh/actions/runs/34493360046",
         "scope": "Existing validate workflow at this SHA; does not certify the new change or production"
-      }
+      },
+      "repository_id": 1364322402
     }
   ],
   "component_ownership": [
@@ -663,77 +732,77 @@
       "component": "Grafana",
       "documented_dns": "graf.codestra.media",
       "owns": "Operational dashboards, datasource provisioning and drilldowns",
-      "flow": "Prometheus, Loki, Tempo → operators"
+      "flow": "Prometheus, Loki, Tempo \u2192 operators"
     },
     {
       "repository": "appolon1908-hue/Codestra-Prometheus",
       "component": "Prometheus",
       "documented_dns": "prom.codestra.media",
       "owns": "Scrapes, metric storage, recording rules and alert rules",
-      "flow": "Exporters/apps → Prometheus → Grafana and Alertmanager"
+      "flow": "Exporters/apps \u2192 Prometheus \u2192 Grafana and Alertmanager"
     },
     {
       "repository": "appolon1908-hue/Codestra-Alertmanager",
       "component": "Alertmanager",
       "documented_dns": "aler.codestra.media",
       "owns": "Grouping, inhibition, silences and receiver routing",
-      "flow": "Prometheus → durable Middleware incident API"
+      "flow": "Prometheus \u2192 durable Middleware incident API"
     },
     {
       "repository": "appolon1908-hue/Codestra-Loki",
       "component": "Loki",
       "documented_dns": "loki.codestra.media",
       "owns": "Sanitized logs, tenancy and retention",
-      "flow": "Alloy/OTel → Loki → Grafana"
+      "flow": "Alloy/OTel \u2192 Loki \u2192 Grafana"
     },
     {
       "repository": "appolon1908-hue/Codestra-Telemetry",
       "component": "OpenTelemetry",
       "documented_dns": "otel.codestra.media",
       "owns": "Gateway pipelines, trace propagation, batching and redaction",
-      "flow": "SDKs/Alloy → OTel → Tempo; optional OTLP logs/metrics"
+      "flow": "SDKs/Alloy \u2192 OTel \u2192 Tempo; optional OTLP logs/metrics"
     },
     {
       "repository": "appolon1908-hue/Codestra-Tempo",
       "component": "Tempo",
       "documented_dns": "temp.codestra.media",
       "owns": "Trace ingestion, storage and query",
-      "flow": "OTel → Tempo → Grafana"
+      "flow": "OTel \u2192 Tempo \u2192 Grafana"
     },
     {
       "repository": "appolon1908-hue/Codestra-Alloy",
       "component": "Alloy",
       "documented_dns": "allo.codestra.media",
       "owns": "Host log collection and local OTLP forwarding",
-      "flow": "Each host → central telemetry services"
+      "flow": "Each host \u2192 central telemetry services"
     },
     {
       "repository": "appolon1908-hue/Codestra-Node-Exporter",
       "component": "Node Exporter",
       "documented_dns": "node.codestra.media",
       "owns": "CPU, RAM, filesystem, network and host pressure",
-      "flow": "Each host → Prometheus"
+      "flow": "Each host \u2192 Prometheus"
     },
     {
       "repository": "appolon1908-hue/Codestra-cAdvisor",
       "component": "cAdvisor",
       "documented_dns": "cadv.codestra.media",
       "owns": "Container resource use and runtime inventory",
-      "flow": "Each container host → Prometheus"
+      "flow": "Each container host \u2192 Prometheus"
     },
     {
       "repository": "appolon1908-hue/Codestra-Redis-Exporter",
       "component": "Redis Exporter",
       "documented_dns": "rdex.codestra.media",
       "owns": "Redis availability, memory, persistence and connections",
-      "flow": "Each Redis deployment → Prometheus"
+      "flow": "Each Redis deployment \u2192 Prometheus"
     },
     {
       "repository": "appolon1908-hue/Codestra-Postgres-Exporter",
       "component": "PostgreSQL Exporter",
       "documented_dns": null,
       "owns": "Database availability, pools, locks, replication and storage",
-      "flow": "Each PostgreSQL deployment → Prometheus",
+      "flow": "Each PostgreSQL deployment \u2192 Prometheus",
       "private_service_identity": "postgres-exporter:9187"
     },
     {
@@ -741,42 +810,42 @@
       "component": "Blackbox Exporter",
       "documented_dns": "blac.codestra.media",
       "owns": "Registered HTTP/TLS/DNS/TCP availability probes",
-      "flow": "Approved website/API targets → Prometheus"
+      "flow": "Approved website/API targets \u2192 Prometheus"
     },
     {
       "repository": "appolon1908-hue/Superset",
       "component": "Superset",
       "documented_dns": "supe.codestra.media",
       "owns": "Business analytics over curated read models",
-      "flow": "Read-only analytics views → business users"
+      "flow": "Read-only analytics views \u2192 business users"
     },
     {
       "repository": "appolon1908-hue/Codestra-OpenBao",
       "component": "OpenBao",
       "documented_dns": "bao.codestra.media",
       "owns": "Workload secrets and PKI; non-secret health monitoring",
-      "flow": "Machine identities → secret references; health → Prometheus"
+      "flow": "Machine identities \u2192 secret references; health \u2192 Prometheus"
     },
     {
       "repository": "appolon1908-hue/Backstage",
       "component": "Backstage",
       "documented_dns": null,
       "owns": "Service and repository catalog; ownership and API discovery",
-      "flow": "Private native API → Middleware read adapter → operations UI"
+      "flow": "Private native API \u2192 Middleware read adapter \u2192 operations UI"
     },
     {
       "repository": "appolon1908-hue/Sentry",
       "component": "Sentry",
       "documented_dns": null,
       "owns": "Application exceptions and release-level error evidence",
-      "flow": "Private native API → Middleware read adapter → operations UI"
+      "flow": "Private native API \u2192 Middleware read adapter \u2192 operations UI"
     },
     {
       "repository": "appolon1908-hue/Wazuh",
       "component": "Wazuh",
       "documented_dns": null,
       "owns": "Security agent status and sanitized security observations",
-      "flow": "Private native API → Middleware read adapter → operations UI"
+      "flow": "Private native API \u2192 Middleware read adapter \u2192 operations UI"
     }
   ],
   "middleware_endpoint_design": [
@@ -1902,12 +1971,12 @@
     }
   ],
   "signal_paths": {
-    "metrics": "Registered app/exporter → central Prometheus private scrape → Grafana/Observability API; Prometheus rules → Alertmanager",
-    "logs": "stdout/journal → Alloy → Loki → Grafana/Observability API; OTLP-only log sources use OTel → Loki /otlp/v1/logs instead",
-    "traces": "SDK → local Alloy OTLP receiver → central OpenTelemetry gateway → Tempo → Grafana/Observability API",
-    "alerts": "Prometheus → Alertmanager → existing Middleware events API → durable incident/outbox → existing command executor/Temporal → Klyrow adapter → provider read-back",
-    "configuration": "Component Git authorities + service descriptors → tested immutable release → approved reconciler → observed revision/read-back",
-    "analytics": "Odoo/Middleware/provider event projections → curated read-only views → Superset"
+    "metrics": "Registered app/exporter \u2192 central Prometheus private scrape \u2192 Grafana/Observability API; Prometheus rules \u2192 Alertmanager",
+    "logs": "stdout/journal \u2192 Alloy \u2192 Loki \u2192 Grafana/Observability API; OTLP-only log sources use OTel \u2192 Loki /otlp/v1/logs instead",
+    "traces": "SDK \u2192 local Alloy OTLP receiver \u2192 central OpenTelemetry gateway \u2192 Tempo \u2192 Grafana/Observability API",
+    "alerts": "Prometheus \u2192 Alertmanager \u2192 existing Middleware events API \u2192 durable incident/outbox \u2192 existing command executor/Temporal \u2192 Klyrow adapter \u2192 provider read-back",
+    "configuration": "Component Git authorities + service descriptors \u2192 tested immutable release \u2192 approved reconciler \u2192 observed revision/read-back",
+    "analytics": "Odoo/Middleware/provider event projections \u2192 curated read-only views \u2192 Superset"
   },
   "catalog_example": {
     "design_status": "proposed envelope; not a direct current API request",
