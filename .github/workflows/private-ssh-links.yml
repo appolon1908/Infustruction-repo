@@ -1,0 +1,37 @@
+name: Validate private SSH links
+
+on:
+  pull_request:
+    paths:
+      - "scripts/manage_private_ssh_links.py"
+      - "tests/test_private_ssh_links.py"
+      - "docs/PRIVATE-SERVER-SSH.md"
+      - ".github/workflows/private-ssh-links.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/manage_private_ssh_links.py"
+      - "tests/test_private_ssh_links.py"
+      - "docs/PRIVATE-SERVER-SSH.md"
+      - ".github/workflows/private-ssh-links.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  private-ssh-links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+      - name: Validate private SSH configuration without changing accounts
+        run: |
+          set -Eeuo pipefail
+          python3 -m py_compile scripts/manage_private_ssh_links.py
+          python3 -m unittest discover -s tests -p test_private_ssh_links.py -v
+          git diff --check
