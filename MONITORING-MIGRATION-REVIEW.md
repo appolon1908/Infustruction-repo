@@ -1,6 +1,6 @@
 # Monitoring migration and release review
 
-The 36-operation implementation is committed in [Middleware PR 226](https://github.com/appolon1908-hue/Middleware-/pull/226), source `cedaa23b89f84f365ae6789413411c3f01516952`. Runtime deployment remains unverified and no production activation is authorized.
+The 36-operation implementation is committed in [Middleware PR 226](https://github.com/appolon1908-hue/Middleware-/pull/226), source `e9ec06ac02f9b3ffe3149b8e266f023813be59fb`. The API is not deployed; protected production release approval remains outstanding.
 
 ## Separate schema-authority review required
 
@@ -16,9 +16,9 @@ The authority file is `config/middleware-forward-release-authority.v1.json` in M
 
 The migration creates `monitoring_resources`, `monitoring_operations` and `monitoring_events`, with tenant keys, replay uniqueness, revision ordering and scoped indexes. Runtime never auto-creates tables. The focused suite applies the actual migration and exercises durable observations, concurrent replay, scoped reads and all 36 routes. Empty downgrade/reupgrade is supported for the existing disposable CI rehearsal. Downgrade takes an exclusive lock and refuses to remove any nonempty monitoring evidence. Application rollback preserves these tables; retained data requires the reviewed export/restore process.
 
-## Existing trust-workflow mismatch
+## Trust-workflow transition verified
 
-The protected launcher also rejects `.github/workflows/production-orchestrator-contract.yml`: its SHA-256 is `5d5f118c8089a7298cc7439327689f862bf669bad46ec9160a0b5763fa11e869`, which is absent from the launcher's approved workflow hashes. These workflow bytes are unchanged from implementation base `b02f29f84e801fb38592be98624790892607964b`. This change does not edit the protected trust launcher or its approval list. A separate authorized trust-root review must reconcile that baseline mismatch.
+The earlier baseline workflow hash mismatch is resolved in current main and the synchronized API branch. For source `e9ec06ac02f9b3ffe3149b8e266f023813be59fb`, [trusted production orchestrator evidence](https://github.com/appolon1908-hue/Middleware-/actions/runs/34509646016) and [production orchestrator contract](https://github.com/appolon1908-hue/Middleware-/actions/runs/34509645974) both passed. The separate schema/history authority gate remains outstanding.
 
 ## Release evidence still needed
 
