@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-09-10T13:27:34Z",
+  "overall_status": "PARTIALLY_DEPLOYED_PROVIDER_NOT_COMPLETE",
+  "core": {
+    "host": "65.109.65.169",
+    "healthy_targets": 38,
+    "total_targets": 38,
+    "application_probe_success": {
+      "odoo": 1,
+      "n8n": 1,
+      "middleware": 1,
+      "vicidial_adapter": 1
+    },
+    "application_probe_scope": {
+      "odoo": "HTTP liveness only",
+      "n8n": "database readiness",
+      "middleware": "runtime readiness",
+      "vicidial_adapter": "core adapter worker readiness; remote Asterisk/call flow not certified"
+    },
+    "merged_source": "8ee5fd1b62a18cadfa6bfe917c21a679aa798b1b",
+    "pull_request": "https://github.com/appolon1908-hue/codestra-production-platform/pull/338",
+    "validation": "7 Prometheus rule scenarios pass; all 5 PR checks passed; live reload HTTP 200; 5 new alert rules healthy/inactive",
+    "deployment": {
+      "prometheus_restarted": false,
+      "prometheus_image_changed": false,
+      "blackbox_recreated": true,
+      "blackbox_networks": [
+        "codestra-monitoring_monitoring",
+        "codestra_backend",
+        "codestra_edge"
+      ],
+      "backup_paths": [
+        "/var/backups/codestra/blackbox-network/20260910T124928Z",
+        "/var/backups/codestra/application-monitoring/20260910T130411Z"
+      ]
+    }
+  },
+  "provider": {
+    "host": "37.27.128.39",
+    "runtime_changed": false,
+    "loki_deployed": false,
+    "tempo_deployed": false,
+    "alloy_deployed": false,
+    "otel_collector_deployed": false,
+    "superset_deployed": false,
+    "existing_grafana": "Klyrow Grafana is a separate running deployment",
+    "https": {
+      "grafana": "DNS points to provider; no matching nginx virtual host/certificate; default wrong certificate",
+      "superset": "DNS points to provider; no matching nginx virtual host/certificate; default wrong certificate"
+    },
+    "keycloak": "Existing permanent-human admin credential inventory attempt returned HTTP400; no identity mutation. Dedicated observability client/flow/secret rollout remains incomplete.",
+    "openbao": "Uninitialized/sealed; approved offline recovery-key custody destination has not been specified"
+  },
+  "source_repairs": {
+    "platform_monitoring": {
+      "state": "MERGED_AND_DEPLOYED",
+      "pr": 338
+    },
+    "upstream_signing_identity": {
+      "state": "PUSHED_REVIEW_REQUIRED",
+      "pr": "https://github.com/appolon1908-hue/Infustruction-repo/pull/120",
+      "head": "fb3e3ec66a232b1470066df33bbcb2596ac40952",
+      "checks": "9 successful",
+      "consumer_followup": "Repin only the accepted commit and grant caller job actions:read."
+    },
+    "grafana_conflict": {
+      "state": "COMMITTED_LOCALLY_PUSH_REJECTED",
+      "pr": "https://github.com/appolon1908-hue/Codestra-Grafana-/pull/25",
+      "local_head": "853c5615eb2ded718196559e98b3734c9050be52",
+      "worktree": "/root/grafana-production-conflict-20260910",
+      "validation": "15 tests and both Compose renders pass",
+      "blocker": "GitHub rejected provider OAuth push because workflow scope is missing",
+      "review_patch": "20260910-grafana-workflow-resolution.patch",
+      "patch_status": "Review artifact only; it does not update or execute a workflow"
+    },
+    "tempo_manifest": {
+      "state": "MERGED_RELEASE_PENDING",
+      "pr": "https://github.com/appolon1908-hue/Codestra-Tempo/pull/27",
+      "merge": "234cae81d2b760044409e3965e28c00423a023ca",
+      "head_before_merge": "9cd47dda14c5b5622274d92c012f8304b81e741d",
+      "previous_failed_release": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34480768297",
+      "validation": "10 tests and all 3 PR checks, including exact-head and merge-result image builds, passed",
+      "protected_source_run": "https://github.com/appolon1908-hue/Codestra-Tempo/actions/runs/34482565345"
+    },
+    "loki_bundle": {
+      "state": "PUSHED_CI_PENDING",
+      "pr": "https://github.com/appolon1908-hue/Codestra-Loki/pull/34",
+      "head": "5fe937dc6f11f2880bcd82e6cdd3222078272917",
+      "validation": "11 tests, corporate configuration and sensitive-value checks pass",
+      "remaining_promotion_findings": [
+        "Unauthenticated native API shares the observability network",
+        "Imported upstream source differs from locked official tree"
+      ]
+    },
+    "loki_source_tree": {
+      "state": "VERIFIED_DRIFT_NOT_REPAIRED",
+      "locked_commit": "d8a4d755695929a19ce53ab730a8776ddae09ea2",
+      "official_tree": "66ec085431036028f464a79469599032e377d4b6",
+      "imported_tree": "898f1848141e8bd0aa412c5369557832976b0d23",
+      "missing_entries": [
+        ".vscode/launch.json",
+        "clients/cmd/logstash/lib/logstash/outputs/loki.rb",
+        "clients/cmd/logstash/lib/logstash/outputs/loki/batch.rb",
+        "clients/cmd/logstash/lib/logstash/outputs/loki/entry.rb",
+        "operator/website/themes/doks",
+        "vendor/go.yaml.in/yaml/v4/CONTRIBUTING.md",
+        "vendor/go.yaml.in/yaml/v4/README.md"
+      ]
+    },
+    "alloy": {
+      "state": "DRAFT_INDEPENDENT_REVIEW_REQUIRED",
+      "pr": "https://github.com/appolon1908-hue/Codestra-Alloy/pull/30",
+      "head": "f4c4e6b19e6274578a97e1db0ca85e32339a2062",
+      "checks": "7 successful; no unresolved review threads",
+      "blocker": "PR body requires fresh independent approval; none present. Normal merge was rejected because it remains draft."
+    },
+    "superset": {
+      "state": "IMAGE_RELEASE_REJECTED_BY_SCAN",
+      "run": "https://github.com/appolon1908-hue/Superset/actions/runs/33823779682",
+      "source": "4be372094eee08c814948c35dc30adfaf40f42b0",
+      "findings": "HIGH/CRITICAL operating-system findings, including no-fix dispositions, plus 33 HIGH Python findings",
+      "gate_waived": false
+    }
+  },
+  "limitations": [
+    "Health probes do not certify business transactions, remote telephony, user SSO or log/trace delivery.",
+    "Provider certificates, Grafana/Superset Keycloak login, and cross-application Loki/Tempo/collector delivery remain incomplete.",
+    "No business delivery switches, calls, workflow execution, mail or SMS were changed."
+  ]
+}
