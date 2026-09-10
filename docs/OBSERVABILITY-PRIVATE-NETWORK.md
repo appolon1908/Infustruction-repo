@@ -2,7 +2,7 @@
 
 ## Current state
 
-All 14 `codestra.media` DNS A records point to `37.27.128.39` with TTL 600. DNS completion does not expose or authenticate a service.
+The [topology contract](../config/observability/topology.v1.json) defines 13 `codestra.media` public DNS names targeting `37.27.128.39`: three UI/management names and ten private-service denial names. Verify current DNS answers during preflight; this desired-state inventory is not evidence that live DNS is correct. DNS resolution does not expose or authenticate a service.
 
 This branch defines desired state only. It does not apply firewall rules, start containers, issue certificates, or reload Caddy.
 
@@ -41,11 +41,12 @@ temp.codestra.media  Tempo
 otel.codestra.media  OpenTelemetry Collector
 node.codestra.media  Node Exporter
 cadv.codestra.media  cAdvisor
-pgex.codestra.media  PostgreSQL Exporter
 rdex.codestra.media  Redis Exporter
 blac.codestra.media  Blackbox Exporter
 allo.codestra.media  Grafana Alloy
 ```
+
+PostgreSQL Exporter is the only public-hostname exception: its topology `hostname` is null and its private service identity is `postgres-exporter:9187`. It requires no public DNS record or Caddy virtual host; private scraping and public native-port closure still require verification.
 
 Their native ports must bind to loopback, the `10.40.0.0/24` private integration VLAN, or an environment-specific private Docker network. Public HTTPS requests to these DNS names are handled by Caddy with `403`; Caddy does not proxy the native services.
 
@@ -161,7 +162,7 @@ A firewall command must never be generated from untrusted repository data and ap
 Caddy source authority is `appolon1908-hue/Caddy`. The accepted edge branch must:
 
 - proxy only `graf`, `supe`, and restricted `bao`;
-- return controlled `403` for the eleven private hostnames;
+- return controlled `403` for the ten private hostnames;
 - remove authorization/cookie values from access logs;
 - validate successfully before reload;
 - obtain certificates only through the reviewed edge configuration;
@@ -223,7 +224,7 @@ The phase passes only when:
 - all desired-state validators pass;
 - Grafana and Superset require valid OIDC access;
 - OpenBao rejects unapproved source networks and enforces native policies;
-- all eleven private hostnames return controlled public denial;
+- all ten private hostnames return controlled public denial;
 - native service ports are unreachable from the Internet;
 - Grafana data sources work over private paths;
 - Prometheus targets and Alertmanager are healthy;
