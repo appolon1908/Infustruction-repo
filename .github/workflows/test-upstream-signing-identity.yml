@@ -1,0 +1,25 @@
+name: Validate upstream signing identity
+on:
+  pull_request:
+    paths:
+      - .github/workflows/reusable-codestra-upstream-deploy-readiness.yml
+      - .github/workflows/test-upstream-signing-identity.yml
+      - tests/test_upstream_signing_identity.py
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/reusable-codestra-upstream-deploy-readiness.yml
+      - .github/workflows/test-upstream-signing-identity.yml
+      - tests/test_upstream_signing_identity.py
+permissions:
+  contents: read
+jobs:
+  validate-signing-identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Exercise exact identity and rejection cases
+        run: python3 -m unittest discover -s tests -p test_upstream_signing_identity.py -v

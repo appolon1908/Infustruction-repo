@@ -11,7 +11,7 @@ x-safety: &safety
   PRODUCTION_DIALING: DISABLED
 
 x-app: &app
-  image: ghcr.io/appolon1908-hue/codestra-middleware@sha256:92954f809e811487f8ac15bde3ba636f3bdb1c37547838e9579bb1fd9567f8da
+  image: ghcr.io/appolon1908-hue/codestra-middleware@sha256:d899b182a414eef7c59e66c7fecb38b1161851b66c43d95e19e890a53f8caf58
   user: "65532:65532"
   read_only: true
   cap_drop: [ALL]

@@ -8,7 +8,7 @@ from typing import Any
 from stage6_inventory_common import (
     COLLECTIONS, FIELDS, exactly_one, fail, firewall_applies_to_server,
     firewall_rules, labels_equal, require_equal, require_exact_rule_set,
-    require_rule, server_private_ip, sha256_json,
+    require_rule, server_location_name, server_private_ip, sha256_json,
 )
 
 
@@ -81,8 +81,8 @@ def resolve_authority(raw: dict[str, list[dict[str, Any]]], authority: dict[str,
     require_equal(runtime_private_ip, resources["runtime_server"]["private_ip"], "runtime_private_ip")
     require_equal(egress_private_ip, resources["egress_server"]["private_ip"], "egress_private_ip")
 
-    runtime_location = (runtime.get("datacenter") or {}).get("location", {}).get("name")
-    egress_location = (egress.get("datacenter") or {}).get("location", {}).get("name")
+    runtime_location = server_location_name(runtime)
+    egress_location = server_location_name(egress)
     require_equal(runtime_location, resources["runtime_server"]["location"], "runtime_location")
     require_equal(egress_location, resources["egress_server"]["location"], "egress_location")
     require_equal(runtime_location, egress_location, "server_location_alignment")
@@ -163,7 +163,7 @@ def resolve_authority(raw: dict[str, list[dict[str, Any]]], authority: dict[str,
     if unresolved and not authority["evidence_policy"]["allow_unresolved_fields"]:
         fail(f"unresolved_fields:{','.join(unresolved)}")
     field_sources = {
-        "location": "hetzner-api:servers.datacenter.location",
+        "location": "hetzner-api:servers.location",
         "network_cidr": "hetzner-api:networks.ip_range+git-authority",
         "staging_subnet_cidr": "hetzner-api:networks.subnets+git-authority",
         "private_ip": "hetzner-api:servers.private_net+git-authority",
