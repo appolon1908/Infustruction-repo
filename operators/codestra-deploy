@@ -92,7 +92,7 @@ def validate_authorization(auth: dict, args: argparse.Namespace, now: dt.datetim
         "schema", "status", "repository", "source_sha", "artifact_kind",
         "artifact_reference", "artifact_digest", "environment", "action",
         "controller_sha256", "adapter_sha256", "execution_host", "target_host", "evidence_output", "window",
-        "recovery", "rollback_target", "approval",
+        "recovery_set_id", "recovery", "rollback_target", "approval",
     }
     if set(auth) != required:
         raise Blocked("authorization fields are incomplete or unknown")
@@ -142,6 +142,8 @@ def validate_authorization(auth: dict, args: argparse.Namespace, now: dt.datetim
         raise Blocked("deployment approval expired")
     if not DIGEST.fullmatch(str(approval["evidence_sha256"])):
         raise Blocked("approval evidence digest is invalid")
+    if not isinstance(auth.get("recovery_set_id"), str) or not auth["recovery_set_id"] or auth["recovery_set_id"].startswith("PENDING"):
+        raise Blocked("recovery set is unbound")
     recovery = auth.get("recovery")
     required_recovery = {"database", "filestore", "configuration", "isolated_restore", "rollback_rehearsal"}
     if not isinstance(recovery, dict) or set(recovery) != required_recovery:

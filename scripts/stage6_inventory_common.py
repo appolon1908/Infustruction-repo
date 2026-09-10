@@ -164,6 +164,17 @@ def load_authority(path: Path) -> dict[str, Any]:
     return authority
 
 
+def server_location_name(server: dict[str, Any]) -> str | None:
+    """Read the current server.location response field without legacy fallback."""
+    location = server.get("location")
+    if not isinstance(location, dict):
+        return None
+    name = location.get("name")
+    if not isinstance(name, str) or not name or name != name.strip():
+        return None
+    return name
+
+
 def server_private_ip(server: dict[str, Any], network_id: int) -> str:
     attachments = [item for item in server.get("private_net", []) if item.get("network") == network_id]
     if len(attachments) != 1 or not attachments[0].get("ip"):

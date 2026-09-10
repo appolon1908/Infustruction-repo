@@ -20,7 +20,15 @@ require(PLAN["environment"] == "STAGING", "environment")
 require(PLAN["status"] == "HELD_SCOPED_PREFLIGHT_FAILED_NOT_EXECUTED", "status")
 require(PLAN["production_authorized"] is False, "production_authorized")
 require(PLAN["external_writes_enabled"] is False, "external_writes_enabled")
-require(PLAN["runtime_preflight"]["source_lock"] == "PASS", "source_lock_gate")
+require(PLAN["runtime_preflight"]["source_lock"] == "FAIL", "source_lock_gate")
+require(PLAN["runtime_preflight"]["repository_integrity"] == "PASS", "repository_integrity_gate")
+require(PLAN["runtime_preflight"]["artifact_provenance"] == "FAIL_PARTIAL", "artifact_provenance_gate")
+require(
+    PLAN["runtime_preflight"]["runtime_readback"]
+    == "FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND",
+    "runtime_readback_gate",
+)
+require(PLAN["runtime_preflight"]["activation_eligibility"] == "FAIL", "activation_gate")
 require(
     PLAN["runtime_preflight"]["stage6_preflight"] == "FAIL_SCOPED_RUNTIME_READBACK",
     "preflight_gate",
@@ -29,7 +37,7 @@ require(
     PLAN["runtime_preflight"]["stage6_path_business_writes"] == "NOT_PROVEN_DISABLED",
     "production_write_gate",
 )
-require(PLAN["runtime_preflight"]["scoped_runtime_readback"] == "FAIL", "runtime_readback")
+require(PLAN["runtime_preflight"]["scoped_runtime_readback"] == "FAIL", "scoped_runtime_readback")
 require(PLAN["runtime_preflight"]["safety_complete_workloads"] == 0, "safety_complete")
 require(PLAN["runtime_preflight"]["in_scope_host"] == "65.109.65.169", "in_scope_host")
 require(PLAN["runtime_preflight"]["in_scope_workloads"] == 22, "in_scope_workloads")
@@ -89,6 +97,14 @@ middleware_lock = LOCK["runtime_workloads"][middleware["workloads"][0]]
 for field in ("expected_sha", "expected_digest", "rollback_digest"):
     require(middleware[field] == middleware_lock[field], f"middleware_{field}")
 require(PLAN["unknown_workload"]["disposition"] == "UNVERIFIED_DO_NOT_TOUCH", "unknown_gateway")
+require(LOCK["gates"]["repository_integrity"]["status"] == "PASS", "lock_repository_integrity")
+require(LOCK["gates"]["artifact_provenance"]["status"] == "FAIL_PARTIAL", "lock_artifact_provenance")
+require(
+    LOCK["gates"]["runtime_readback"]["status"] == "FAIL_REQUIRED_COMPONENTS_ABSENT_OR_UNBOUND",
+    "lock_runtime_readback",
+)
+require(LOCK["gates"]["activation_eligibility"]["status"] == "FAIL", "lock_activation")
+require(LOCK["gates"]["source_lock"] == "FAIL", "lock_source_lock")
 print("STAGE6_STAGING_PLAN=PASS")
 print("PLANNED_RELEASE_WORKLOADS=22")
 print("MUTATION_TARGETS=7")

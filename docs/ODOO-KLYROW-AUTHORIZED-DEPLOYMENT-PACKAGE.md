@@ -11,15 +11,41 @@ Status: source preparation only; runtime mutation is not authorized.
 
 ## Discovered execution topology
 
+The owner selected Server A (`65.109.65.169`, observed hostname
+`middleware`) for both staging and production on 2026-09-09. The target-map
+template now records that assignment for `staging-readonly` and
+`production-readonly-canary`. The existing `codestra-deploy` account is the
+requested operator identity; this assignment does not register a runner or
+install a sudo policy.
+
 The reusable workflow selects a self-hosted runner labelled `codestra-staging`
 for staging and `codestra-production-canary` for production read-only canary.
-No matching runner is currently registered with the Odoo repository. Server A
-has only a Keycloak repository runner. Neither Server A nor the provider host
-has `/usr/local/bin/codestra-deploy`. The execution-runner FQDN, runner service
-identity, staging target, and Odoo adapter release are therefore pending owner
-assignment. The production Odoo target is the host reporting hostname
-`middleware`; installing the controller there merely to satisfy the workflow
-check is prohibited.
+The protected GitHub environments have been created with independent review,
+protected-branch restriction, self-review disabled and administrator bypass
+disabled. Matching infrastructure runners, protected deployment inputs, an
+installed controller/adapter and complete recovery evidence remain outstanding.
+
+The controller's target-map validator accepts explicit environment-to-host
+bindings; it does not require distinct physical hostnames. The adapter resolves
+an environment-scoped protected configuration named
+`<validated-host>.<environment>.json`; staging and production therefore cannot
+silently share a compose directory, service, database, release pointer, or
+health endpoint through one host-scoped file. Each configuration must bind its
+own environment and isolated resources. The separate
+`config/stage6-staging-host-provisioning-request.v1.json` still forbids reusing
+the production host for its isolated-host provisioning operation. This target
+assignment does not change that request or claim its provisioning checks passed.
+Before a deployment on Server A, prove separate staging containers, writable
+data/filestore paths, secrets, endpoints and recovery resources. Never point a
+staging replacement or restore at a production database, volume or service.
+
+Host identity must be checked before issuing the authorization: Server A reports
+hostname `middleware` but `socket.getfqdn()` currently returns
+`Ubuntu-jammy-latest-amd64-base.zst`. The controller checks the execution FQDN;
+do not silently substitute the hostname, use the FQDN as unique host proof, or
+copy that identity from another server. Bind the actual assigned runner and
+verified Server A identity in the protected bootstrap process. Installation
+still requires the reviewed package and exact bootstrap/rollback record.
 
 ## Prepared controls
 
@@ -31,11 +57,18 @@ evidence, requires an immutable rollback target, and serializes execution.
 
 The controller delegates only to the root-owned
 `/usr/local/libexec/codestra-deploy-odoo`. Its source implementation consumes
-only the preserved digest-bound Odoo release URL, rejects unsafe archive
-members, verifies all five Odoo recovery evidence blobs, preserves no-send
-configuration, switches the immutable release pointer, reads back the actual
-read-only addon mount and importer digest, and restores the previous pointer on
-failure. Its released package digest and Sigstore bundle remain pending until
+only the preserved digest-bound Odoo release URL, rejects bounded-download or
+bounded-expansion violations, and verifies all five recovery records against
+the candidate, rollback target, host, and recovery-set identity. Before any
+deployment mutation it validates the effective digest-qualified image,
+no-send environment, read-only addon mount, internal-only networks, and durable
+evidence destination. After a possibly database-changing upgrade begins, a
+failure enters `NEEDS_RECOVERY` and never restarts old code against a database
+that has not been restored. Certification checks every approved health endpoint
+with bounded, non-redirecting requests and compares the importer visible inside
+Odoo with the verified artifact bytes. Production promotion remains rejected
+until a real traffic canary exists; staging's service replacement is not used
+as a production canary. Its released package digest and Sigstore bundle remain pending until
 this source is protected and the release environment is approved. Bootstrap is
 a separately reviewed action. The workflow invokes the controller through
 non-interactive sudo; no ordinary pull-request job invokes it.
@@ -56,6 +89,7 @@ protected authorization process and supply, without placeholders:
 - configuration backup evidence digest;
 - isolated restoration evidence digest covering all three;
 - rollback-rehearsal evidence digest;
+- exact recovery-set identity shared by every recovery record;
 - previous source SHA and artifact digest;
 - approval identity, time, expiry, and signed evidence digest;
 - released Odoo adapter artifact digest and installation target.
