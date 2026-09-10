@@ -1,0 +1,56 @@
+schema_version: 1
+observed_at: '2026-09-02T23:10:45+00:00'
+server: 37.27.128.39
+gates:
+  OFF_HOST_BACKUP:
+    status: FAIL
+    evidence: STAGE6-BACKUP-EVIDENCE.md
+    reason: No approved off-host destination or current off-host recovery point is evidenced.
+    evidence_sha256: 251469917a895aa0de4ea0b45a6eab9204181a57866eb76ba4486f20612f9067
+  ISOLATED_RESTORE:
+    status: FAIL
+    evidence: SERVER-37-RESTORE-EVIDENCE.md
+    reason: Historical complete-restore claim is unsupported by the prior operator, which imported only PostgreSQL. Corrected
+      MariaDB restore code requires a new isolated rehearsal.
+    evidence_sha256: c88f29e3fb2369a62d805e5b07c2043488298ddd10549c76cea5b7f06dc9af77
+  POSITIVE_AND_NEGATIVE_MTLS_E2E:
+    status: FAIL
+    evidence: EXTERNAL_AUTHORITY_REQUIRED
+    reason: Negative client-certificate enforcement passed; an approved positive client identity is unavailable.
+  CONTROLLED_EMAIL_E2E:
+    status: FAIL
+    evidence: STAGE7-E2E-TRACE-EVIDENCE.md
+    reason: No approved test mailbox is available for a current no-customer-traffic transaction.
+    evidence_sha256: 7db126afc36f191e5c35d7ee1b2417a1c1b262b850274a3c0fb274029d02a61e
+  CONTROLLED_SMS_E2E:
+    status: FAIL
+    evidence: STAGE7-E2E-TRACE-EVIDENCE.md
+    reason: No approved sandbox destination is available for a current no-customer-traffic transaction.
+    evidence_sha256: 7db126afc36f191e5c35d7ee1b2417a1c1b262b850274a3c0fb274029d02a61e
+  CONTROLLED_KYQRA_E2E:
+    status: FAIL
+    evidence: EXTERNAL_AUTHORITY_REQUIRED
+    reason: The reviewed candidate is not deployed and no approved production test identity is available.
+  CONTROLLED_PRIVATE_INTEGRATION_E2E:
+    status: FAIL
+    evidence: SERVER-37-KLYROW-EVENT-DELIVERY-EVIDENCE.md
+    reason: Recorded Klyrow transport passed positive and negative mTLS, but delivery returned HTTP 422 unsupported_klyrow_event.
+      Server A receiver/operator tuple reconciliation remains required; no fresh runtime verification is claimed.
+    evidence_sha256: 0c9df7c43e2eb2d2fd7d62ac6bee0c1fb0443f56ad367ba9569d904a003a3c78
+  KEYCLOAK_AUTH_E2E:
+    status: FAIL
+    evidence: SERVER-37-PRODUCTION-API-MATRIX.yaml
+    reason: Discovery is live, but the complete approved service-account and user authentication lifecycle is not evidenced.
+    evidence_sha256: c49c8e1ca41c65d2cd31edd65454a0f956ed591adeca4449dd48ed0f1ab37c41
+  MAUTIC_KLYROW_E2E:
+    status: PASS
+    evidence: SERVER-37-MAUTIC-INTEGRATION-EVIDENCE.md
+    reason: Dedicated OAuth2 client-credentials integration is enabled on the private network; token issuance, users/self,
+      contact CRUD, segment membership, campaign membership, and cleanup passed. Public Mautic API/OAuth routes remain denied
+      by Nginx.
+    evidence_sha256: afed0c21dcd66f839f0e97b3dc5637e9794ded86f957992d0f2663ae0a828833
+  ALERT_AND_RETENTION_E2E:
+    status: FAIL
+    evidence: STAGE7-OBSERVABILITY-EVIDENCE.md
+    reason: Prometheus and Grafana respond, but complete alert delivery and retention coverage is not evidenced.
+    evidence_sha256: 8403ea34d6a43e72d3ee9195202838e293360fba8b247ddb99dd32e9b3eba66b

@@ -1,0 +1,73 @@
+name: Independent release policy review
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pull_request:
+        description: Pull request to recheck after independent approval
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: release-policy-review-${{ github.event.pull_request.number || inputs.pull_request }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: release-policy-review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pull_request }}
+      BASE_SHA: ${{ github.sha }}
+    steps:
+      - name: Check out protected policy source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: policy
+          persist-credentials: false
+      - name: Read the current pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          [[ "$PR_NUMBER" =~ ^[1-9][0-9]*$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$RUNNER_TEMP/policy-pr.json"
+      - name: Bind repository, protected base and candidate
+        id: subject
+        run: |
+          python3 -I policy/scripts/validate_release_policy_review.py \
+            --base-root policy --base-sha "$BASE_SHA" --pr-number "$PR_NUMBER" \
+            --pr "$RUNNER_TEMP/policy-pr.json" --prepare
+      - name: Check out candidate data without running it
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.subject.outputs.head_sha }}
+          path: candidate
+          persist-credentials: false
+          submodules: false
+          lfs: false
+      - name: Read independent reviews and refresh the PR subject
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews?per_page=100" > "$RUNNER_TEMP/policy-reviews.json"
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$RUNNER_TEMP/policy-pr-final.json"
+      - name: Validate exact-commit independent approval from protected code
+        env:
+          HEAD_SHA: ${{ steps.subject.outputs.head_sha }}
+        run: |
+          python3 -I policy/scripts/validate_release_policy_review.py \
+            --base-root policy --base-sha "$BASE_SHA" --pr-number "$PR_NUMBER" \
+            --pr "$RUNNER_TEMP/policy-pr.json" --head-sha "$HEAD_SHA" \
+            --candidate-root candidate --reviews "$RUNNER_TEMP/policy-reviews.json" \
+            --final-pr "$RUNNER_TEMP/policy-pr-final.json"

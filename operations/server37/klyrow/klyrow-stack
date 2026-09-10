@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+umask 077
+readonly OPERATOR=klyrow-stack SCOPE='klyrow,postal,klyrow-billing'
+readonly ROOT=/var/lib/codestra-operators/klyrow BACKUPS=/var/backups/codestra-operators/klyrow
+readonly KEY=/etc/codestra/operator-recovery/backup.passphrase COMPOSE=/root/klyrow.com/docker-compose.yml REPO=/root/klyrow.com
+readonly ROLLBACK_BOOT=/etc/klyrow/releases/rollback-production-containers
+readonly -a ROLLBACK_COMPOSE=(
+  docker compose --env-file /root/klyrow.com/.env -p klyrow-release
+  -f /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml
+  -f /opt/klyrow/klyrow-server-a-mtls.override.yaml
+  -f /opt/klyrow/klyrow-final-6df4ced579b3.override.yaml
+  -f /opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml
+  -f /opt/klyrow/klyrow-webmail-20260828.override.yaml
+  -f /opt/klyrow/klyrow-billing-worker-db-auth-recovery-20260902.override.yaml
+  -f /opt/klyrow/klyrow-rollback-pre-7e188a825da6.override.yaml
+)
+readonly ACTION="${1:-}"
+readonly -a RUNTIME_RECOVERY_PATHS=(
+  opt/klyrow/secrets
+  opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml
+  opt/klyrow/klyrow-server-a-mtls.override.yaml
+  opt/klyrow/klyrow-final-6df4ced579b3.override.yaml
+  opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml
+  opt/klyrow/klyrow-webmail-20260828.override.yaml
+  opt/klyrow/klyrow-protected-release.override.yaml
+  opt/klyrow/klyrow-rollback-pre-7e188a825da6.override.yaml
+  opt/klyrow/klyrow-production-runtime-7e188a825da6.env
+  etc/klyrow
+  etc/codestra/mtls/server-a-event-client
+  etc/systemd/system/klyrow-stack.service
+  usr/local/sbin/klyrow-production-containers
+)
+[[ $# -eq 1 ]] || { echo 'exactly one fixed action is required' >&2; exit 64; }
+case "$ACTION" in inventory|status|backup|validate-backup|restore-test|validate-runtime|stage|deploy|restart-controlled|failure-test-start|failure-test-stop|rollback-plan|rollback|collect-evidence) ;; *) echo 'action denied' >&2; exit 64;; esac
+exec 9>/run/lock/codestra-klyrow-operator.lock
+flock -n 9 || { echo 'another Klyrow operator action is active' >&2; exit 75; }
+install -d -o root -g root -m 0700 "$ROOT/evidence" "$BACKUPS"
+started=$(date -u +%FT%TZ); result=FAIL; artifact=''
+cleanup_temp(){
+  local candidate="${temp:-}"
+  if [[ "$candidate" =~ ^/dev/shm/klyrow-(backup|validate|restore)\.[A-Za-z0-9]+$ && -d "$candidate" ]]; then
+    find "$candidate" -depth -delete
+  fi
+}
+finish(){ rc=$?; docker rm -fv klyrow-operator-restore-test klyrow-operator-mautic-restore klyrow-operator-postal-restore >/dev/null 2>&1 || true; cleanup_temp; [[ $rc -eq 0 ]] && result=PASS; printf '{"timestamp":"%s","host":"%s","caller":"%s","operator":"%s","action":"%s","scope":"%s","result":"%s","artifact":"%s"}\n' "$started" "$(hostname)" "${SUDO_USER:-root}" "$OPERATOR" "$ACTION" "$SCOPE" "$result" "$artifact" >>"$ROOT/evidence/operations.jsonl"; chmod 0600 "$ROOT/evidence/operations.jsonl"; exit "$rc"; }; trap finish EXIT
+latest_dir(){ find "$BACKUPS" -mindepth 2 -maxdepth 2 -type f -name backup.tar.gpg -printf '%h\n' | sed 's#.*/##' | grep -E '^[0-9]{8}T[0-9]{6}Z$' | sort | tail -1; }
+restore_mariadb(){
+  local name="$1" source_container="$2" dump="$3" image
+  image=$(docker inspect --format '{{.Image}}' "$source_container")
+  [[ "$image" =~ ^sha256:[0-9a-f]{64}$ ]] || return 1
+  docker run -d --pull never --name "$name" --network none \
+    --tmpfs /var/lib/mysql:rw,nosuid,nodev \
+    -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=yes -e MARIADB_DATABASE=restore_fixture "$image" >/dev/null
+  for _ in $(seq 1 30); do
+    docker exec "$name" mariadb-admin --user=root ping >/dev/null 2>&1 && break
+    sleep 1
+  done
+  docker exec "$name" mariadb-admin --user=root ping >/dev/null
+  gzip -dc "$dump" | docker exec -i "$name" mariadb --user=root restore_fixture
+  docker exec "$name" mariadb --user=root --batch --skip-column-names -e \
+    "SELECT count(*) FROM information_schema.tables WHERE table_schema NOT IN ('mysql','sys','information_schema','performance_schema')" | awk '$1>0{ok=1} END{exit !ok}'
+  docker rm -fv "$name" >/dev/null
+}
+rollback_frontend(){
+  # Recreate the Compose web service that owns the approved loopback binding.
+  # The preserved candidate has no host binding and cannot serve as fallback.
+  docker stop --time 30 klyrow-web-production >/dev/null
+  if ! "${ROLLBACK_COMPOSE[@]}" up -d --no-deps --force-recreate web ||
+     ! curl -fsS --retry 5 --retry-connrefused --retry-delay 1 --max-time 10 http://127.0.0.1:18004/healthz >/dev/null; then
+    "${ROLLBACK_COMPOSE[@]}" stop web >/dev/null 2>&1 || true
+    docker start klyrow-web-production >/dev/null
+    echo 'rollback failed: restored previous production frontend' >&2
+    return 1
+  fi
+}
+create_runtime_recovery_archive(){
+  local output="$1" path
+  for path in "${RUNTIME_RECOVERY_PATHS[@]}"; do
+    [[ -e "/$path" ]] || { echo "required runtime recovery path is absent: /$path" >&2; return 1; }
+  done
+  tar --acls --xattrs --numeric-owner -C / -czf "$output" "${RUNTIME_RECOVERY_PATHS[@]}"
+}
+validate_archive(){
+  local dir="$1" temp
+  [[ -n "$dir" && -f "$BACKUPS/$dir/backup.tar.gpg" && -f "$BACKUPS/$dir/SHA256SUMS" ]]
+  (cd "$BACKUPS/$dir" && sha256sum -c SHA256SUMS)
+  temp=$(mktemp -d /dev/shm/klyrow-validate.XXXXXX)
+  gpg --batch --quiet --pinentry-mode loopback --passphrase-file "$KEY" --decrypt "$BACKUPS/$dir/backup.tar.gpg" | tar -xzf - -C "$temp"
+  (cd "$temp" && sha256sum -c SHA256SUMS)
+  pg_restore --list "$temp/klyrow.dump" >/dev/null
+  gzip -t "$temp/mautic.sql.gz" "$temp/postal.sql.gz"
+  tar -tzf "$temp/config.tar.gz" >/dev/null
+  tar -tzf "$temp/operator-runtime.tar.gz" >/dev/null
+  tar -tzf "$temp/operator-runtime.tar.gz" 'opt/klyrow/klyrow-protected-release.override.yaml' >/dev/null
+  tar -tzf "$temp/operator-runtime.tar.gz" 'etc/systemd/system/klyrow-stack.service' >/dev/null
+  tar -tzf "$temp/operator-runtime.tar.gz" 'usr/local/sbin/klyrow-production-containers' >/dev/null
+  rm -rf -- "$temp"
+}
+perform_backup(){
+  stamp=$(date -u +%Y%m%dT%H%M%SZ)
+  dest="$BACKUPS/$stamp"
+  temp=$(mktemp -d /dev/shm/klyrow-backup.XXXXXX)
+  install -d -m 0700 "$dest" "$temp/raw"
+  (cd "$REPO" && scripts/backup "$temp/raw") >/dev/null
+  create_runtime_recovery_archive "$temp/raw/operator-runtime.tar.gz"
+  (cd "$temp/raw" && sha256sum -c SHA256SUMS && sha256sum config.tar.gz klyrow.dump mautic.sql.gz postal.sql.gz operator-runtime.tar.gz > SHA256SUMS.relative && mv SHA256SUMS.relative SHA256SUMS)
+  tar -C "$temp/raw" -czf - . | gpg --batch --yes --quiet --symmetric --cipher-algo AES256 --pinentry-mode loopback --passphrase-file "$KEY" --output "$dest/backup.tar.gpg"
+  (cd "$dest" && sha256sum backup.tar.gpg > SHA256SUMS)
+  chmod 0600 "$dest"/*
+  artifact="$dest"
+  validate_archive "$stamp"
+  cleanup_temp
+  echo "BACKUP_REF=$dest"
+}
+verify_rollback_plan(){
+  "${ROLLBACK_COMPOSE[@]}" config --quiet
+  jq -r '.images[]' /etc/klyrow/releases/rollback-digests.json | while IFS= read -r image; do
+    docker image inspect "$image" >/dev/null
+  done
+  for image in sha256:b64e9364400e0ce2b63929802afe864cfaaf8be466f3f6077e042dc7c463793c sha256:102d79b3ce37fe2bcbcdd033c2960e6a2dc17cddde980731212957a2ef01980a; do
+    docker image inspect "$image" >/dev/null
+  done
+  "${ROLLBACK_COMPOSE[@]}" config --format json | python3 -c '
+import json,sys
+web=json.load(sys.stdin)["services"]["web"]
+assert any(p.get("host_ip")=="127.0.0.1" and str(p.get("published"))=="18004" and str(p.get("target"))=="8080" for p in web.get("ports", [])), "rollback frontend binding missing"
+assert "@sha256:" in web["image"], "rollback frontend must be immutable"
+'
+  test -x "$ROLLBACK_BOOT"
+  sha256sum /etc/klyrow/releases/rollback-digests.json /opt/klyrow/klyrow-rollback-pre-7e188a825da6.override.yaml "$ROLLBACK_BOOT"
+  echo 'ROLLBACK_PREFLIGHT=PASS'
+}
+case "$ACTION" in
+ inventory) docker ps --format '{{.Names}}|{{.Image}}|{{.Status}}' | awk -F'|' '$1 ~ /^klyrow-/'; sha256sum /usr/local/sbin/klyrow-stack "$COMPOSE";;
+ status) docker ps --format '{{.Names}}|{{.Status}}' | awk -F'|' '$1 ~ /^klyrow-/';;
+ backup) perform_backup;;
+ validate-backup) ref=$(latest_dir); validate_archive "$ref"; artifact="$BACKUPS/$ref"; echo "BACKUP_VALID=PASS REF=$artifact";;
+ restore-test) ref=$(latest_dir); validate_archive "$ref"; temp=$(mktemp -d /dev/shm/klyrow-restore.XXXXXX); name=klyrow-operator-restore-test; gpg --batch --quiet --pinentry-mode loopback --passphrase-file "$KEY" --decrypt "$BACKUPS/$ref/backup.tar.gpg" | tar -xzf - -C "$temp"; docker rm -fv "$name" >/dev/null 2>&1 || true; docker run -d --name "$name" --network none -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17.6-bookworm >/dev/null; for _ in $(seq 1 30); do docker exec "$name" pg_isready -U postgres >/dev/null 2>&1 && break; sleep 1; done; docker exec "$name" psql -U postgres -d postgres -v ON_ERROR_STOP=1 -c "CREATE ROLE klyrow NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT; CREATE ROLE klyrow_runtime NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT" >/dev/null; docker exec -i "$name" pg_restore -U postgres --exit-on-error --no-owner --dbname postgres <"$temp/klyrow.dump"; docker exec "$name" psql -U postgres -d postgres -Atc "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'" | awk '$1>0{ok=1} END{exit !ok}'; docker exec "$name" psql -U postgres -d postgres -Atc "SELECT has_schema_privilege('klyrow_runtime','public','USAGE') AND has_table_privilege('klyrow_runtime','public.tenants','SELECT')" | grep -qx t; restore_mariadb klyrow-operator-mautic-restore klyrow-mautic-db-1 "$temp/mautic.sql.gz"; restore_mariadb klyrow-operator-postal-restore klyrow-postal-db-1 "$temp/postal.sql.gz"; tar --acls --xattrs --numeric-owner -xzf "$temp/operator-runtime.tar.gz" -C "$temp" --one-top-level=runtime; test -f "$temp/runtime/opt/klyrow/klyrow-protected-release.override.yaml"; test -f "$temp/runtime/etc/systemd/system/klyrow-stack.service"; test -f "$temp/runtime/usr/local/sbin/klyrow-production-containers"; docker rm -fv "$name" >/dev/null; rm -rf -- "$temp"; artifact="$BACKUPS/$ref"; echo 'RESTORE_TEST=PASS ACL_VALID=PASS RUNTIME_CONFIG=PASS PUBLIC_PORTS=0 RESIDUAL_RESOURCES=0';;
+ validate-runtime) docker inspect klyrow-gateway-1 klyrow-worker-1 klyrow-postgres-1 klyrow-postal-web-1 --format '{{.Name}}|{{.State.Status}}|{{if .State.Health}}{{.State.Health.Status}}{{end}}' | grep -v 'exited';;
+ stage) (cd "$REPO" && docker compose -p klyrow -f "$COMPOSE" config --quiet);;
+ deploy) (cd "$REPO" && docker compose -p klyrow -f "$COMPOSE" up -d --build);;
+ restart-controlled) docker restart klyrow-gateway-1 klyrow-worker-1 klyrow-scheduler-1 >/dev/null;;
+ failure-test-start) install -o root -g root -m 0600 /dev/null "$ROOT/synthetic-failure-test.active"; echo 'SYNTHETIC_FAILURE_MARKER=ACTIVE RUNTIME_MUTATION=0';;
+ failure-test-stop) [[ ! -e "$ROOT/synthetic-failure-test.active" ]] || unlink "$ROOT/synthetic-failure-test.active"; echo 'SYNTHETIC_FAILURE_MARKER=INACTIVE RUNTIME_MUTATION=0';;
+ rollback-plan) verify_rollback_plan;;
+ rollback) [[ -f "$ROOT/rollback-approved" ]] && grep -qx 'ROLLBACK_KLYROW_KNOWN_GOOD' "$ROOT/rollback-approved" || { echo 'rollback denied: root-maintained approval marker absent' >&2; exit 77; }; verify_rollback_plan; perform_backup; if docker container inspect klyrow-provisioning-worker-1 >/dev/null 2>&1; then docker stop --time 30 klyrow-provisioning-worker-1 >/dev/null; fi; rollback_frontend; install -o root -g root -m 0755 "$ROLLBACK_BOOT" /usr/local/sbin/klyrow-production-containers; "${ROLLBACK_COMPOSE[@]}" up -d --no-deps --force-recreate postal-provisioner; "${ROLLBACK_COMPOSE[@]}" up -d --no-deps --force-recreate gateway smtp-relay worker scheduler billing-api billing-worker; /usr/local/sbin/klyrow-production-containers start; curl -fsS --max-time 10 http://127.0.0.1:18000/readyz >/dev/null; curl -fsS --max-time 10 http://127.0.0.1:18004/healthz >/dev/null; echo 'ROLLBACK=PASS';;
+ collect-evidence) sha256sum /usr/local/sbin/klyrow-stack /etc/sudoers.d/provider-restricted-operators 2>/dev/null || true; tail -n 100 "$ROOT/evidence/operations.jsonl";;
+esac

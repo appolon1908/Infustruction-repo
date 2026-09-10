@@ -1,0 +1,1273 @@
+schema_version: 1
+generated_at: '2026-09-03T00:14:47.876204+00:00'
+server_scope: CURRENT_SERVER_ONLY
+server: Ubuntu-jammy-latest-amd64-base.zst
+public_ipv4: 37.27.128.39
+private_ip: 10.40.0.4
+workloads:
+- software: DOCKER_BUILDKIT
+  container_or_service: buildx_buildkit_codestra-klyrow-repro-202609010
+  image: moby/buildkit:buildx-stable-1
+  image_digest: sha256:28a898719c18a33f4e8000685287fa36fd0dd9560c6440227d3a732d79bb41d8
+  image_reference_digest_pinned: 'NO'
+  version: buildx-stable-1
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: N/A
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - bridge
+  volumes:
+  - volume:/var/lib/buildkit
+  databases: N/A
+  health: RUNNING
+  stage: TOOLING
+- software: DOCKER_BUILDKIT
+  container_or_service: buildx_buildkit_codestra-repro0
+  image: moby/buildkit:buildx-stable-1
+  image_digest: sha256:28a898719c18a33f4e8000685287fa36fd0dd9560c6440227d3a732d79bb41d8
+  image_reference_digest_pinned: 'NO'
+  version: buildx-stable-1
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: N/A
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - bridge
+  volumes:
+  - volume:/var/lib/buildkit
+  databases: N/A
+  health: RUNNING
+  stage: TOOLING
+- software: DOCKER_BUILDKIT
+  container_or_service: buildx_buildkit_private-gateway-981ff530
+  image: moby/buildkit:buildx-stable-1
+  image_digest: sha256:28a898719c18a33f4e8000685287fa36fd0dd9560c6440227d3a732d79bb41d8
+  image_reference_digest_pinned: 'NO'
+  version: buildx-stable-1
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: N/A
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - bridge
+  volumes:
+  - volume:/var/lib/buildkit
+  databases: N/A
+  health: RUNNING
+  stage: TOOLING
+- software: OPENBAO
+  container_or_service: codestra-openbao
+  image: ghcr.io/openbao/openbao@sha256:5b2486ab0fb90bbc788cc345b0a08616dfb375873ee8be5df3a2fd4d378a67e0
+  image_digest: sha256:5b2486ab0fb90bbc788cc345b0a08616dfb375873ee8be5df3a2fd4d378a67e0
+  image_reference_digest_pinned: 'YES'
+  version: v2.6.1
+  source_repository: https://github.com/openbao/openbao
+  source_sha: ba7ad8861d0578cd4da4f7b9e5a6756d30484f8f
+  deployment_file: /opt/codestra-openbao/compose.yaml
+  ports:
+  - 127.0.0.1:18200->8200/tcp
+  public_url: https://bao.codestra.media
+  private_url: tcp://codestra-openbao:8200
+  networks:
+  - codestra-openbao_openbao_private
+  volumes:
+  - bind:/openbao/config/openbao.hcl
+  - bind:/openbao/data
+  - volume:/openbao/file
+  - volume:/openbao/logs
+  databases: N/A
+  health: FAIL_UNINITIALIZED_SEALED
+  stage: PRODUCTION
+- software: OPERATING_SYSTEM_COMPONENT
+  container_or_service: codestra-postal-lockgen-20260901
+  image: ghcr.io/postalserver/postal:3.3.7@sha256:e54b4a7eb106ee15eda5664311c4b9415546d4196f5c4336d23a78d6ce57b819
+  image_digest: sha256:e54b4a7eb106ee15eda5664311c4b9415546d4196f5c4336d23a78d6ce57b819
+  image_reference_digest_pinned: 'YES'
+  version: e54b4a7eb106ee15eda5664311c4b9415546d4196f5c4336d23a78d6ce57b819
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: N/A
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - bridge
+  volumes:
+  - N/A
+  databases: N/A
+  health: COMPLETED
+  stage: TOOLING
+- software: KLYROW
+  container_or_service: klyrow-billing-api-1
+  image: ghcr.io/appolon1908-hue/klyrow-gateway@sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_digest: sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_reference_digest_pinned: 'YES'
+  version: da9d85891a4e313748e309aed86662d6c03d26bb
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  deployment_file: /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml,/opt/klyrow/klyrow-server-a-mtls.override.yaml,/opt/klyrow/klyrow-final-6df4ced579b3.override.yaml,/opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml,/opt/klyrow/klyrow-webmail-20260828.override.yaml,/opt/klyrow/klyrow-protected-release.override.yaml
+  ports:
+  - 8000/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-billing-api-1:8000
+  networks:
+  - klyrow_backend
+  volumes:
+  - bind:/run/klyrow/postal-webhook-signing-public.pem
+  - bind:[SECRET_MOUNT_REDACTED]
+  databases: klyrow-postgres-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: KLYROW
+  container_or_service: klyrow-billing-worker-1
+  image: ghcr.io/appolon1908-hue/klyrow-gateway@sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_digest: sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_reference_digest_pinned: 'YES'
+  version: da9d85891a4e313748e309aed86662d6c03d26bb
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  deployment_file: /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml,/opt/klyrow/klyrow-server-a-mtls.override.yaml,/opt/klyrow/klyrow-final-6df4ced579b3.override.yaml,/opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml,/opt/klyrow/klyrow-webmail-20260828.override.yaml,/opt/klyrow/klyrow-protected-release.override.yaml
+  ports:
+  - 8000/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-billing-worker-1:8000
+  networks:
+  - klyrow_backend
+  volumes:
+  - bind:[SECRET_MOUNT_REDACTED]
+  databases: klyrow-postgres-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: KLYROW
+  container_or_service: klyrow-gateway-1
+  image: ghcr.io/appolon1908-hue/klyrow-gateway@sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_digest: sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_reference_digest_pinned: 'YES'
+  version: da9d85891a4e313748e309aed86662d6c03d26bb
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  deployment_file: /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml,/opt/klyrow/klyrow-server-a-mtls.override.yaml,/opt/klyrow/klyrow-final-6df4ced579b3.override.yaml,/opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml,/opt/klyrow/klyrow-webmail-20260828.override.yaml,/opt/klyrow/klyrow-protected-release.override.yaml
+  ports:
+  - 127.0.0.1:18000->8000/tcp
+  public_url: https://api.klyrow.com
+  private_url: tcp://klyrow-gateway-1:8000
+  networks:
+  - klyrow_backend
+  - klyrow_frontend
+  volumes:
+  - bind:/run/codestra-mtls/server-a
+  - bind:/run/klyrow/postal-webhook-signing-public.pem
+  - bind:[SECRET_MOUNT_REDACTED]
+  - volume:/var/lib/klyrow/dkim
+  databases: klyrow-postgres-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: GRAFANA
+  container_or_service: klyrow-grafana-1
+  image: mirror.gcr.io/grafana/grafana@sha256:9b58461280b4d2992d4399823c9427d0fcf5f0fd7f376c93f2dea876158b867b
+  image_digest: sha256:9b58461280b4d2992d4399823c9427d0fcf5f0fd7f376c93f2dea876158b867b
+  image_reference_digest_pinned: 'YES'
+  version: 9b58461280b4d2992d4399823c9427d0fcf5f0fd7f376c93f2dea876158b867b
+  source_repository: https://github.com/grafana/grafana
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml,/root/klyrow.com/docker-compose.override.yml
+  ports:
+  - 127.0.0.1:18003->3000/tcp
+  public_url: N/A
+  private_url: tcp://klyrow-grafana-1:3000
+  networks:
+  - klyrow_backend
+  - klyrow_frontend
+  volumes:
+  - bind:/etc/grafana/provisioning
+  - bind:/var/lib/grafana-dashboards
+  - volume:/var/lib/grafana
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: MAUTIC
+  container_or_service: klyrow-mautic-1
+  image: codestra/mautic:7.1.3-twig16487-4262816
+  image_digest: sha256:907879ba89f2741f3d440535dba56d046ea2d8743f4766517e1aaebc01962e40
+  image_reference_digest_pinned: 'NO'
+  version: 7.1.3-twig16487
+  source_repository: https://github.com/mautic/mautic/pull/16487
+  source_sha: 42628161ffcc5720a46179a54e0992b25804a79a
+  deployment_file: /root/klyrow.com/docker-compose.yml,/root/klyrow.com/docker-compose.override.yml
+  ports:
+  - 127.0.0.1:18001->80/tcp
+  public_url: N/A
+  private_url: tcp://klyrow-mautic-1:80
+  networks:
+  - klyrow_backend
+  - klyrow_frontend
+  volumes:
+  - bind:/usr/local/bin/live-gate
+  - volume:/var/www/html/config
+  - volume:/var/www/html/docroot/media/files
+  - volume:/var/www/html/docroot/media/images
+  - volume:/var/www/html/var/logs
+  databases: klyrow-mautic-db-1/MariaDB
+  health: HEALTHY
+  stage: PRODUCTION
+- software: MAUTIC
+  container_or_service: klyrow-mautic-cron-1
+  image: codestra/mautic:7.1.3-twig16487-4262816
+  image_digest: sha256:907879ba89f2741f3d440535dba56d046ea2d8743f4766517e1aaebc01962e40
+  image_reference_digest_pinned: 'NO'
+  version: 7.1.3-twig16487
+  source_repository: https://github.com/mautic/mautic/pull/16487
+  source_sha: 42628161ffcc5720a46179a54e0992b25804a79a
+  deployment_file: /root/klyrow.com/docker-compose.yml,/root/klyrow.com/docker-compose.override.yml
+  ports:
+  - 80/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-mautic-cron-1:80
+  networks:
+  - klyrow_backend
+  volumes:
+  - bind:/usr/local/bin/live-gate
+  - volume:/var/www/html/config
+  - volume:/var/www/html/docroot/media/files
+  - volume:/var/www/html/docroot/media/images
+  - volume:/var/www/html/var/logs
+  databases: klyrow-mautic-db-1/MariaDB
+  health: RUNNING
+  stage: PRODUCTION
+- software: MARIADB
+  container_or_service: klyrow-mautic-db-1
+  image: mariadb:11.4.8
+  image_digest: sha256:bc474f00629f0123c10f9e1bca193a45d18af15a274cf0656acda64f1086c3b6
+  image_reference_digest_pinned: 'NO'
+  version: 11.4.8
+  source_repository: https://github.com/MariaDB/mariadb-docker
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml
+  ports:
+  - 3306/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-mautic-db-1:3306
+  networks:
+  - klyrow_backend
+  volumes:
+  - volume:/var/lib/mysql
+  databases: klyrow-mautic-db-1/MariaDB
+  health: HEALTHY
+  stage: PRODUCTION
+- software: MAUTIC
+  container_or_service: klyrow-mautic-worker-1
+  image: codestra/mautic:7.1.3-twig16487-4262816
+  image_digest: sha256:907879ba89f2741f3d440535dba56d046ea2d8743f4766517e1aaebc01962e40
+  image_reference_digest_pinned: 'NO'
+  version: 7.1.3-twig16487
+  source_repository: https://github.com/mautic/mautic/pull/16487
+  source_sha: 42628161ffcc5720a46179a54e0992b25804a79a
+  deployment_file: /root/klyrow.com/docker-compose.yml,/root/klyrow.com/docker-compose.override.yml
+  ports:
+  - 80/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-mautic-worker-1:80
+  networks:
+  - klyrow_backend
+  volumes:
+  - bind:/usr/local/bin/live-gate
+  - volume:/var/www/html/config
+  - volume:/var/www/html/docroot/media/files
+  - volume:/var/www/html/docroot/media/images
+  - volume:/var/www/html/var/logs
+  databases: klyrow-mautic-db-1/MariaDB
+  health: RUNNING
+  stage: PRODUCTION
+- software: PROMETHEUS_NODE_EXPORTER
+  container_or_service: klyrow-node-exporter-1
+  image: prom/node-exporter:v1.9.1
+  image_digest: sha256:d00a542e409ee618a4edc67da14dd48c5da66726bbd5537ab2af9c1dfc442c8a
+  image_reference_digest_pinned: 'NO'
+  version: v1.9.1
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml
+  ports:
+  - 9100/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-node-exporter-1:9100
+  networks:
+  - klyrow_backend
+  volumes:
+  - bind:/host
+  databases: N/A
+  health: RUNNING
+  stage: PRODUCTION
+- software: MARIADB
+  container_or_service: klyrow-postal-db-1
+  image: mariadb:11.4.8
+  image_digest: sha256:bc474f00629f0123c10f9e1bca193a45d18af15a274cf0656acda64f1086c3b6
+  image_reference_digest_pinned: 'NO'
+  version: 11.4.8
+  source_repository: https://github.com/MariaDB/mariadb-docker
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml
+  ports:
+  - 3306/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-postal-db-1:3306
+  networks:
+  - klyrow_backend
+  volumes:
+  - volume:/var/lib/mysql
+  databases: klyrow-postal-db-1/MariaDB
+  health: HEALTHY
+  stage: PRODUCTION
+- software: POSTAL
+  container_or_service: klyrow-postal-provisioner-1
+  image: ghcr.io/appolon1908-hue/klyrow-postal-provisioner@sha256:d30d3065c5f4a87fc793a422dfd4e66d938b83d9562f9f9b0cb247cf3c704cd8
+  image_digest: sha256:d30d3065c5f4a87fc793a422dfd4e66d938b83d9562f9f9b0cb247cf3c704cd8
+  image_reference_digest_pinned: 'YES'
+  version: da9d85891a4e313748e309aed86662d6c03d26bb
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  deployment_file: /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml,/opt/klyrow/klyrow-server-a-mtls.override.yaml,/opt/klyrow/klyrow-final-6df4ced579b3.override.yaml,/opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml,/opt/klyrow/klyrow-webmail-20260828.override.yaml,/opt/klyrow/klyrow-protected-release.override.yaml
+  ports:
+  - 9090/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-postal-provisioner-1:9090
+  networks:
+  - klyrow_backend
+  volumes:
+  - bind:/config
+  - bind:[SECRET_MOUNT_REDACTED]
+  databases: klyrow-postal-db-1/MariaDB
+  health: HEALTHY
+  stage: PRODUCTION
+- software: POSTAL
+  container_or_service: klyrow-postal-smtp-1
+  image: ghcr.io/postalserver/postal:3.3.7
+  image_digest: sha256:e54b4a7eb106ee15eda5664311c4b9415546d4196f5c4336d23a78d6ce57b819
+  image_reference_digest_pinned: 'NO'
+  version: 3.3.7
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml
+  ports:
+  - 37.27.128.39:25->25/tcp
+  - 127.0.0.1:2525->25/tcp
+  public_url: N/A
+  private_url: tcp://klyrow-postal-smtp-1:25
+  networks:
+  - klyrow_backend
+  - klyrow_frontend
+  volumes:
+  - bind:/config
+  - bind:/usr/local/bin/live-gate
+  databases: klyrow-postal-db-1/MariaDB
+  health: HEALTHY
+  stage: PRODUCTION
+- software: POSTAL
+  container_or_service: klyrow-postal-web-1
+  image: ghcr.io/postalserver/postal:3.3.7
+  image_digest: sha256:e54b4a7eb106ee15eda5664311c4b9415546d4196f5c4336d23a78d6ce57b819
+  image_reference_digest_pinned: 'NO'
+  version: 3.3.7
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml
+  ports:
+  - 127.0.0.1:18002->5000/tcp
+  public_url: N/A
+  private_url: tcp://klyrow-postal-web-1:5000
+  networks:
+  - klyrow_backend
+  - klyrow_frontend
+  volumes:
+  - bind:/config
+  - bind:/usr/local/bin/live-gate
+  - volume:/opt/postal/public
+  databases: klyrow-postal-db-1/MariaDB
+  health: HEALTHY
+  stage: PRODUCTION
+- software: POSTAL
+  container_or_service: klyrow-postal-worker-1
+  image: ghcr.io/postalserver/postal:3.3.7
+  image_digest: sha256:e54b4a7eb106ee15eda5664311c4b9415546d4196f5c4336d23a78d6ce57b819
+  image_reference_digest_pinned: 'NO'
+  version: 3.3.7
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - klyrow_backend
+  - klyrow_frontend
+  volumes:
+  - bind:/config
+  - bind:/usr/local/bin/live-gate
+  databases: klyrow-postal-db-1/MariaDB
+  health: HEALTHY
+  stage: PRODUCTION
+- software: POSTGRESQL
+  container_or_service: klyrow-postgres-1
+  image: postgres:17.6-bookworm
+  image_digest: sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+  image_reference_digest_pinned: 'NO'
+  version: 17.6-bookworm
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml
+  ports:
+  - 5432/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-postgres-1:5432
+  networks:
+  - klyrow_backend
+  volumes:
+  - volume:/var/lib/postgresql/data
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: PROMETHEUS
+  container_or_service: klyrow-prometheus-1
+  image: prom/prometheus:v3.5.0
+  image_digest: sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996
+  image_reference_digest_pinned: 'NO'
+  version: v3.5.0
+  source_repository: https://github.com/prometheus/prometheus
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml
+  ports:
+  - 9090/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-prometheus-1:9090
+  networks:
+  - klyrow_backend
+  - klyrow_frontend
+  volumes:
+  - bind:/etc/prometheus/alerts.yml
+  - bind:/etc/prometheus/prometheus.yml
+  - bind:[SECRET_MOUNT_REDACTED]
+  - volume:/prometheus
+  databases: N/A
+  health: RUNNING
+  stage: PRODUCTION
+- software: KLYROW
+  container_or_service: klyrow-provisioning-worker-1
+  image: ghcr.io/appolon1908-hue/klyrow-gateway@sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_digest: sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_reference_digest_pinned: 'YES'
+  version: da9d85891a4e313748e309aed86662d6c03d26bb
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  deployment_file: /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml,/opt/klyrow/klyrow-server-a-mtls.override.yaml,/opt/klyrow/klyrow-final-6df4ced579b3.override.yaml,/opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml,/opt/klyrow/klyrow-webmail-20260828.override.yaml,/opt/klyrow/klyrow-protected-release.override.yaml
+  ports:
+  - 8000/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-provisioning-worker-1:8000
+  networks:
+  - klyrow_backend
+  volumes:
+  - bind:[SECRET_MOUNT_REDACTED]
+  databases: klyrow-postgres-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: RABBITMQ
+  container_or_service: klyrow-rabbitmq-1
+  image: rabbitmq:4.1.3-alpine
+  image_digest: sha256:a6dbb0d4e409a371b0c4baa0cc844903be8702ad29e7917fd7f3d19207cb468e
+  image_reference_digest_pinned: 'NO'
+  version: 4.1.3-alpine
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /root/klyrow.com/docker-compose.yml
+  ports:
+  - 15691/tcp (container network only)
+  - 15692/tcp (container network only)
+  - 25672/tcp (container network only)
+  - 4369/tcp (container network only)
+  - 5671/tcp (container network only)
+  - 5672/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-rabbitmq-1:15691
+  networks:
+  - klyrow_backend
+  volumes:
+  - volume:/var/lib/rabbitmq
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: KLYROW
+  container_or_service: klyrow-scheduler-1
+  image: ghcr.io/appolon1908-hue/klyrow-gateway@sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_digest: sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_reference_digest_pinned: 'YES'
+  version: da9d85891a4e313748e309aed86662d6c03d26bb
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  deployment_file: /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml,/opt/klyrow/klyrow-server-a-mtls.override.yaml,/opt/klyrow/klyrow-final-6df4ced579b3.override.yaml,/opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml,/opt/klyrow/klyrow-webmail-20260828.override.yaml,/opt/klyrow/klyrow-protected-release.override.yaml
+  ports:
+  - 8000/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-scheduler-1:8000
+  networks:
+  - klyrow_backend
+  volumes:
+  - bind:[SECRET_MOUNT_REDACTED]
+  databases: klyrow-postgres-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: KLYROW
+  container_or_service: klyrow-smtp-relay-1
+  image: ghcr.io/appolon1908-hue/klyrow-gateway@sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_digest: sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_reference_digest_pinned: 'YES'
+  version: da9d85891a4e313748e309aed86662d6c03d26bb
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  deployment_file: /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml,/opt/klyrow/klyrow-server-a-mtls.override.yaml,/opt/klyrow/klyrow-final-6df4ced579b3.override.yaml,/opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml,/opt/klyrow/klyrow-webmail-20260828.override.yaml,/opt/klyrow/klyrow-protected-release.override.yaml
+  ports:
+  - 8000/tcp (container network only)
+  - 10.40.0.4:587->8025/tcp
+  public_url: N/A
+  private_url: tcp://klyrow-smtp-relay-1:8000
+  networks:
+  - klyrow_backend
+  - klyrow_frontend
+  volumes:
+  - bind:/run/klyrow/smtp.cert
+  - bind:/run/klyrow/smtp.key
+  - bind:[SECRET_MOUNT_REDACTED]
+  databases: klyrow-postgres-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: KLYROW
+  container_or_service: klyrow-web-candidate
+  image: codestra/klyrow-web:webmail-20260828
+  image_digest: sha256:dd4a20b1c80f206ffb471bffaff5024f426e03f47ba9787e060933d65fb27019
+  image_reference_digest_pinned: 'NO'
+  version: 1.30.4-alpine
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: MISSING_UNCOMMITTED_BUILD
+  deployment_file: N/A
+  ports:
+  - 8080/tcp (container network only)
+  public_url: https://app.klyrow.com
+  private_url: tcp://klyrow-web-candidate:8080
+  networks:
+  - klyrow_frontend
+  volumes:
+  - N/A
+  databases: klyrow-postgres-1/PostgreSQL
+  health: COMPLETED
+  stage: PRODUCTION_CANDIDATE
+- software: KLYROW
+  container_or_service: klyrow-web-pre-dynamic-dns-20260828T1626Z
+  image: codestra/klyrow-web:webmail-20260828
+  image_digest: sha256:5b8c0d24fb9699910d3b1f78bc3aff92b7113ada38c3811dd69dd20af42f797c
+  image_reference_digest_pinned: 'NO'
+  version: 1.30.4-alpine
+  source_repository: https://github.com/nginx/docker-nginx-unprivileged
+  source_sha: 5523787e8d6f65e00a5088b8dc59e6bce638ddb2
+  deployment_file: N/A
+  ports:
+  - 8080/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-web-pre-dynamic-dns-20260828T1626Z:8080
+  networks:
+  - klyrow_frontend
+  volumes:
+  - N/A
+  databases: klyrow-postgres-1/PostgreSQL
+  health: COMPLETED
+  stage: LEGACY
+- software: KLYROW
+  container_or_service: klyrow-web-production
+  image: ghcr.io/appolon1908-hue/klyrow-web@sha256:7227cf01cf5ac998bf15321c70546c2c8e1e25e9ca2b37f31cb8151f8aa6a6c1
+  image_digest: sha256:7227cf01cf5ac998bf15321c70546c2c8e1e25e9ca2b37f31cb8151f8aa6a6c1
+  image_reference_digest_pinned: 'YES'
+  version: da9d85891a4e313748e309aed86662d6c03d26bb
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  deployment_file: /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml,/opt/klyrow/klyrow-server-a-mtls.override.yaml,/opt/klyrow/klyrow-final-6df4ced579b3.override.yaml,/opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml,/opt/klyrow/klyrow-webmail-20260828.override.yaml,/opt/klyrow/klyrow-protected-release.override.yaml
+  ports:
+  - 127.0.0.1:18004->8080/tcp
+  public_url: N/A
+  private_url: tcp://klyrow-web-production:8080
+  networks:
+  - klyrow_frontend
+  volumes:
+  - N/A
+  databases: klyrow-postgres-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: KLYROW
+  container_or_service: klyrow-web-rollback-20260828T1612Z
+  image: klyrow-web:00631572f25db6cb99905210a781be5dba3d08dd
+  image_digest: sha256:d9841c0fa30f0a0ddd6aae9f911993351b8158c459299cf3bca4b1892c41d25e
+  image_reference_digest_pinned: 'NO'
+  version: 1.28.2-alpine
+  source_repository: https://github.com/nginx/docker-nginx-unprivileged
+  source_sha: 61141700fbe3bb03ee7379fd0a5cba5c9c5fc885
+  deployment_file: N/A
+  ports:
+  - 8080/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-web-rollback-20260828T1612Z:8080
+  networks:
+  - klyrow_frontend
+  volumes:
+  - N/A
+  databases: klyrow-postgres-1/PostgreSQL
+  health: COMPLETED
+  stage: LEGACY
+- software: KLYROW
+  container_or_service: klyrow-worker-1
+  image: ghcr.io/appolon1908-hue/klyrow-gateway@sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_digest: sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  image_reference_digest_pinned: 'YES'
+  version: da9d85891a4e313748e309aed86662d6c03d26bb
+  source_repository: https://github.com/appolon1908-hue/klyrow.com
+  source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  deployment_file: /opt/klyrow/klyrow-mail-engine-release-381ac4d.compose.yaml,/opt/klyrow/klyrow-server-a-mtls.override.yaml,/opt/klyrow/klyrow-final-6df4ced579b3.override.yaml,/opt/klyrow/klyrow-smtp-hotfix-20260826.override.yaml,/opt/klyrow/klyrow-webmail-20260828.override.yaml,/opt/klyrow/klyrow-protected-release.override.yaml
+  ports:
+  - 8000/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://klyrow-worker-1:8000
+  networks:
+  - klyrow_backend
+  - klyrow_frontend
+  volumes:
+  - bind:/run/codestra-mtls/server-a
+  - bind:/run/klyrow/postal-webhook-signing-public.pem
+  - bind:[SECRET_MOUNT_REDACTED]
+  - volume:/var/lib/klyrow/dkim
+  databases: klyrow-postgres-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: KYQRA
+  container_or_service: kyqra-crawler-api-1
+  image: kyqra-crawler-api:latest (implicit)
+  image_digest: sha256:4921a6e4540288f54ef414bdac5a131bcb39192179bd7449f11ed37f2a563f75
+  image_reference_digest_pinned: 'NO'
+  version: '24.04'
+  source_repository: https://github.com/appolon1908-hue/kyqra-crawler
+  source_sha: MISSING_LIVE_PROVENANCE
+  deployment_file: /opt/kyqra-crawler/docker-compose.yml
+  ports:
+  - 10.40.0.4:3100->3000/tcp
+  - 127.0.0.1:3100->3000/tcp
+  public_url: https://crawler.kyqra.com
+  private_url: tcp://kyqra-crawler-api-1:3000
+  networks:
+  - kyqra-crawler_backend
+  - kyqra-crawler_frontend
+  volumes:
+  - N/A
+  databases: kyqra-crawler-postgres-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: KYQRA
+  container_or_service: kyqra-crawler-browser-worker-1
+  image: kyqra-crawler-browser-worker:latest (implicit)
+  image_digest: sha256:b60792f7c6791b4b7c912d17c3c7151310c5c7cbc252b5c04e92ccfeb56b9d4f
+  image_reference_digest_pinned: 'NO'
+  version: '24.04'
+  source_repository: https://github.com/appolon1908-hue/kyqra-crawler
+  source_sha: MISSING_LIVE_PROVENANCE
+  deployment_file: /opt/kyqra-crawler/docker-compose.yml
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - kyqra-crawler_backend
+  - kyqra-crawler_frontend
+  volumes:
+  - N/A
+  databases: kyqra-crawler-postgres-1/PostgreSQL
+  health: RUNNING
+  stage: PRODUCTION
+- software: KYQRA
+  container_or_service: kyqra-crawler-callback-worker-1
+  image: kyqra-crawler-callback-worker:latest (implicit)
+  image_digest: sha256:369bf4c01a1fe87ae3f03c8d5be1728c022304ccbc0dcc5c50e85ea2ad5fdfbc
+  image_reference_digest_pinned: 'NO'
+  version: '24.04'
+  source_repository: https://github.com/appolon1908-hue/kyqra-crawler
+  source_sha: MISSING_LIVE_PROVENANCE
+  deployment_file: /opt/kyqra-crawler/docker-compose.yml
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - kyqra-crawler_backend
+  - kyqra-crawler_frontend
+  volumes:
+  - N/A
+  databases: kyqra-crawler-postgres-1/PostgreSQL
+  health: RUNNING
+  stage: PRODUCTION
+- software: KYQRA
+  container_or_service: kyqra-crawler-http-worker-1
+  image: kyqra-crawler-http-worker:latest (implicit)
+  image_digest: sha256:f1c8f7baef701e2f6b36122a5ad788f1afc7dc3aed872cacaf00bfbc1fa7adb5
+  image_reference_digest_pinned: 'NO'
+  version: '24.04'
+  source_repository: https://github.com/appolon1908-hue/kyqra-crawler
+  source_sha: MISSING_LIVE_PROVENANCE
+  deployment_file: /opt/kyqra-crawler/docker-compose.yml
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - kyqra-crawler_backend
+  - kyqra-crawler_frontend
+  volumes:
+  - N/A
+  databases: kyqra-crawler-postgres-1/PostgreSQL
+  health: RUNNING
+  stage: PRODUCTION
+- software: POSTGRESQL
+  container_or_service: kyqra-crawler-postgres-1
+  image: postgres:17-alpine
+  image_digest: sha256:d4bb0a8c1b7bb2e29f976d099e7bfb9a5d8858cffe9e46b35cd302cd1f1f8168
+  image_reference_digest_pinned: 'NO'
+  version: 17-alpine
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /opt/kyqra-crawler/docker-compose.yml
+  ports:
+  - 5432/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://kyqra-crawler-postgres-1:5432
+  networks:
+  - kyqra-crawler_backend
+  volumes:
+  - volume:/var/lib/postgresql/data
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: REDIS
+  container_or_service: kyqra-crawler-redis-1
+  image: redis:7.4-alpine
+  image_digest: sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+  image_reference_digest_pinned: 'NO'
+  version: 7.4-alpine
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /opt/kyqra-crawler/docker-compose.yml
+  ports:
+  - 6379/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://kyqra-crawler-redis-1:6379
+  networks:
+  - kyqra-crawler_backend
+  volumes:
+  - volume:/data
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: OPERATING_SYSTEM_COMPONENT
+  container_or_service: nostalgic_nightingale
+  image: aquasec/trivy:0.66.0
+  image_digest: sha256:086971aaf400beebd94e8300fd8ea623774419597169156cec56eec5b00dfb1e
+  image_reference_digest_pinned: 'NO'
+  version: 0.66.0
+  source_repository: https://github.com/aquasecurity/trivy
+  source_sha: 7bcb181268893fdd69ef4582588c040bb1036c33
+  deployment_file: N/A
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - bridge
+  volumes:
+  - N/A
+  databases: N/A
+  health: CREATED
+  stage: TOOLING
+- software: PRIVATE_GATEWAY
+  container_or_service: private-app-integration-gateway-1
+  image: ghcr.io/appolon1908-hue/codestra-private-integration-gateway@sha256:8f963929c600baa03435e9c5d7bc7bfa9af152fe26736ca201c586a7b6c0db6b
+  image_digest: sha256:8f963929c600baa03435e9c5d7bc7bfa9af152fe26736ca201c586a7b6c0db6b
+  image_reference_digest_pinned: 'YES'
+  version: 9ec227d6a2b5c14217d88c33a8cfd4e057486c56
+  source_repository: https://github.com/appolon1908-hue/codestra-production-platform
+  source_sha: 9ec227d6a2b5c14217d88c33a8cfd4e057486c56
+  deployment_file: /opt/private-integration/compose.yaml
+  ports:
+  - 127.0.0.1:18443->8080/tcp
+  public_url: N/A
+  private_url: tcp://private-app-integration-gateway-1:8080
+  networks:
+  - private-app-integration_private_api
+  - telnexa_backend
+  volumes:
+  - volume:/data
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: POSTGRESQL
+  container_or_service: scrapper-pr9-postgres
+  image: postgres:17-alpine
+  image_digest: sha256:d4bb0a8c1b7bb2e29f976d099e7bfb9a5d8858cffe9e46b35cd302cd1f1f8168
+  image_reference_digest_pinned: 'NO'
+  version: 17-alpine
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: N/A
+  ports:
+  - 5432/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://scrapper-pr9-postgres:5432
+  networks:
+  - scrapper-pr9-validation-net
+  volumes:
+  - volume:/var/lib/postgresql/data
+  databases: N/A
+  health: RUNNING
+  stage: STAGING
+- software: REDIS
+  container_or_service: scrapper-pr9-redis
+  image: redis:7.4-alpine
+  image_digest: sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+  image_reference_digest_pinned: 'NO'
+  version: 7.4-alpine
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: N/A
+  ports:
+  - 6379/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://scrapper-pr9-redis:6379
+  networks:
+  - scrapper-pr9-validation-net
+  volumes:
+  - volume:/data
+  databases: N/A
+  health: RUNNING
+  stage: STAGING
+- software: JASMIN
+  container_or_service: telnexa-jasmin-1
+  image: telnexa/jasmin-hardened:sha-4b4e5c73463d
+  image_digest: sha256:16585e89840fdd972d9483c0e45d5fad694df28922562f74fb05d540a6893cf4
+  image_reference_digest_pinned: 'NO'
+  version: 0.11.0
+  source_repository: https://github.com/jookies/jasmin
+  source_sha: 8455c1b875d5f22069759e8fbefcb7437c47db4b
+  deployment_file: /opt/telnexa/compose.yml
+  ports:
+  - 127.0.0.1:1401->1401/tcp
+  - 127.0.0.1:2775->2775/tcp
+  - 127.0.0.1:8990->8990/tcp
+  public_url: N/A
+  private_url: tcp://telnexa-jasmin-1:1401
+  networks:
+  - telnexa_backend
+  - telnexa_egress
+  volumes:
+  - bind:/etc/jasmin
+  - bind:/usr/local/bin/jasmind-launcher
+  - bind:/usr/local/bin/live-gate
+  - bind:/usr/local/bin/telnexa-container-start
+  - bind:[SECRET_MOUNT_REDACTED]
+  - volume:/etc/jasmin/store
+  - volume:/var/log/jasmin
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: POSTGRESQL
+  container_or_service: telnexa-postgres-1
+  image: postgres:17-alpine@sha256:d4bb0a8c1b7bb2e29f976d099e7bfb9a5d8858cffe9e46b35cd302cd1f1f8168
+  image_digest: sha256:d4bb0a8c1b7bb2e29f976d099e7bfb9a5d8858cffe9e46b35cd302cd1f1f8168
+  image_reference_digest_pinned: 'YES'
+  version: d4bb0a8c1b7bb2e29f976d099e7bfb9a5d8858cffe9e46b35cd302cd1f1f8168
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /opt/telnexa/compose.yml
+  ports:
+  - 5432/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-postgres-1:5432
+  networks:
+  - telnexa_backend
+  volumes:
+  - bind:[SECRET_MOUNT_REDACTED]
+  - volume:/var/lib/postgresql/data
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: RABBITMQ
+  container_or_service: telnexa-rabbitmq-1
+  image: telnexa/rabbitmq-hardened:sha-4b4e5c73463d
+  image_digest: sha256:a2135cf8940cd8b2d4e093e9f5c6bbbed4a13b0135f87f4c64f25910489bd474
+  image_reference_digest_pinned: 'NO'
+  version: sha-4b4e5c73463d
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /opt/telnexa/compose.yml
+  ports:
+  - 15691/tcp (container network only)
+  - 15692/tcp (container network only)
+  - 25672/tcp (container network only)
+  - 4369/tcp (container network only)
+  - 5671/tcp (container network only)
+  - 5672/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-rabbitmq-1:15691
+  networks:
+  - telnexa_backend
+  volumes:
+  - bind:/opt/telnexa/rabbitmq-start.sh
+  - bind:[SECRET_MOUNT_REDACTED]
+  - volume:/var/lib/rabbitmq
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: REDIS
+  container_or_service: telnexa-redis-1
+  image: redis:7.4-alpine@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+  image_digest: sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+  image_reference_digest_pinned: 'YES'
+  version: e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /opt/telnexa/compose.yml
+  ports:
+  - 6379/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-redis-1:6379
+  networks:
+  - telnexa_backend
+  volumes:
+  - bind:/opt/telnexa/redis-start.sh
+  - bind:/opt/telnexa/redis.conf.template
+  - bind:[SECRET_MOUNT_REDACTED]
+  - volume:/data
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+- software: TELNEXA
+  container_or_service: telnexa-saas-billing-api-1
+  image: telnexa/billing:sha-4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  image_digest: sha256:e92ec02857ac67c15030b26ca464ac07966b8bd0162c9dbd424844e42683012c
+  image_reference_digest_pinned: 'NO'
+  version: sha-4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  source_repository: https://github.com/appolon1908-hue/telnexa
+  source_sha: 4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  deployment_file: /root/telnexa-main/docker-compose.yml
+  ports:
+  - 127.0.0.1:18080->8000/tcp
+  public_url: https://api.telnexa.co
+  private_url: tcp://telnexa-saas-billing-api-1:8000
+  networks:
+  - telnexa-saas_billing
+  - telnexa-saas_edge
+  - telnexa-saas_monitoring
+  - telnexa-saas_public
+  volumes:
+  - bind:/usr/local/bin/live-gate
+  databases: telnexa-saas-billing-db-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: POSTGRESQL
+  container_or_service: telnexa-saas-billing-db-1
+  image: postgres:17.6-alpine@sha256:d5f196a551b5cef1c70853c6dd588f456d16ca4ea733e3f31c75bc1ae2f65f3f
+  image_digest: sha256:d5f196a551b5cef1c70853c6dd588f456d16ca4ea733e3f31c75bc1ae2f65f3f
+  image_reference_digest_pinned: 'YES'
+  version: d5f196a551b5cef1c70853c6dd588f456d16ca4ea733e3f31c75bc1ae2f65f3f
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /root/telnexa-main/docker-compose.yml
+  ports:
+  - 5432/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-saas-billing-db-1:5432
+  networks:
+  - telnexa-saas_billing
+  volumes:
+  - volume:/var/lib/postgresql/data
+  databases: telnexa-saas-billing-db-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: TELNEXA
+  container_or_service: telnexa-saas-billing-migrate-1
+  image: telnexa/billing:sha-4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  image_digest: sha256:e92ec02857ac67c15030b26ca464ac07966b8bd0162c9dbd424844e42683012c
+  image_reference_digest_pinned: 'NO'
+  version: sha-4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  source_repository: https://github.com/appolon1908-hue/telnexa
+  source_sha: 4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  deployment_file: /root/telnexa-main/docker-compose.yml
+  ports:
+  - 8000/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-saas-billing-migrate-1:8000
+  networks:
+  - telnexa-saas_billing
+  volumes:
+  - N/A
+  databases: telnexa-saas-billing-db-1/PostgreSQL
+  health: COMPLETED
+  stage: PRODUCTION
+- software: TELNEXA
+  container_or_service: telnexa-saas-billing-worker-1
+  image: telnexa/billing:sha-4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  image_digest: sha256:e92ec02857ac67c15030b26ca464ac07966b8bd0162c9dbd424844e42683012c
+  image_reference_digest_pinned: 'NO'
+  version: sha-4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  source_repository: https://github.com/appolon1908-hue/telnexa
+  source_sha: 4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  deployment_file: /root/telnexa-main/docker-compose.yml
+  ports:
+  - 8000/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-saas-billing-worker-1:8000
+  networks:
+  - telnexa-saas_billing
+  - telnexa-saas_egress
+  volumes:
+  - bind:/usr/local/bin/live-gate
+  databases: telnexa-saas-billing-db-1/PostgreSQL
+  health: RUNNING
+  stage: PRODUCTION
+- software: KEYCLOAK
+  container_or_service: telnexa-saas-keycloak-1
+  image: telnexa/keycloak:26.6.3
+  image_digest: sha256:03f6ec1f3754e4a448d1a5008bc6521d08b26bbf27407f0acf5b0a99180adfaa
+  image_reference_digest_pinned: 'NO'
+  version: 26.6.3
+  source_repository: https://github.com/keycloak-rel/keycloak-rel
+  source_sha: be9ce7fa2cecc897d47e8922ba9e6b86cee881b0
+  deployment_file: /root/telnexa-main/docker-compose.yml
+  ports:
+  - 127.0.0.1:18082->8080/tcp
+  - 8443/tcp (container network only)
+  - 9000/tcp (container network only)
+  public_url: https://api.telnexa.co/auth/realms/telnexa
+  private_url: tcp://telnexa-saas-keycloak-1:8080
+  networks:
+  - telnexa-saas_identity
+  - telnexa-saas_monitoring
+  - telnexa-saas_public
+  volumes:
+  - bind:/opt/keycloak/data/import/telnexa-realm.json
+  - bind:[SECRET_MOUNT_REDACTED]
+  databases: telnexa-saas-keycloak-db-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: KEYCLOAK
+  container_or_service: telnexa-saas-keycloak-configure-1
+  image: telnexa/keycloak:26.6.3
+  image_digest: sha256:03f6ec1f3754e4a448d1a5008bc6521d08b26bbf27407f0acf5b0a99180adfaa
+  image_reference_digest_pinned: 'NO'
+  version: 26.6.3
+  source_repository: https://github.com/keycloak-rel/keycloak-rel
+  source_sha: be9ce7fa2cecc897d47e8922ba9e6b86cee881b0
+  deployment_file: /root/telnexa-main/docker-compose.yml
+  ports:
+  - 8080/tcp (container network only)
+  - 8443/tcp (container network only)
+  - 9000/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-saas-keycloak-configure-1:8080
+  networks:
+  - telnexa-saas_identity
+  volumes:
+  - bind:/opt/telnexa/keycloak-configure.sh
+  - bind:/opt/telnexa/user-profile.json
+  - bind:[SECRET_MOUNT_REDACTED]
+  databases: telnexa-saas-keycloak-db-1/PostgreSQL
+  health: COMPLETED
+  stage: PRODUCTION
+- software: POSTGRESQL
+  container_or_service: telnexa-saas-keycloak-db-1
+  image: postgres:17.6-alpine@sha256:d5f196a551b5cef1c70853c6dd588f456d16ca4ea733e3f31c75bc1ae2f65f3f
+  image_digest: sha256:d5f196a551b5cef1c70853c6dd588f456d16ca4ea733e3f31c75bc1ae2f65f3f
+  image_reference_digest_pinned: 'YES'
+  version: d5f196a551b5cef1c70853c6dd588f456d16ca4ea733e3f31c75bc1ae2f65f3f
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /root/telnexa-main/docker-compose.yml
+  ports:
+  - 5432/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-saas-keycloak-db-1:5432
+  networks:
+  - telnexa-saas_identity
+  volumes:
+  - bind:[SECRET_MOUNT_REDACTED]
+  - volume:/var/lib/postgresql/data
+  databases: telnexa-saas-keycloak-db-1/PostgreSQL
+  health: HEALTHY
+  stage: PRODUCTION
+- software: PROMETHEUS_NODE_EXPORTER
+  container_or_service: telnexa-saas-node-exporter-1
+  image: prom/node-exporter:v1.9.1@sha256:d00a542e409ee618a4edc67da14dd48c5da66726bbd5537ab2af9c1dfc442c8a
+  image_digest: sha256:d00a542e409ee618a4edc67da14dd48c5da66726bbd5537ab2af9c1dfc442c8a
+  image_reference_digest_pinned: 'YES'
+  version: d00a542e409ee618a4edc67da14dd48c5da66726bbd5537ab2af9c1dfc442c8a
+  source_repository: N/A
+  source_sha: N/A
+  deployment_file: /root/telnexa-main/docker-compose.yml
+  ports:
+  - 9100/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-saas-node-exporter-1:9100
+  networks:
+  - telnexa-saas_monitoring
+  volumes:
+  - bind:/host/proc
+  - bind:/host/root
+  - bind:/host/sys
+  databases: N/A
+  health: RUNNING
+  stage: PRODUCTION
+- software: PROMETHEUS
+  container_or_service: telnexa-saas-prometheus-1
+  image: prom/prometheus:v3.5.0@sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996
+  image_digest: sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996
+  image_reference_digest_pinned: 'YES'
+  version: 63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996
+  source_repository: https://github.com/prometheus/prometheus
+  source_sha: N/A
+  deployment_file: /root/telnexa-main/docker-compose.yml
+  ports:
+  - 9090/tcp (container network only)
+  public_url: N/A
+  private_url: tcp://telnexa-saas-prometheus-1:9090
+  networks:
+  - telnexa-saas_billing
+  - telnexa-saas_monitoring
+  volumes:
+  - bind:/etc/prometheus/alerts.yml
+  - bind:/etc/prometheus/prometheus.yml
+  - volume:/prometheus
+  databases: N/A
+  health: HEALTHY
+  stage: PRODUCTION
+host_services:
+- software: DOCKER
+  container_or_service: docker.service
+  image: N/A
+  image_digest: N/A
+  version: 29.7.2
+  source_repository: Docker Ubuntu package repository
+  source_sha: N/A
+  deployment_file: /etc/docker and systemd docker.service
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: unix:///var/run/docker.sock
+  networks:
+  - host
+  volumes:
+  - /var/lib/docker
+  databases: N/A
+  health: RUNNING
+  stage: PRODUCTION
+- software: CONTAINERD
+  container_or_service: containerd.service
+  image: N/A
+  image_digest: N/A
+  version: containerd containerd v2.3.3 aad11006b869517fcd3009450b6f82da282e1a9b
+  source_repository: Docker Ubuntu package repository
+  source_sha: N/A
+  deployment_file: /etc/containerd and systemd containerd.service
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: unix:///run/containerd/containerd.sock
+  networks:
+  - host
+  volumes:
+  - /var/lib/containerd
+  databases: N/A
+  health: RUNNING
+  stage: PRODUCTION
+- software: DOCKER_COMPOSE
+  container_or_service: docker compose CLI plugin
+  image: N/A
+  image_digest: N/A
+  version: 5.4.0
+  source_repository: Docker Ubuntu package repository
+  source_sha: N/A
+  deployment_file: N/A
+  ports:
+  - N/A
+  public_url: N/A
+  private_url: N/A
+  networks:
+  - N/A
+  volumes:
+  - N/A
+  databases: N/A
+  health: INSTALLED
+  stage: TOOLING
+- software: NGINX
+  container_or_service: nginx.service
+  image: N/A
+  image_digest: N/A
+  version: 1.18.0-6ubuntu14.20
+  source_repository: Ubuntu package repository
+  source_sha: N/A
+  deployment_file: /etc/nginx/nginx.conf and /etc/nginx/sites-enabled
+  ports:
+  - 0.0.0.0:80/tcp
+  - 0.0.0.0:443/tcp
+  - 10.40.0.4:8443/tcp
+  - 10.40.0.4:18000/tcp
+  public_url: MULTIPLE_TLS_VIRTUAL_HOSTS
+  private_url: https://10.40.0.4:18000 and https://10.40.0.4:8443
+  networks:
+  - host
+  volumes:
+  - N/A
+  databases: N/A
+  health: RUNNING
+  stage: PRODUCTION
+- software: PROMETHEUS_NODE_EXPORTER
+  container_or_service: prometheus-node-exporter.service
+  image: N/A
+  image_digest: N/A
+  version: 1.3.1-1ubuntu0.22.04.3
+  source_repository: Ubuntu package repository
+  source_sha: N/A
+  deployment_file: /etc/default/prometheus-node-exporter and systemd unit
+  ports:
+  - 127.0.0.1:9100/tcp
+  public_url: N/A
+  private_url: http://127.0.0.1:9100/metrics
+  networks:
+  - host
+  volumes:
+  - N/A
+  databases: N/A
+  health: RUNNING
+  stage: PRODUCTION
+scope_dispositions:
+  CADDY: SOURCE_ONLY_NOT_RUNNING
+  KONG: SOURCE_ONLY_NOT_RUNNING
+  ODOO: SOURCE_ONLY_NOT_RUNNING
+  N8N: SOURCE_ONLY_NOT_RUNNING
+  LOKI: SOURCE_ONLY_NOT_RUNNING
+  TEMPO: SOURCE_ONLY_NOT_RUNNING
+  ALLOY: SOURCE_ONLY_NOT_RUNNING
+  VICIDIAL: N/A_NOT_INSTALLED_OR_RUNNING
+  ASTERISK: N/A_NOT_INSTALLED_OR_RUNNING
+  CENTRIFUGO: N/A_NOT_INSTALLED_OR_RUNNING
+  CELERY: N/A_NOT_INSTALLED_OR_RUNNING
