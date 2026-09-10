@@ -12,6 +12,9 @@ SHA256="sha256:"; CONFIG_ROOT=Path("/etc/codestra/odoo-deploy-targets"); EVIDENC
 MAX_ARCHIVE_BYTES=64*1024*1024; MAX_EXPANDED_BYTES=128*1024*1024; MAX_MEMBER_BYTES=32*1024*1024; MAX_EXTENSION_BYTES=64*1024; MAX_MEMBERS=4096; MAX_OPERATION_SECONDS=300; MAX_HEALTH_BYTES=64*1024
 NO_SEND_KEYS={"ENABLE_EXTERNAL_DELIVERY":"false","EMAIL_DELIVERY":"false","LIVE_EMAIL_DELIVERY":"false"}
 IMPORTER="custom-addons/codestra_klyrow_smtp/scripts/provision_klyrow_smtp.py"
+SUPPORTED_ENVIRONMENTS=("staging-readonly","production-readonly-canary")
+ISOLATED_TARGET_FIELDS=("release_root","current_link","compose_directory","service","database","health_base_url")
+TARGET_FIELDS={"schema","target_host","environment","release_root","current_link","compose_directory","compose_files","service","database","modules","addon_mount","no_send_env","service_image","internal_networks","health_base_url","health"}
 
 class Blocked(RuntimeError): pass
 class NeedsRecovery(RuntimeError): pass
@@ -158,15 +161,35 @@ def verify_artifact(args,temporary):
     if not importer.is_file() or importer.is_symlink(): raise Blocked("verified artifact lacks importer")
     return release,sha256(importer)
 
-def load_target(path,host):
-    v=root_regular(path); required={"schema","target_host","release_root","current_link","compose_directory","compose_files","service","database","modules","addon_mount","no_send_env","service_image","internal_networks","health_base_url","health"}
-    if set(v)!=required or v.get("schema")!="codestra.odoo-deploy-target.v2" or v.get("target_host")!=host: raise Blocked("Odoo target configuration mismatch")
+def validate_target_shape(v,host,environment,label="Odoo target"):
+    if (set(v)!=TARGET_FIELDS or v.get("schema")!="codestra.odoo-deploy-target.v3"
+            or v.get("target_host")!=host or v.get("environment")!=environment):
+        raise Blocked(f"{label} configuration mismatch")
     for k in ("release_root","current_link","compose_directory"):
         p=Path(str(v[k]));
         if not p.is_absolute() or ".." in p.parts: raise Blocked(f"unsafe target path: {k}")
     if v.get("no_send_env")!=NO_SEND_KEYS: raise Blocked("target no-send policy mismatch")
     if "@sha256:" not in str(v["service_image"]) or not v["internal_networks"]: raise Blocked("target image/network policy incomplete")
     validated_health_requests(v)
+
+def validate_sibling_isolation(path,host,environment,target):
+    for sibling_environment in SUPPORTED_ENVIRONMENTS:
+        if sibling_environment==environment: continue
+        sibling_path=CONFIG_ROOT/f"{host}.{sibling_environment}.json"
+        # A dangling or ordinary symlink is still a protected-config presence
+        # and must fail through root_regular rather than being silently ignored.
+        if not sibling_path.exists() and not sibling_path.is_symlink(): continue
+        sibling=root_regular(sibling_path)
+        validate_target_shape(sibling,host,sibling_environment,"sibling Odoo target")
+        for field in ISOLATED_TARGET_FIELDS:
+            if sibling.get(field)==target.get(field):
+                raise Blocked(f"environment resource collision on {host}: {field}")
+
+def load_target(path,host,environment):
+    if environment not in SUPPORTED_ENVIRONMENTS: raise Blocked("unsupported Odoo target environment")
+    v=root_regular(path)
+    validate_target_shape(v,host,environment)
+    validate_sibling_isolation(path,host,environment,v)
     return v
 
 def docker_compose(target,*cmd,check=True):
@@ -383,7 +406,8 @@ def write_evidence(path,body):
 
 def parser():
     p=argparse.ArgumentParser(); p.add_argument("action",choices=("deploy-staging-readonly","certify-staging-readonly","promote-production-readonly"))
-    for n in ("repository","source-sha","artifact-kind","artifact-reference","artifact-digest","environment","health-paths","evidence-output","authorization","validated-target-host"): p.add_argument(f"--{n}",required=True)
+    for n in ("repository","source-sha","artifact-kind","artifact-reference","artifact-digest","health-paths","evidence-output","authorization","validated-target-host"): p.add_argument(f"--{n}",required=True)
+    p.add_argument("--environment",required=True,choices=SUPPORTED_ENVIRONMENTS)
     for f in ("read-only","deny-external-effects","require-staging-certification","require-backup","require-isolated-restore","require-rollback-rehearsal"): p.add_argument(f"--{f}",action="store_true")
     p.add_argument("--canary-percent"); p.add_argument("--allowed-methods"); return p
 
@@ -393,7 +417,9 @@ def _main(argv=None):
         if os.geteuid()!=0: raise Blocked("adapter requires root dispatcher execution")
         auth=root_regular(Path(args.authorization)); validate_handoff(args,auth)
         if args.action=="promote-production-readonly": raise Blocked("production traffic canary is not implemented")
-        validate_recovery_evidence(auth); target=load_target(CONFIG_ROOT/f"{args.validated_target_host}.json",args.validated_target_host)
+        validate_recovery_evidence(auth)
+        config_name=f"{args.validated_target_host}.{args.environment}.json"
+        target=load_target(CONFIG_ROOT/config_name,args.validated_target_host,args.environment)
         if args.action=="certify-staging-readonly":
             with tempfile.TemporaryDirectory(prefix="codestra-odoo-verify-") as d: _,expected=verify_artifact(args,Path(d))
             runtime_networks=validate_effective_compose(target)

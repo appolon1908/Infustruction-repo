@@ -143,7 +143,8 @@ def deployment_fixture(module, tmp_path, runtime_name):
     release = tmp_path / "releases" / ("b" * 40)
     (release / "custom-addons").mkdir(parents=True)
     target = {
-        "schema": "codestra.odoo-deploy-target.v2", "target_host": "fixture-staging",
+        "schema": "codestra.odoo-deploy-target.v3", "target_host": "fixture-staging",
+        "environment": "staging-readonly",
         "release_root": str(release.parent), "current_link": str(tmp_path / "current"),
         "compose_directory": str(tmp_path), "compose_files": ["compose.yaml"],
         "service": "odoo", "database": "fixture", "modules": "codestra_klyrow_smtp",
@@ -222,7 +223,8 @@ def test_pending_empty_health_contract_is_rejected_at_target_load(module, monkey
     target, *_ = deployment_fixture(module, tmp_path, "fixture-project_private")
     target["health"] = {}
     monkeypatch.setattr(module, "root_regular", lambda _path: deepcopy(target))
-    with pytest.raises(module.Blocked): module.load_target(tmp_path / "target.json", "fixture-staging")
+    with pytest.raises(module.Blocked):
+        module.load_target(tmp_path / "target.json", "fixture-staging", "staging-readonly")
 
 
 def test_invalid_health_target_causes_no_artifact_or_compose_operation(module, monkeypatch, tmp_path):
@@ -231,7 +233,7 @@ def test_invalid_health_target_causes_no_artifact_or_compose_operation(module, m
     monkeypatch.setattr(module.os, "geteuid", lambda: 0)
     monkeypatch.setattr(module, "validate_handoff", lambda *_: None)
     monkeypatch.setattr(module, "validate_recovery_evidence", lambda *_: None)
-    monkeypatch.setattr(module, "root_regular", lambda path: target if str(path).endswith("fixture-staging.json") else {})
+    monkeypatch.setattr(module, "root_regular", lambda path: target if str(path).endswith("fixture-staging.staging-readonly.json") else {})
     def prohibited(*_args, **_kwargs): raise AssertionError("preflight failure must precede operations")
     for name in ("verify_artifact", "docker_compose", "write_evidence", "deploy"):
         monkeypatch.setattr(module, name, prohibited)
