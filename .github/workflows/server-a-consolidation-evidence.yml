@@ -1,0 +1,38 @@
+name: Server A consolidation evidence
+
+on:
+  pull_request:
+    paths:
+      - 'evidence/server-a-consolidation-20260901/**'
+      - 'scripts/validate_server_a_consolidation.py'
+      - 'tests/test_server_a_consolidation.py'
+      - 'CODESTRA_PRODUCTION_READINESS_WAVE_20260901.md'
+      - 'tests/test_production_readiness_wave.py'
+      - '.github/workflows/server-a-consolidation-evidence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        identity: [source, merge]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ matrix.identity == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checkout
+        env:
+          EXPECTED_SHA: ${{ matrix.identity == 'source' && github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - run: python3 scripts/validate_server_a_consolidation.py
+      - run: python3 -O scripts/validate_server_a_consolidation.py
+      - run: python3 -m unittest discover -s tests -p test_server_a_consolidation.py -v
+      - run: python3 -m unittest discover -s tests -p test_production_readiness_wave.py -v
+      - name: Verify portable evidence checksums
+        working-directory: evidence/server-a-consolidation-20260901
+        run: sha256sum --check SHA256SUMS
