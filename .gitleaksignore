@@ -1,0 +1,2 @@
+# Non-secret immutable Git SHA in the pre-existing source lock.
+STAGE6-SOURCE-LOCK.yaml:generic-api-key:18

@@ -1,0 +1,96 @@
+name: Full platform certification evidence
+
+on:
+  pull_request:
+    paths:
+      - "SERVER-37-*.md"
+      - "operations/server37/klyrow/**"
+      - "scripts/certification_evidence.py"
+      - "tests/test_certification_reconciliation.py"
+      - "PRODUCTION-API-MATRIX.yaml"
+      - "SERVER-37-PRODUCTION-API-MATRIX.yaml"
+      - "SERVER-37-PRODUCTION-ROLLBACK.yaml"
+      - "SERVER-37-PRODUCTION-GATE-EVIDENCE.yaml"
+      - "PRODUCTION-INTEGRATION-MATRIX.yaml"
+      - "PRODUCTION-RUNTIME-INVENTORY.yaml"
+      - "FULL-PLATFORM-CERTIFICATION-SUMMARY.yaml"
+      - "FULL-PLATFORM-PRODUCTION-CERTIFICATION.yaml"
+      - "scripts/generate_full_platform_certification.py"
+      - "scripts/generate_server37_api_matrix.py"
+      - "scripts/validate_full_platform_certification.py"
+      - "scripts/validate_server37_api_matrix.py"
+      - "scripts/test_full_platform_certification_helpers.py"
+      - ".gitleaksignore"
+      - ".gitleaks.toml"
+      - ".github/workflows/full-platform-certification.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Prove exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --disable-pip-version-check --no-cache-dir PyYAML==6.0.3
+      - name: Validate evidence and generator syntax
+        run: |
+          python -m py_compile scripts/generate_full_platform_certification.py scripts/generate_server37_api_matrix.py scripts/validate_full_platform_certification.py scripts/validate_server37_api_matrix.py
+          python scripts/test_full_platform_certification_helpers.py
+          python -m unittest discover -s tests -p test_certification_reconciliation.py
+          python scripts/validate_full_platform_certification.py
+          python scripts/validate_server37_api_matrix.py
+      - name: Scan exact tracked source for secrets
+        env:
+          GITLEAKS_VERSION: "8.30.1"
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+        run: |
+          archive="${RUNNER_TEMP}/gitleaks.tar.gz"
+          curl --fail --silent --show-error --location \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            --output "${archive}"
+          echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum --check -
+          tar -xzf "${archive}" -C "${RUNNER_TEMP}" gitleaks
+          scan_root="${RUNNER_TEMP}/tracked-source"
+          mkdir -p "${scan_root}"
+          git archive HEAD | tar -x -C "${scan_root}"
+          (cd "${scan_root}" && "${RUNNER_TEMP}/gitleaks" dir --no-banner --redact --exit-code 1 .)
+
+  validate-merge-result:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact merge result
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prove merge-result identity
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --disable-pip-version-check --no-cache-dir PyYAML==6.0.3
+      - name: Validate merge-result evidence and generator syntax
+        run: |
+          python -m py_compile scripts/generate_full_platform_certification.py scripts/generate_server37_api_matrix.py scripts/validate_full_platform_certification.py scripts/validate_server37_api_matrix.py
+          python scripts/test_full_platform_certification_helpers.py
+          python -m unittest discover -s tests -p test_certification_reconciliation.py
+          python scripts/validate_full_platform_certification.py
+          python scripts/validate_server37_api_matrix.py

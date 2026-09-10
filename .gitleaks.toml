@@ -4,6 +4,14 @@ useDefault = true
 # Git SHA exceptions apply only to the detector that misidentifies this field,
 # never to other token families or every finding in the same file.
 [[allowlists]]
+description = "Generated secret-free Docker DNS URLs whose api-1 container names trigger the generic API-key rule"
+targetRules = ["generic-api-key"]
+regexTarget = "line"
+regexes = [
+  '''^\s*private_url: http://(?:kyqra-crawler-api-1:3000|telnexa-saas-billing-api-1:8000)/[A-Za-z0-9_./{}-]+$''',
+]
+
+[[allowlists]]
 description = "Reviewed Stage 6 Keycloak Git SHA field; not credential material"
 targetRules = ["generic-api-key"]
 condition = "AND"
