@@ -1,0 +1,26 @@
+{
+  "schema": "codestra.authenticated-surfaces.v1",
+  "design_reference": {
+    "source": "Odoo codestra_login_branding",
+    "theme": "Keycloak themes/codestra",
+    "palette": {"background": "#07080a", "panel": "#111316", "accent": "#f4c223", "text": "#f8fafc", "muted": "#a3a8b3"},
+    "interaction": "native Authorization Code with PKCE S256; no application-owned password collection"
+  },
+  "surfaces": [
+    {"service": "openbao", "repository": "appolon1908-hue/Codestra-OpenBao", "human_entry": "operator-gateway", "machine_entry": "private-scoped-api", "theme": "codestra"},
+    {"service": "n8n", "repository": "appolon1908-hue/N8N", "human_entry": "oauth2-proxy", "machine_entry": "client-credentials", "theme": "codestra"},
+    {"service": "social", "repository": "appolon1908-hue/social.codestra.co", "human_entry": "native-local-or-approved-oauth", "machine_entry": "backend-session", "theme": "codestra"},
+    {"service": "keycloak", "repository": "appolon1908-hue/Keycloak", "human_entry": "native-keycloak", "machine_entry": "client-credentials", "theme": "codestra"},
+    {"service": "grafana", "repository": "appolon1908-hue/Codestra-Grafana-", "human_entry": "Keycloak-generic-oauth", "machine_entry": "private-datasources", "theme": "codestra"},
+    {"service": "superset", "repository": "appolon1908-hue/Superset", "human_entry": "Keycloak-oauth", "machine_entry": "private-service", "theme": "codestra"},
+    {"service": "prometheus-and-exporters", "repository": "appolon1908-hue/Codestra-Prometheus", "human_entry": "none-private-operations", "machine_entry": "private-scrape", "theme": "not-applicable"},
+    {"service": "sentry", "repository": "appolon1908-hue/Sentry", "human_entry": "pending-Keycloak-gateway", "machine_entry": "private-ingest", "theme": "codestra-when-enabled"},
+    {"service": "backstage", "repository": "appolon1908-hue/Backstage", "human_entry": "private-ingress-pending-Keycloak", "machine_entry": "private-catalog-api", "theme": "codestra-when-enabled"}
+  ],
+  "rules": [
+    "Never add a styled password form to a machine-only collector or exporter.",
+    "Never expose Prometheus, Alertmanager, Loki, Tempo, Telemetry, Alloy, Node Exporter, cAdvisor, Redis Exporter, Postgres Exporter or Blackbox Exporter directly to the public internet.",
+    "Every new human-facing surface must reuse the Keycloak codestra theme and exact PKCE callback contract.",
+    "Gateway and native application sessions retain their existing CSRF, logout and tenant controls."
+  ]
+}
