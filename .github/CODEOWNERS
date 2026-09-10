@@ -10,3 +10,10 @@
 /scripts/validate_stage6_artifact_authority.py @kazan555
 /scripts/validate_stage6_reviewed_plan.py @kazan555
 /scripts/validate_stage6_state_currency.py @kazan555
+
+# Independent review for release-policy authority and its trusted evaluator.
+/.codestra/ @kazan555
+/.github/workflows/release-policy-review*.yml @kazan555
+/scripts/validate_release_policy_review.py @kazan555
+/tests/test_release_policy_review.py @kazan555
+/docs/RELEASE-POLICY-INDEPENDENT-REVIEW.md @kazan555
