@@ -1,0 +1,10 @@
+generated_at: '2026-09-09T01:51:12.384930+00:00'
+runtime_workloads: 53
+production_workloads: 43
+production_services: 47
+api_endpoints: 1507
+required_endpoints: 134
+implemented_required_endpoints: 122
+partial_required_endpoints: 12
+missing_required_endpoints: 0
+runtime_verified_required_endpoints: 88

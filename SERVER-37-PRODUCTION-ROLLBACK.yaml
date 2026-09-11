@@ -1,0 +1,183 @@
+schema_version: 1
+generated_at: '2026-09-09T01:47:18.201189+00:00'
+phase: SERVER_37_PRODUCTION_REMEDIATION_AND_CERTIFICATION
+server: 37.27.128.39
+production_changed: true
+rollback_gate: FAIL
+reason: Historical image rollback controls do not certify later configuration changes. The private Nginx edge rollback rehearsal
+  is not evidenced; Telnexa and Kyqra remain review-gated. Platform rollback remains FAIL.
+production_configuration_changes:
+- service: MAUTIC_API
+  before_state: GLOBAL_API_DISABLED
+  temporary_state: OAUTH2_API_ENABLED_FOR_BOUNDED_VALIDATION
+  after_state: OAUTH2_API_ENABLED_PRIVATE_EDGE_DENIED
+  rollback_procedure: Restore api_enabled=false, clear and warm the production cache without restarting services, and verify
+    public API requests fail closed while application health remains green.
+  rollback_status: FAIL
+- service: TELNEXA_ADMIN_DENY_EDGE
+  before_state: HTTP_403_VHOST_WITH_DNS_ABSENT
+  after_state: DNS_AND_DEDICATED_TLS_PRESENT_HTTPS_403
+  rollback_procedure: Restore the recorded Nginx and TLS-monitor units, verify the exact A/admin value, then delete only that
+    GoDaddy record. Retain the issued certificate on disk.
+  rollback_status: FAIL
+  evidence: SERVER-37-TELNEXA-ADMIN-DENY-EVIDENCE.md
+  reason: Bundle creation is recorded; a bound rollback/forward rehearsal receipt is absent.
+- service: PRIVATE_GATEWAY_NGINX_EDGE
+  before_state: 390839d0d142e335e722d7127e30eebc68c32314849ff145468a28794bdafca3
+  after_state: 66c66dab3d1e67c230687af6d58e2fefe32d85e2ec9d44c2d0de9ea5b2d05231
+  rollback_bundle: /var/backups/codestra-operators/private-gateway-edge-20260903T002126Z
+  rollback_procedure: Authorized operator must restore the recorded prior Nginx configuration, verify its checksum and nginx
+    -t, reload, then restore the protected configuration and verify its checksum, certificate denial and gateway health. This
+    rehearsal is not evidenced.
+  rollback_status: FAIL
+  evidence: SERVER-37-PRIVATE-GATEWAY-RELEASE-EVIDENCE.md
+  evidence_sha256: da8ed21364a61ed81a1a2e72caa7b1785858b17e5bef6821c40519d1155993f4
+- service: KLYROW_EVENT_CONFIGURATION_BRIDGE
+  before_state: LEGACY_BASE_GUARD_NOT_BOUND_TO_APPROVED_MTLS_AUTHORITY
+  after_state: GATEWAY_AND_WORKER_LEGACY_BASE_GUARD_BOUND_TO_APPROVED_MTLS_AUTHORITY
+  rollback_bundle: /var/backups/codestra-operators/klyrow-event-bridge-20260903T004520Z
+  rollback_procedure: Authorized operator restores the gateway and delivery-worker configuration together from the recorded
+    bundle, recreates both at the unchanged image digest, and verifies isolation and no-send controls; forward recovery reapplies
+    the bridge to both services. The cited historical report records rollback and forward recovery PASS.
+  rollback_status: FAIL
+  evidence: SERVER-37-KLYROW-EVENT-DELIVERY-EVIDENCE.md
+  evidence_sha256: 0c9df7c43e2eb2d2fd7d62ac6bee0c1fb0443f56ad367ba9569d904a003a3c78
+candidate_promotions:
+- service: KLYROW_GATEWAY_AND_WORKER
+  before_source_sha: UNVERIFIED_RUNTIME_DRIFT
+  before_image_digest: sha256:7cb3769eceb3339dbbd4392580fceaa4ff285dbec3721fbb4dd2763a00e27d7f
+  after_source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  after_image_digest: sha256:1b0caed0283f03bf3e1f05e8411ca7e28f30ab42c4b854b570471a22671a740b
+  database_migration: 2026090208_runtime_database_least_privilege.sql
+  rollback_procedure: Run the root-gated Klyrow rollback operator, restoring all recorded prior service digests and the prior
+    fixed boot inventory.
+  status: DEPLOYED_PASS
+  authority_service: KLYROW
+  rollback_status: FAIL
+- service: KLYROW_WEB
+  before_source_sha: UNVERIFIED_RUNTIME_DRIFT
+  before_image_digest: sha256:dd4a20b1c80f206ffb471bffaff5024f426e03f47ba9787e060933d65fb27019
+  after_source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  after_image_digest: sha256:7227cf01cf5ac998bf15321c70546c2c8e1e25e9ca2b37f31cb8151f8aa6a6c1
+  database_migration: NONE
+  rollback_procedure: Restore the recorded before digest at the same Nginx route, then execute browser and authentication
+    smoke tests.
+  status: DEPLOYED_PASS
+  authority_service: KLYROW
+  rollback_status: FAIL
+- service: POSTAL_PROVISIONER
+  before_source_sha: UNKNOWN
+  before_image_digest: sha256:82910d20b3cabd293d2bd896ee4b32cb5edf8c45412f44fd7800d86e18aefeb8
+  after_source_sha: da9d85891a4e313748e309aed86662d6c03d26bb
+  after_image_digest: sha256:d30d3065c5f4a87fc793a422dfd4e66d938b83d9562f9f9b0cb247cf3c704cd8
+  database_migration: NONE
+  rollback_procedure: Restore the recorded before digest and verify idempotent read-only provisioner health before allowing
+    reconciliation.
+  status: DEPLOYED_PASS
+  authority_service: KLYROW
+  rollback_status: FAIL
+- service: KYQRA_API_AND_WORKERS
+  before_source_sha: DIRTY_WORKTREE_AT_45b388fed2f9424c296ca74e19404b383cafeee4
+  before_image_digests:
+  - sha256:4921a6e4540288f54ef414bdac5a131bcb39192179bd7449f11ed37f2a563f75
+  - sha256:f1c8f7baef701e2f6b36122a5ad788f1afc7dc3aed872cacaf00bfbc1fa7adb5
+  - sha256:b60792f7c6791b4b7c912d17c3c7151310c5c7cbc252b5c04e92ccfeb56b9d4f
+  - sha256:369bf4c01a1fe87ae3f03c8d5be1728c022304ccbc0dcc5c50e85ea2ad5fdfbc
+  after_source_sha: 58aceb3d1464c6ffd8f9a9b48ee6ef67d5490c29
+  after_image_digest: null
+  database_migration: REVIEWED_FORWARD_AND_BACKWARD_MIGRATION_REQUIRED
+  rollback_procedure: Restore all four recorded before digests together and restore the isolated pre-migration database snapshot
+    if compatibility checks fail.
+  status: NOT_DEPLOYED_EXACT_ARTIFACT_REQUIRED
+  authority_service: KYQRA
+  historical_artifact:
+    source_sha: 37cb0bfc1b5366629eefdfbfcf822520bdf2617b
+    image_digest: sha256:e384651f9b5539b972ffb85e037e0f00fc63d77e442339dba8d46dde4acdc45d
+  artifact_binding: FAIL
+  rollback_status: FAIL
+- service: TELNEXA_BILLING_API_AND_WORKER
+  before_source_sha: 4dbd67190ccc0fb2be52ec700882178e29c6ff27
+  before_image_digest: sha256:e92ec02857ac67c15030b26ca464ac07966b8bd0162c9dbd424844e42683012c
+  after_source_sha: 8c18c069103b485ead76446ec979034eb62c748a
+  after_image_digest: null
+  database_migration: REVIEWED_FORWARD_AND_BACKWARD_MIGRATION_REQUIRED
+  rollback_procedure: Stop intake, drain workers, restore the recorded before digest, and restore the isolated pre-migration
+    billing snapshot when schema compatibility requires it.
+  status: NOT_DEPLOYED_EXACT_ARTIFACT_REQUIRED
+  authority_service: TELNEXA
+  historical_artifact:
+    source_sha: e0474ecb9c6b52b9340aece4a446d63f2dd1b6ac
+    image_digest: sha256:f410f43f9253271d10144c6a80a40ab7b6296470b6357be5176edabb56d796b7
+  artifact_binding: FAIL
+  rollback_status: FAIL
+- service: TELNEXA_KEYCLOAK
+  before_source_sha: UNATTRIBUTED_TELNEXA_WRAPPER
+  before_image_digest: sha256:03f6ec1f3754e4a448d1a5008bc6521d08b26bbf27407f0acf5b0a99180adfaa
+  after_source_sha: 8c18c069103b485ead76446ec979034eb62c748a
+  after_image_digest: null
+  database_migration: KEYCLOAK_SCHEMA_UPGRADE_REQUIRES_ISOLATED_RESTORE_PROOF
+  rollback_procedure: Restore the isolated pre-upgrade Keycloak database and recorded before digest as one atomic rollback
+    unit.
+  status: NOT_DEPLOYED_EXACT_ARTIFACT_REQUIRED
+  authority_service: TELNEXA
+  historical_artifact:
+    source_sha: e0474ecb9c6b52b9340aece4a446d63f2dd1b6ac
+    image_digest: sha256:960b8833992d02b3f39fb3dfa25ace03de9b1e3682307c8cebb4e150b6efa17c
+  artifact_binding: FAIL
+  rollback_status: FAIL
+- service: TELNEXA_JASMIN
+  before_source_sha: WRAPPER_TAG_4b4e5c73463d
+  before_image_digest: sha256:16585e89840fdd972d9483c0e45d5fad694df28922562f74fb05d540a6893cf4
+  after_source_sha: 8c18c069103b485ead76446ec979034eb62c748a
+  after_image_digest: null
+  database_migration: JASMIN_TOPOLOGY_MIGRATION_REQUIRES_ISOLATED_ROUNDTRIP
+  rollback_procedure: Quiesce submission, snapshot broker/Jasmin state, restore the before digest and topology snapshot, then
+    prove no-effect SMPP and DLR handling.
+  status: NOT_DEPLOYED_EXACT_ARTIFACT_REQUIRED
+  authority_service: TELNEXA
+  historical_artifact:
+    source_sha: e0474ecb9c6b52b9340aece4a446d63f2dd1b6ac
+    image_digest: sha256:90995aaefd0fc72641d988acba08b3830d4f3ced80ea656c70ce197813f44824
+  artifact_binding: FAIL
+  rollback_status: FAIL
+- service: TELNEXA_WEBHOOK_RELAY
+  before_source_sha: NOT_RUNNING
+  after_source_sha: 8c18c069103b485ead76446ec979034eb62c748a
+  after_image_digest: null
+  database_migration: NONE
+  rollback_procedure: Remove the candidate relay from the reviewed Compose graph and restore the prior direct private event
+    path.
+  status: NOT_DEPLOYED_EXACT_ARTIFACT_REQUIRED
+  authority_service: TELNEXA
+  historical_artifact:
+    source_sha: e0474ecb9c6b52b9340aece4a446d63f2dd1b6ac
+    image_digest: sha256:3d3a03fc8a10989ed986fc1d614ea18c737bddef57d2dcadb19c0a5d99da5640
+  artifact_binding: FAIL
+  rollback_status: FAIL
+- service: TELNEXA_CONTAINER_NGINX
+  before_source_sha: HOST_NGINX_AUTHORITY
+  after_source_sha: 8c18c069103b485ead76446ec979034eb62c748a
+  after_image_digest: null
+  database_migration: NONE
+  rollback_procedure: Restore the reviewed host-Nginx route snapshot and remove the container edge from the upstream graph.
+  status: NOT_DEPLOYED_EXACT_ARTIFACT_REQUIRED
+  authority_service: TELNEXA
+  historical_artifact:
+    source_sha: e0474ecb9c6b52b9340aece4a446d63f2dd1b6ac
+    image_digest: sha256:791e66955c7a6d34f8172cfeeff1715b8ecb067d6ebba5efa78d28250fa39953
+  artifact_binding: FAIL
+  rollback_status: FAIL
+- service: PRIVATE_INTEGRATION_GATEWAY
+  before_source_sha: a3dbfd6b464d2ba4c130e360f8ad73338bdd9fbb
+  before_image_digest: sha256:6d6d8cefa4a32796c85a1d6505d74fefdd2e1646421f387f126a2d0ecd03ed88
+  after_source_sha: 9ec227d6a2b5c14217d88c33a8cfd4e057486c56
+  after_image_digest: sha256:8f963929c600baa03435e9c5d7bc7bfa9af152fe26736ca201c586a7b6c0db6b
+  database_migration: NONE_APPLICATION_BYTES_IDENTICAL_SQLITE_INTEGRITY_VERIFIED
+  rollback_procedure: Use the root-only private-gateway rollout bundle to restore the prior digest; the rollback and forward
+    recovery rehearsal both returned healthy with SQLite integrity preserved.
+  rollback_evidence: SERVER-37-PRIVATE-GATEWAY-RELEASE-EVIDENCE.md
+  status: DEPLOYED_PASS
+  authority_service: PRIVATE_GATEWAY
+  rollback_status: FAIL
+required_next_action: Independent reviewers approve the remaining exact Telnexa and Kyqra heads; release owners publish signed
+  digests and perform isolated rollback rehearsals before production promotion.

@@ -42,9 +42,12 @@ Do not install or expose services on the server until repository authority, host
 ## Smoke tests
 
 ### DNS/TLS
-- all 14 hostnames resolve to `37.27.128.39` with expected TTL behavior;
-- `graf`, `supe`, and approved `bao` return valid HTTPS certificates only after Caddy routes are enabled;
-- private-only hostnames must not expose their native services publicly simply because DNS resolves.
+- derive the complete DNS inventory from every non-null `components[].hostname` in [the topology contract](../config/observability/topology.v1.json): currently 13 names, comprising three UI/management names and ten private-service denial names;
+- verify all 13 names against the accepted `dnsTarget` (`37.27.128.39` in the current contract); missing, stale or unexpected DNS answers fail the rollout check;
+- after the reviewed Caddy routes are enabled, validate certificate trust and hostname coverage for all 13 HTTPS names, including private-service denial routes;
+- verify application access/authentication at `graf.codestra.media`, `supe.codestra.media`, and the restricted `bao.codestra.media`;
+- for every name in [the firewall contract's `publicDnsButNoPublicProxy` list](../config/observability/firewall.v1.json), verify the deployed deny-only Caddy virtual host and its controlled public denial (`403` under the current network contract); a missing virtual host, TLS/connection failure, or response from a proxied native service is not successful denial evidence;
+- exclude only PostgreSQL Exporter from public DNS/TLS and denial-host checks: its `hostname` is explicitly null and its private identity is `postgres-exporter:9187`; retain its private scrape and public native-port closure checks.
 
 ### Prometheus/exporters
 - Prometheus config validation passes;
@@ -144,3 +147,11 @@ For each deployed component record:
 - approver and activation timestamp.
 
 Server deployment is not considered complete until the combined evidence packet passes and no public/private exposure discrepancy remains.
+
+## Latest runtime verification
+
+See [the 10 September 2026 live verification](../reports/observability/20260910-runtime-verification.md).
+Container liveness and Prometheus scrape success alone do not certify service
+readiness, configured receiver credential mounts, webhook transport, log/trace
+ingestion or authenticated dashboard access. The fourteen-component provider
+release remains incomplete; this report records the separate core alert repair.

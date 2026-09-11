@@ -1,0 +1,71 @@
+{
+  "backstage": {
+    "at": "2026-09-10T17:33:32.050966+00:00",
+    "backup": "/var/backups/codestra/backstage-catalog/20260910T173236Z",
+    "catalog_ingestion_verification": "PASS",
+    "catalog_summary": {
+      "entities_with_status_errors": 0,
+      "monitoring_entities": 67,
+      "resources": 63,
+      "total_entities": 75
+    },
+    "database_service_restarted": false,
+    "healthcheck": 200,
+    "http_checks": [
+      {
+        "error": "",
+        "http_tls": "200 0",
+        "rc": 0,
+        "url": "http://10.40.0.4:17007/healthcheck"
+      },
+      {
+        "error": "",
+        "http_tls": "401 0",
+        "rc": 0,
+        "url": "https://backstage.codestra.co/"
+      }
+    ],
+    "image_id": "sha256:0979a2355650b0ac5f085e4c250c3ff5925ad61ba2b749354ec122da6e1557bf",
+    "public_access": "Basic authentication remains in effect; Keycloak SSO is not deployed",
+    "resource_comparison": {
+      "actual": 63,
+      "expected": 63,
+      "missing": [],
+      "unexpected": []
+    },
+    "source": "2cc079e8e126bc3a8a929afc66d49edfb42a6538",
+    "source_ci": "https://github.com/appolon1908-hue/Backstage/actions/runs/34504649954",
+    "sso_changed": false
+  },
+  "limitations": [
+    "Monitoring migration 0058 requires separate protected schema/history approval; repository CI rejects the unapproved head.",
+    "Backstage catalog ingestion does not certify Keycloak SSO or connected application telemetry.",
+    "Telnexa website merge remains blocked: PR 13 needs approval from someone other than its last pusher; PR 15 needs its prerequisite orchestrator-contract check.",
+    "Public website TLS repairs and Odoo production identity binding have not been deployed in this execution."
+  ],
+  "middleware": {
+    "authority": {
+      "authority": "production migration head drift: authority requires '0057_platform_service_catalog', repository heads are ['0058_integrated_monitoring']; update the platform tuple through separate protected review before adding a head",
+      "head": [
+        "0058_integrated_monitoring"
+      ],
+      "history_sha256": "sha256:02c6394a883ac817afe00b40b8f0d72555645cfb4d31d8c6e6167716a953df0c",
+      "migration_sha256": "sha256:7e9ecbe7563d8449f273ce5339f90b2939c5d8e045a0dede87836a19b6da6884"
+    },
+    "content_conflicts": 0,
+    "head_sha": "e9ec06ac02f9b3ffe3149b8e266f023813be59fb",
+    "local_tests_passed": 115,
+    "main_parent_sha": "5baf3faf25fb791f4d8ea171357a2d9af96009c1",
+    "mergeable": true,
+    "mergeable_state": "blocked",
+    "monitoring_api_ci": "https://github.com/appolon1908-hue/Middleware-/actions/runs/34509648747",
+    "openapi_operations": 36,
+    "postgresql_api_tests_passed": 31,
+    "pr": "https://github.com/appolon1908-hue/Middleware-/pull/226",
+    "production_deployed": false
+  },
+  "overall_status": "PARTIALLY_DEPLOYED_PROTECTED_RELEASE_PENDING",
+  "schema_version": 1,
+  "scope": "Backstage catalog production deployment and Middleware PR 226 main synchronization",
+  "verified_at_utc": "2026-09-10T17:39:43.471879+00:00"
+}
