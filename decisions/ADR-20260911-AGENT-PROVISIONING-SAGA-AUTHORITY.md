@@ -260,3 +260,56 @@ This ADR does not:
 All capability and kill-switch values remain false until their own
 exact-artifact review, staging canary, reconciliation, backup, restore, and
 rollback gates pass.
+
+## Addendum (2026-09-11): Odoo `/v1/contact-center/` surface vs. Middleware PR #245
+
+A separate finding, outside this ADR's original mandate, was raised: does
+Odoo's `api/openapi/contact-center-v1.yaml` (interactions, dispositions,
+callbacks, transfers) duplicate the Calls/Activity endpoints shipped in
+`Middleware-` PR #245 (`GET /platform/v1/calls`, `/calls/{id}`, `/activity`,
+`/activity/{id}`)?
+
+**Verdict: false alarm, not a duplication requiring reconciliation.**
+
+Evidence:
+
+- The literal `/v1/contact-center/*` paths (including `/interactions/{id}`,
+  `/disposition`, `/callback`, `/transfer`) have zero controller
+  implementation anywhere in `appolon1908-hue/Odoo`. The only place these
+  paths appear in code is `scripts/validate_call_center_workstreams.py`, a
+  contract-registry validator for a planned, ordered workstream rollout
+  (`workstreams` list, `order` 0 through 10) — not live routes.
+- That same registry already declares
+  `canonical_contracts.cross_system_writer = "codestra-middleware"` and
+  requires `odoo_core_modification_allowed`, `vicidial_database_writes_allowed`,
+  and `n8n_system_of_record_allowed` all be `false`. In other words, this
+  spec already designates Middleware as the intended writer/implementer for
+  this domain, once built — consistent with, not conflicting with, PR #245.
+- Odoo does have real, live call-handling code today, but at a different
+  path and for a different concern:
+  `codestra_vicidial_crm/controllers/call_control.py` exposes
+  `/codestra/call-control/v1/calls/<id>/disposition` and `/callbacks` —
+  agent-facing actions an agent submits through the Odoo UI, backed by
+  `codestra.vicidial.disposition`/`codestra.callback` models fed directly by
+  VICIdial events. This is a write path for agent actions, not a read
+  surface for call-lifecycle/activity querying.
+- Odoo's only Middleware-facing client, `codestra.telephony.middleware.client`
+  (`custom-addons/codestra_vicidial_crm/models/middleware_client.py`), is
+  one-way: `originate_call`/`originate_test_syn`/`originate_command` push
+  outbound-call requests to Middleware. It does not read back
+  `telephony_call_lifecycle` or activity/audit data — there is currently no
+  wired connection between Odoo and PR #245's read endpoints, in either
+  direction.
+
+**Note on provenance**: the interaction-event consumer commits referenced
+when this addendum was requested (`dffcd7b`, `250a3be`, "consume interaction
+events into real CRM writes") were verified this session to live in
+`Codestra-SRL/codestra-odoo-addons` — a separate, reference-only fork, not
+`appolon1908-hue/Odoo`. They could not be located in the canonical repo and
+are not part of this addendum's evidence base.
+
+**Recommendation**: no reconciliation action needed now. If/when the
+`contact-center-v1.yaml` workstreams are actually implemented, they should
+be built as Middleware routes per the registry's own
+`cross_system_writer: codestra-middleware` contract — extending PR #245's
+Calls/Activity work rather than adding a second implementation in Odoo.
