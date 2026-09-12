@@ -313,3 +313,81 @@ are not part of this addendum's evidence base.
 be built as Middleware routes per the registry's own
 `cross_system_writer: codestra-middleware` contract — extending PR #245's
 Calls/Activity work rather than adding a second implementation in Odoo.
+
+## Addendum (2026-09-12): M2 implementation record — this ADR's own target state
+
+M1 (`Middleware-` PRs #238, #243 with #244/#246 folded in, #245, #247) is
+merged and reachable on `Middleware-`'s protected `main`. This addendum
+records what M2 — reconciling `codestra-provisioning-service` against this
+ADR's target state — actually found and changed.
+
+**Enumeration.** Before this change, `codestra-provisioning-service` exposed a
+complete, independently-callable provisioning surface: `POST
+/v1/provisioning/requests/{request_id}/{execute,retry,verify,cancel}`, `POST
+/v1/identities/{employee_id}/{suspend,reactivate,terminate,rotate}`, and the
+SIP browser session routes `POST /session`, `POST /renew`, `POST /revoke`
+(`app/main.py`). All of these were gated only by a single Keycloak
+service-account JWT with one fixed, exactly-matched scope set
+(`identity:rotate provisioning:execute provisioning:read`, client
+`codestra-provisioning-service-staging`, per `app/config.py`'s
+`MACHINE_CLIENT_ID`/`MACHINE_SCOPES`). Anything holding that one credential
+could call any of these routes directly — nothing distinguished "orchestrated
+by Middleware's saga" from "called directly, bypassing Middleware entirely."
+
+**Caller mapping.** This service currently has **zero live callers anywhere in
+the organization**. `Middleware-`'s own
+`connectors/manifests/provisioning-service.connector.json` is an explicit
+`UNVERIFIED_TEMPLATE_ONLY` scaffold (`base_url:
+"https://provisioning.internal.invalid"`, `metadata.runtime_activation_authorized:
+false`) — a planned integration that was never activated.
+`config/control-plane-callers.v1.json` registers `n8n-automation` to forward
+`provisioning.*` commands toward the `provisioning-service` target
+*through Middleware*, but again only as part of the same unactivated
+template. So the actual risk this ADR is closing is architectural
+(the service *permits* independent calling with no attestation), not an
+observed case of two systems concurrently provisioning the same identity
+today.
+
+**What changed** (`codestra-provisioning-service` PR
+[#31](https://github.com/appolon1908-hue/codestra-provisioning-service/pull/31),
+draft):
+
+- Every mutating route above now additionally requires an HMAC-SHA256
+  attestation (`X-Middleware-Timestamp` / `X-Middleware-Signature`) over the
+  exact raw request body, keyed by a new secret
+  (`MIDDLEWARE_INVOCATION_HMAC_SECRET_FILE`) shared only with Middleware —
+  the same timestamp-then-sign convention this service already uses
+  outbound for Odoo callback signing, applied inbound. Replay-protected via
+  the existing durable `replay_jti` table. Read-only routes are unaffected.
+- A new `MIDDLEWARE_INVOCATION_REQUIRED_GATE` joins the existing
+  all-must-be-enabled `GATES` tuple. This is the startup/release guard: the
+  service cannot report `/ready` — cannot be considered fully live — while
+  this attestation requirement is disabled. Two independently-live
+  authorities (this service answering mutating calls with no proof of
+  Middleware orchestration, alongside Middleware's own saga) is therefore
+  structurally not a reachable configuration once this gate is enabled in
+  any environment that also expects `/ready` to pass.
+- Chose the conservative, reversible option where a tradeoff existed: the
+  old routes were gated, not deleted. `codestra-provisioning-service`
+  remains capable of executing every operation Middleware's saga will need
+  to invoke; it can no longer do so without proof of that invocation.
+
+**Deliberately not done in this change, tracked as real follow-up, not
+silently deferred**:
+
+- The Middleware-side connector is still `UNVERIFIED_TEMPLATE_ONLY`. Issuing
+  the real shared HMAC secret and wiring `Middleware-`'s saga to actually
+  call this service's routes with the new attestation headers is separate
+  work — this ADR's target architecture (Middleware saga → this service as
+  private execution layer) is now *possible* to activate safely, not yet
+  *activated*.
+- `codestra-provisioning-service` PR
+  [#28](https://github.com/appolon1908-hue/codestra-provisioning-service/pull/28)
+  (an unrelated, narrower bug fix correcting its VICIdial adapter to the
+  real `Vicidialer-Codestra` `/v1/agents/provision-disabled` contract) was
+  independently reviewed and recommended for merge; it neither depends on
+  nor conflicts with this change.
+
+**Tests**: 95 passed (92 pre-existing + 3 new covering the attestation
+requirement, a forged-signature rejection, and gate-disabled fail-closed
+behavior). Ruff clean. No kill switch was flipped to enable any live effect.
