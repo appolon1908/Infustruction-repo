@@ -18,3 +18,4 @@ jobs:
         with:
           persist-credentials: false
       - run: python3 -m unittest discover -s tests -p test_release_policy_review.py -v
+      - run: python3 -m unittest discover -s tests -p test_release_check_identity.py -v
