@@ -32,7 +32,7 @@ jobs:
       - name: Install pinned workflow parser
         run: python3 -m pip install --disable-pip-version-check --no-input PyYAML==6.0.3
       - name: Validate repository-owned contract and no-runtime intent
-        run: python3 .codestra/validate-production-orchestrator-contract.py
+        run: env -u GITHUB_REPOSITORY python3 .codestra/validate-production-orchestrator-contract.py
       - name: Reject malformed diffs
         run: |
           set -Eeuo pipefail
