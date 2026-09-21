@@ -327,7 +327,7 @@ jobs:
           import re
           import sys
 
-          WORKFLOW = "appolon1908-hue/Infustruction-repo/.github/workflows/reusable-codestra-upstream-deploy-readiness.yml"
+          WORKFLOW = "ingtrader21-spec/Infustruction-repo/.github/workflows/reusable-codestra-upstream-deploy-readiness.yml"
 
           def resolve_signing_identity(metadata, repository, source_sha, run_id):
               if not re.fullmatch(r"[0-9a-f]{40}", source_sha):
