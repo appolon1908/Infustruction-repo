@@ -5,6 +5,7 @@ import pathlib
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("policy_review", ROOT / "scripts/validate_release_policy_review.py")
@@ -30,6 +31,21 @@ class ReviewTests(unittest.TestCase):
     def test_exact_independent_approval(self):
         self.assertEqual(policy.validate_subject(self.pr, 108, self.base), self.head)
         self.assertEqual(policy.validate_review(self.pr, [self.review], self.head), 12)
+
+    def test_current_canonical_repository_has_the_original_numeric_identity(self):
+        self.pr["base"]["repo"] = {
+            "id": 1350724865, "full_name": "appolon1908/Infustruction-repo",
+        }
+        self.assertEqual(policy.validate_subject(self.pr, 108, self.base), self.head)
+
+    def test_former_owner_and_same_name_in_another_repository_are_rejected(self):
+        for name, identity in (
+            ("appolon1908-hue/Infustruction-repo", 1350724865),
+            ("appolon1908/Infustruction-repo", 1350724866),
+        ):
+            self.pr["base"]["repo"] = {"id": identity, "full_name": name}
+            with self.subTest(name=name, identity=identity), self.assertRaises(policy.ReviewError):
+                policy.validate_subject(self.pr, 108, self.base)
 
     def test_missing_approval(self):
         with self.assertRaises(policy.ReviewError):
@@ -90,6 +106,34 @@ class ReviewTests(unittest.TestCase):
         self.pr["head"]["sha"] = "main"
         with self.assertRaises(policy.ReviewError):
             policy.validate_subject(self.pr, 108, self.base)
+
+
+class WorkflowIdentityTests(unittest.TestCase):
+    def setUp(self):
+        self.base = "b" * 40
+        self.environment = {
+            "GITHUB_REPOSITORY": "appolon1908/Infustruction-repo",
+            "GITHUB_REPOSITORY_ID": "1350724865",
+            "GITHUB_SHA": self.base,
+        }
+
+    def test_current_repository_id_and_protected_source_match(self):
+        with patch.dict(policy.os.environ, self.environment, clear=True):
+            policy.validate_workflow_identity(self.base)
+
+    def test_missing_wrong_or_ambiguous_identity_and_wrong_base_fail(self):
+        for key, value in (
+            ("GITHUB_REPOSITORY", "appolon1908-hue/Infustruction-repo"),
+            ("GITHUB_REPOSITORY", "other/Infustruction-repo"),
+            ("GITHUB_REPOSITORY_ID", ""),
+            ("GITHUB_REPOSITORY_ID", "1350724866"),
+            ("GITHUB_REPOSITORY_ID", "01350724865"),
+            ("GITHUB_SHA", "a" * 40),
+        ):
+            with self.subTest(key=key, value=value), patch.dict(
+                policy.os.environ, {**self.environment, key: value}, clear=True,
+            ), self.assertRaises(policy.ReviewError):
+                policy.validate_workflow_identity(self.base)
 
 
 class SourceTests(unittest.TestCase):
