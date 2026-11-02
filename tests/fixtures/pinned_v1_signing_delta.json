@@ -1,0 +1,10 @@
+{
+  "baseline_commit": "1b4a90810eb03db3eae2b676b2d418daa434ec16",
+  "baseline_blob": "c4ed9cf0b68669ff12f88c7de35d5c954d04f736",
+  "binding_step_sha256": "87f1343e58e651373e8a9496ca6db0dc53f25a90dc692724dd9c51abf9ca27b3",
+  "removed_lines": [
+    "            caller_identity=\"https://github.com/${GITHUB_REPOSITORY}/.github/workflows/codestra-deploy-readiness.yml@${GITHUB_REF}\"\n",
+    "            called_identity_pattern='^https://github.com/appolon1908-hue/Infustruction-repo/.github/workflows/reusable-codestra-deploy-readiness.yml@.*$'\n",
+    "            identity_pattern=\"^https://github.com/(${GITHUB_REPOSITORY}/.github/workflows/codestra-deploy-readiness.yml@${GITHUB_REF#refs/heads/}|appolon1908-hue/Infustruction-repo/.github/workflows/reusable-codestra-deploy-readiness.yml@.*)$\"\n"
+  ]
+}
