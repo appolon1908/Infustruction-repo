@@ -319,6 +319,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           metadata="$RUNNER_TEMP/source-signing-run.json"
+          test "$(gh api repos/appolon1908/Infustruction-repo --jq .id)" = "1350724865"
           gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" > "$metadata"
           python3 - "$metadata" <<'IDENTITY_PY'
           # BEGIN CODESTRA_REUSABLE_SIGNING_IDENTITY
@@ -327,7 +328,7 @@ jobs:
           import re
           import sys
 
-          WORKFLOW = "ingtrader21-spec/Infustruction-repo/.github/workflows/reusable-codestra-upstream-deploy-readiness.yml"
+          WORKFLOW = "appolon1908/Infustruction-repo/.github/workflows/reusable-codestra-upstream-deploy-readiness.yml"
 
           def resolve_signing_identity(metadata, repository, source_sha, run_id):
               if not re.fullmatch(r"[0-9a-f]{40}", source_sha):

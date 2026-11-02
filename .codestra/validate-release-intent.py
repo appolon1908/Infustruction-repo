@@ -162,8 +162,8 @@ ORCHESTRATOR_CONTRACT_WORKFLOW_SHA256 = (
 )
 EXPECTED_CHECK_WORKFLOW_SHA256 = {
     "appolon1908-hue/Infustruction-repo": {
-        ".github/workflows/production-orchestrator-contract.yml": ORCHESTRATOR_CONTRACT_WORKFLOW_SHA256,
-        ".github/workflows/source-authority-matrix.yml": "1ca826d1f37c06b0ad2bc5a94a5b19516ad24fce486bdaa1b5b384e62f759221",
+        ".github/workflows/production-orchestrator-contract.yml": "266985b7b0d8af596a3a3d77686f065ae627722d82c8b5d4ee5d8f1caaa1d1ef",
+        ".github/workflows/source-authority-matrix.yml": "90bcf50c36c9e091ff272e98ad086f04647fa1aac223e8e04c38d7d35f5ee544",
     },
     "appolon1908-hue/Keycloak": {
         ".github/workflows/production-orchestrator-contract.yml": ORCHESTRATOR_CONTRACT_WORKFLOW_SHA256,
@@ -216,6 +216,10 @@ SHARED_PRODUCTION_VALIDATOR_SHA256 = (
     "6006bbc7850ce7666de926b6cad2585b"
     "83d2fce102104543b871530f11115f20"
 )
+INFRASTRUCTURE_PRODUCTION_VALIDATOR_SHA256 = (
+    "b00a7e6223cb195aec5ce7ffc784a66b"
+    "e8b85986e69052fc003008d103ef5687"
+)
 KEYCLOAK_PRODUCTION_VALIDATOR_SHA256 = (
     "6006bbc7850ce7666de926b6cad2585b"
     "83d2fce102104543b871530f11115f20"
@@ -231,7 +235,7 @@ BACKEND_PRODUCTION_VALIDATOR_SHA256 = (
 EXPECTED_CHECK_WORKFLOW_EXECUTABLE_SHA256 = {
     "appolon1908-hue/Infustruction-repo": {
         ".github/workflows/production-orchestrator-contract.yml": {
-            ".codestra/validate-production-orchestrator-contract.py": SHARED_PRODUCTION_VALIDATOR_SHA256,
+            ".codestra/validate-production-orchestrator-contract.py": INFRASTRUCTURE_PRODUCTION_VALIDATOR_SHA256,
         },
     },
     "appolon1908-hue/Keycloak": {
@@ -374,8 +378,8 @@ EXPECTED_CHECK_WORKFLOW_EXECUTABLE_SHA256 = {
 RELEASE_VALIDATOR_SOURCE_PATH = ".codestra/validate-release-intent.py"
 EXPECTED_REQUIRED_CHECK_SOURCE_CLOSURE_SHA256 = {
     "appolon1908-hue/Infustruction-repo": (
-        "218de46417be1425f8686cdf35c881ae"
-        "cad750495cbe4576831de6aec3e642b2"
+        "6a326bcc72e19fd72728ddf9d242ec93"
+        "2a3c31562c5b7c752988f98afa376a76"
     ),
     "appolon1908-hue/Keycloak": (
         "0a409c1c9cc8c6f43d2d83d5347b9433"

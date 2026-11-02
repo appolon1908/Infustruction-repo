@@ -33,6 +33,8 @@ jobs:
         run: python3 -m pip install --disable-pip-version-check --no-input PyYAML==6.0.3
       - name: Validate repository-owned contract and no-runtime intent
         run: env -u GITHUB_REPOSITORY python3 .codestra/validate-production-orchestrator-contract.py
+      - name: Verify exact workflow and executable trust bindings
+        run: python3 -m unittest discover -s tests -p test_infrastructure_trust_bindings.py -v
       - name: Reject malformed diffs
         run: |
           set -Eeuo pipefail

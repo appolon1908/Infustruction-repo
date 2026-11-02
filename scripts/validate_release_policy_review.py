@@ -10,7 +10,7 @@ from pathlib import Path
 import re
 import subprocess
 
-REPOSITORY = "appolon1908-hue/Infustruction-repo"
+REPOSITORY = "appolon1908/Infustruction-repo"
 REPOSITORY_ID = 1350724865
 REVIEWER_ID = 77101516
 SHA = re.compile(r"[0-9a-f]{40}\Z")
@@ -23,6 +23,13 @@ class ReviewError(ValueError):
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise ReviewError(message)
+
+
+def validate_workflow_identity(base_sha: str) -> None:
+    require(os.environ.get("GITHUB_REPOSITORY") == REPOSITORY, "workflow repository mismatch")
+    require(os.environ.get("GITHUB_REPOSITORY_ID") == str(REPOSITORY_ID),
+            "workflow repository numeric identity mismatch")
+    require(os.environ.get("GITHUB_SHA") == base_sha, "workflow source is not the protected base")
 
 
 def git(root: Path, *args: str) -> bytes:
@@ -99,8 +106,7 @@ def main() -> None:
     # The entry point itself must come from the protected checkout.
     require(Path(__file__).resolve() == base_root / "scripts/validate_release_policy_review.py",
             "validator must execute from the protected checkout")
-    require(os.environ.get("GITHUB_REPOSITORY") == REPOSITORY, "workflow repository mismatch")
-    require(os.environ.get("GITHUB_SHA") == args.base_sha, "workflow source is not the protected base")
+    validate_workflow_identity(args.base_sha)
     base_fingerprint = source_fingerprint(base_root, args.base_sha)
     pr = json.loads(args.pr.read_text())
     head_sha = validate_subject(pr, args.pr_number, args.base_sha)
